@@ -7,7 +7,7 @@
         public int UserBookId { get; set; }
         public bool ShelfVisibility { get; set; }
         public EnumMedia Media { get; set; }
-        public string Bookmark { get; set; }
+        public bool Bookmark { get; set; }
         public string Location { get; set; }
         public string Notes { get; set; }
         public bool IsBorrowed { get; set; }
