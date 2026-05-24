@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "My Profile";
+}
+<link rel="stylesheet" href="~/Styles/profile_style.css" asp-append-version="true" />
+
+<div class="container mt-5 text-center library-profile-container">
+<div class="container mt-5 text-center library-profile-container">
+    <div class="profile-header mb-4">
+        <h2 class="display-5 font-weight-bold">My Profile </h2>
+        <p class="lead text-muted">Tutaj powinien byc login</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="profile-card p-4 bg-white rounded shadow-sm">
+
+                <div id="profile-view-mode">
+                    <div class="avatar-container mb-3 mx-auto">
+                        <span class="profile-avatar-emoji">🌿</span>
+                    </div>
+
+                    <h3 class="profile-username">@User.Identity?.Name</h3>
+                   
+
+                    <hr class="library-divider" />
+
+
+                    <button type="button" class="btn btn-library-gold w-100" onclick="toggleEditMode(true)">
+                        Edit Profile
+                    </button>
+                </div>
+
+                <div id="profile-edit-mode" style="display: none;">
+                    <h4 class="mb-4 text-start" style="color: #2d4a43; font-weight: 600;">Edycja Profilu</h4>
+
+                    <form method="post" enctype="multipart/form-data">
+
+                        <div class="mb-4 text-start">
+                            <label class="form-label d-block fw-bold">Wybierz gotowy awatar:</label>
+                            <div class="avatar-picker-grid">
+                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="1" checked><span>🌿</span></label>
+                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="2"><span>📖</span></label>
+                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="3"><span>🌱</span></label>
+                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="4"><span>📚</span></label>
+                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="5"><span>🌸</span></label>
+                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="6"><span>🌵</span></label>
+                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="7"><span>☕</span></label>
+                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="8"><span>🍂</span></label>
+                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="9"><span>🪴</span></label>
+                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="10"><span>🦉</span></label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 text-start">
+                            <label for="customAvatar" class="form-label fw-bold">Or add your own photo:</label>
+                            <input class="form-control library-input" type="file" id="customAvatar" accept="image/*">
+                        </div>
+
+                        <hr class="library-divider" />
+
+                        <div class="mb-3 text-start">
+                            <label for="editLogin" class="form-label fw-bold">Change Login (Email):</label>
+                            <input type="email" class="form-control library-input" id="editLogin" value="@User.Identity?.Name">
+                        </div>
+
+                        <div class="mb-3 text-start">
+                            <label for="newPassword" class="form-label fw-bold">Change Password:</label>
+                            <input type="password" class="form-control library-input" id="newPassword" placeholder="Enter new password">
+                        </div>
+                        <div class="mb-4 text-start">
+                            <label for="confirmPassword" class="form-label fw-bold">Confirm New Password:</label>
+                            <input type="password" class="form-control library-input" id="confirmPassword" placeholder="Confirm new password">
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <button type="button" class="btn btn-library-cancel flex-grow-1" onclick="toggleEditMode(false)">Cancel</button>
+                            <button type="submit" class="btn btn-library-green flex-grow-1">Confirm</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleEditMode(isEdit) {
+        var viewMode = document.getElementById("profile-view-mode");
+        var editMode = document.getElementById("profile-edit-mode");
+
+        if (isEdit) {
+            viewMode.style.display = "none";
+            editMode.style.display = "block";
+        } else {
+            viewMode.style.display = "block";
+            editMode.style.display = "none";
+        }
+    }
+</script>
+

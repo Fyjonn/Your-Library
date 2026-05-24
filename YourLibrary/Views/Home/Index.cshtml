@@ -1,8 +1,47 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "My Library";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="library-container text-center">
+    <div class="library-hero mb-5">
+        <h1 class="library-title">Welcom to My Library</h1>
+    </div>
+
+    <div class="row justify-content-center gap-4 px-3">
+        <div class="cards">
+            <a asp-controller="Profile" asp-action="Index" class="library-card-link">
+                <div class="library-card">
+                    <h3 class="card-headline">My Profile</h3>
+                    <div class="book-image-wrapper">
+                        <img src="https://png.pngtree.com/png-vector/20250111/ourmid/pngtree-open-book-clipart-wide-with-pages-spread-clip-art-png-image_15149179.png"
+                             alt="Książka" class="library-book-img" />
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="cards">
+            <a asp-controller="Home" asp-action="Shelf" class="library-card-link">
+                <div class="library-card">
+                    <h3 class="card-headline">Shelf</h3>
+                    <div class="book-image-wrapper">
+                        <img src="https://png.pngtree.com/png-vector/20250111/ourmid/pngtree-open-book-clipart-wide-with-pages-spread-clip-art-png-image_15149179.png"
+                             alt="Książka" class="library-book-img" />
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="cards">
+            <a asp-controller="Home" asp-action="Friends" class="library-card-link">
+                <div class="library-card">
+                    <h3 class="card-headline">Friends</h3>
+                    <div class="book-image-wrapper">
+                        <img src="https://png.pngtree.com/png-vector/20250111/ourmid/pngtree-open-book-clipart-wide-with-pages-spread-clip-art-png-image_15149179.png"
+                             alt="Książka" class="library-book-img" />
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>

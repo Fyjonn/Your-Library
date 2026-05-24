@@ -1,0 +1,172 @@
+﻿/* ==========================================================================
+   STYLE DLA PODSTRONY: MY PROFILE (Książkara / Zieleniara)
+   ========================================================================== */
+
+.library-profile-container {
+    color: #2d4a43;
+}
+
+/* Karta profilu */
+.profile-card {
+    border: 2px solid #e6dfd1;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(45, 74, 67, 0.06) !important;
+    background-image: radial-gradient(#eef2ef 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Koło awatara */
+.avatar-container {
+    width: 110px;
+    height: 110px;
+    background-color: #2d4a43;
+    border: 3px solid #bfa15f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(45, 74, 67, 0.15);
+    transition: transform 0.4s ease;
+}
+
+    .avatar-container:hover {
+        transform: scale(1.05) rotate(5deg);
+    }
+
+.profile-avatar-emoji {
+    font-size: 2.8rem;
+}
+
+.profile-username {
+    font-weight: 700;
+    color: #1c332e;
+    margin-top: 10px;
+}
+
+.profile-badge {
+    font-style: italic;
+    color: #607c68;
+    font-size: 1rem;
+}
+
+.counter-number {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2d4a43;
+    display: block;
+}
+
+.library-divider {
+    border-top: 1px solid #e6dfd1 !important;
+    opacity: 1;
+    margin: 1.5rem 0;
+}
+
+/* Siatka (Grid) wyboru 10 gotowych awatarów */
+.avatar-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* Stylowanie pojedynczej opcji awatara radiowego */
+.avatar-option {
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+}
+
+    .avatar-option input {
+        position: absolute;
+        opacity: 0; /* Ukrywamy standardowy brzydki kropek radio */
+        cursor: pointer;
+    }
+
+    .avatar-option span {
+        display: block;
+        font-size: 1.8rem;
+        padding: 8px;
+        background-color: #fcfaf2;
+        border: 2px solid #e6dfd1;
+        border-radius: 8px;
+        transition: all 0.25s ease;
+    }
+
+    /* Efekt po zaznaczeniu awatara (Radio Checked) */
+    .avatar-option input:checked + span {
+        background-color: #2d4a43;
+        border-color: #bfa15f;
+        transform: scale(1.08);
+    }
+
+/* Pola tekstowe i plikowe */
+.library-input {
+    border: 2px solid #e6dfd1 !important;
+    border-radius: 8px !important;
+    background-color: #fcfaf2 !important;
+    color: #2d4a43 !important;
+    padding: 10px 12px !important;
+    transition: border-color 0.3s ease !important;
+}
+
+    .library-input:focus {
+        border-color: #2d4a43 !important;
+        box-shadow: 0 0 0 0.25rem rgba(45, 74, 67, 0.15) !important;
+    }
+
+/* PRZYCISKI */
+
+/* 1. Złoty / Beżowy przycisk Edit */
+.btn-library-gold {
+    background-color: #bfa15f !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    border: none !important;
+    transition: background-color 0.3s ease, transform 0.2s ease !important;
+}
+
+    .btn-library-gold:hover {
+        background-color: #a88d50 !important;
+        transform: translateY(-2px);
+    }
+
+/* 2. Zielony przycisk Zapisz */
+.btn-library-green {
+    background-color: #2d4a43 !important;
+    color: #fcfaf2 !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    border: none !important;
+    transition: background-color 0.3s ease !important;
+}
+
+    .btn-library-green:hover {
+        background-color: #1c332e !important;
+    }
+
+/* 3. Przycisk Anuluj */
+.btn-library-cancel {
+    background-color: #fcfaf2 !important;
+    color: #607c68 !important;
+    border: 2px solid #e6dfd1 !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    transition: all 0.3s ease !important;
+}
+
+    .btn-library-cancel:hover {
+        background-color: #e6dfd1 !important;
+        color: #2d4a43 !important;
+    }
+
+/* Dostosowanie siatki awatarów na telefonach (Media Queries) */
+@media screen and (max-width: 576px) {
+    .avatar-picker-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 w rzędzie zamiast 5 na małym ekranie */
+    }
+}
