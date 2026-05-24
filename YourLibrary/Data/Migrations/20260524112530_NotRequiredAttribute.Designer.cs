@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YourLibrary.Data;
 
@@ -11,9 +12,11 @@ using YourLibrary.Data;
 namespace YourLibrary.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260524112530_NotRequiredAttribute")]
+    partial class NotRequiredAttribute
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -204,9 +207,6 @@ namespace YourLibrary.Data.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("ShelfVisibility")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -367,7 +367,7 @@ namespace YourLibrary.Data.Migrations
                     b.Property<int>("BookId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Bookmark")
+                    b.Property<bool?>("Bookmark")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsBorrowed")
@@ -393,6 +393,9 @@ namespace YourLibrary.Data.Migrations
 
                     b.Property<int?>("ReviewId1")
                         .HasColumnType("int");
+
+                    b.Property<bool>("ShelfVisibility")
+                        .HasColumnType("bit");
 
                     b.HasKey("UserBookId");
 

@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using YourLibrary.Models;
+using System.Text.Json;
 using YourLibrary.Data;
+using YourLibrary.Models;
 
 
 namespace YourLibrary.Controllers
@@ -20,6 +21,7 @@ namespace YourLibrary.Controllers
             _userManager = userManager;
         }
 
+
         // Akcje
 
         // localhst:XXXX/UserBook/Create - żeby wejść na ten widok
@@ -30,13 +32,13 @@ namespace YourLibrary.Controllers
             // dodajemy tylko ksiazke na razie, nie cale userbook
             return View(new UserBook { Book = new Book() });
         }
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(UserBook userbook)
         {
             string currentUserId = _userManager.GetUserId(User);
             userbook.ApplicationUserId = currentUserId;
+
 
             ModelState.Remove("ApplicationUserId");
             ModelState.Remove("ApplicationUser");
