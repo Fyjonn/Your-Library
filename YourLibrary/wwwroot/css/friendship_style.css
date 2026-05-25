@@ -1,0 +1,31 @@
+/* Styl kart użytkowników */
+.friend-card, .invitation-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+}
+
+    .friend-card:hover, .invitation-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+
+/* Sekcja zaproszeń oczekujących */
+.invitations-section {
+    background-color: #f8f9fa;
+    border-radius: 16px;
+    border: 1px dashed #dee2e6;
+}
+
+/* Awatary użytkowników (litera z loginu) */
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    background-color: #e9ecef;
+    color: #495057;
+    font-weight: bold;
+    font-size: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

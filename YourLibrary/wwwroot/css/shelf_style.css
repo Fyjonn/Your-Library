@@ -1,0 +1,37 @@
+/* Styl dla pływającego przycisku z plusem (FAB) */
+.btn-fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #0d6efd; /* Kolor Bootstrap Primary */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    text-decoration: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    z-index: 1050; /* Upewnia się, że przycisk jest nad wszystkim */
+}
+
+    /* Efekt po najechaniu myszką na plus */
+    .btn-fab:hover {
+        background-color: #0b5ed7;
+        color: white;
+        transform: scale(1.1); /* Delikatne powiększenie */
+    }
+
+/* Dopasowanie zakładek nawigacyjnych */
+.nav-pills .nav-link {
+    color: #495057;
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+    .nav-pills .nav-link.active {
+        background-color: #0d6efd;
+        box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
+    }
