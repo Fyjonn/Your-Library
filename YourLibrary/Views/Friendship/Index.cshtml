@@ -1,0 +1,155 @@
+﻿@* @model YourLibrary.Models.FriendshipViewModel *@
+
+@{
+    ViewData["Title"] = "Znajomi";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/friendship_style.css" asp-append-version="true" />
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<div class="container mt-4 pb-5">
+
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6">
+            <h1 class="display-5 fw-bold text-primary"><i class="bi bi-people-fill me-3"></i>Your Friends</h1>
+        </div>
+
+        <div class="col-md-6">
+            <form asp-action="SendInvitation" method="post" class="card p-3 shadow-sm border-primary">
+                <h6 class="fw-bold text-muted mb-2">Add new friend</h6>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="searchUsername" class="form-control border-start-0 ps-0" placeholder="Enter username..." required />
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-person-plus-fill me-2"></i>Send invitation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="invitations-section p-4 mb-5 shadow-sm">
+        <h3 class="h5 fw-bold text-secondary mb-4"><i class="bi bi-clock-history me-2"></i>Waiting Invitations</h3>
+
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            @if (Model?.PendingInvitations != null && Model.PendingInvitations.Any())
+            {
+                @foreach (var invite in Model.PendingInvitations)
+                {
+                    <div class="col">
+                        <div class="card invitation-card h-100 shadow-sm border-0">
+                            <div class="card-body d-flex align-items-center justify-content-between p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-3">@invite.SenderUsername?[0].ToString().ToUpper()</div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0">@invite.SenderUsername</h6>
+                                        <small class="text-muted">Chce dołączyć do Twoich znajomych</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <form asp-action="AcceptInvitation" method="post" asp-route-id="@invite.FriendshipId">
+                                        <button type="submit" class="btn btn-success btn-sm px-3 rounded-pill"><i class="bi bi-check border-0 me-1"></i>Tak</button>
+                                    </form>
+                                    <form asp-action="RejectInvitation" method="post" asp-route-id="@invite.FriendshipId">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm px-3 rounded-pill">Nie</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-3">
+                    <p class="text-muted mb-0"><i class="bi bi-envelope-open me-2"></i>No new invitations.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <h3 class="h4 fw-bold text-dark mb-4"><i class="bi bi-person-check me-2"></i>List of friends (@(Model?.Friends?.Count ?? 0))</h3>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @if (Model?.Friends != null && Model.Friends.Any())
+        {
+            @foreach (var friend in Model.Friends)
+            {
+                <div class="col">
+                    <div class="card friend-card h-100 shadow-sm border-light">
+                        <div class="card-body d-flex align-items-center justify-content-between p-4">
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar bg-primary text-white me-3">@friend.FriendUsername?[0].ToString().ToUpper()</div>
+                                <div>
+                                    <h5 class="card-title fw-bold mb-1">@friend.FriendUsername</h5>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Znajomy</span>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteFriendModal"
+                                    data-friendship-id="@friend.FriendshipId"
+                                    data-friend-name="@friend.FriendUsername"
+                                    title="Zakończ przyjaźń">
+                                <i class="bi bi-person-x-fill px-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <div class="text-muted display-6 mb-3"><i class="bi bi-emoji-frown"></i></div>
+                <p class="text-muted fs-5">Twoja lista przyjaciół jest jeszcze pusta. Wyszukaj kogoś u góry!</p>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="deleteFriendModal" tabindex="-1" aria-labelledby="deleteFriendModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold" id="deleteFriendModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Potwierdzenie</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="fs-5 mb-1">Are you sure you want to end this friendship with</p>
+                <h4 class="fw-bold text-danger" id="modal-friend-name">Użytkownik</h4>
+            </div>
+            <div class="modal-footer justify-content-center border-0 pb-4">
+                <form id="deleteFriendForm" asp-action="EndFriendship" method="post">
+                    <input type="hidden" name="friendshipId" id="modal-friendship-id" value="" />
+                    <button type="submit" class="btn btn-danger btn-lg px-4 me-2 shadow-sm">Yes</button>
+                    <button type="button" class="btn btn-light btn-lg px-4 border shadow-sm" data-bs-dismiss="modal">No</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Skrypt, który przechwytuje dane klikniętej karty i dynamicznie uzupełnia okienko Modal (pop-up)
+        const deleteModal = document.getElementById('deleteFriendModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+
+                // Pobieranie danych z atrybutów data-* przycisku
+                const friendshipId = button.getAttribute('data-friendship-id');
+                const friendName = button.getAttribute('data-friend-name');
+
+                // Wstrzykiwanie danych do elementów wewnątrz modala
+                document.getElementById('modal-friend-name').textContent = friendName;
+                document.getElementById('modal-friendship-id').value = friendshipId;
+            });
+        }
+    </script>
+}
