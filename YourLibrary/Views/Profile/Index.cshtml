@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = "My Profile";
 }
+@model YourLibrary.Models.ProfileViewModel
+
 <link rel="stylesheet" href="~/Styles/profile_style.css" asp-append-version="true" />
 
 <div class="container mt-5 text-center library-profile-container">
@@ -16,7 +18,7 @@
 
                 <div id="profile-view-mode">
                     <div class="avatar-container mb-3 mx-auto">
-                        <span class="profile-avatar-emoji">🌿</span>
+                        <span class="profile-avatar-emoji">@Model.Avatar</span>
                     </div>
 
                     <h3 class="profile-username">@User.Identity?.Name</h3>
@@ -38,16 +40,16 @@
                         <div class="mb-4 text-start">
                             <label class="form-label d-block fw-bold">Wybierz gotowy awatar:</label>
                             <div class="avatar-picker-grid">
-                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="1" checked><span>🌿</span></label>
-                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="2"><span>📖</span></label>
-                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="3"><span>🌱</span></label>
-                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="4"><span>📚</span></label>
-                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="5"><span>🌸</span></label>
-                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="6"><span>🌵</span></label>
-                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="7"><span>☕</span></label>
-                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="8"><span>🍂</span></label>
-                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="9"><span>🪴</span></label>
-                                <label class="avatar-option"><input type="radio" name="selectedAvatar" value="10"><span>🦉</span></label>
+                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌿" checked><span>🌿</span></label>
+                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="📖"><span>📖</span></label>
+                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌱"><span>🌱</span></label>
+                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="📚"><span>📚</span></label>
+                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌸"><span>🌸</span></label>
+                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌵"><span>🌵</span></label>
+                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="☕"><span>☕</span></label>
+                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🍂"><span>🍂</span></label>
+                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🪴"><span>🪴</span></label>
+                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🦉"><span>🦉</span></label>
                             </div>
                         </div>
 
@@ -59,17 +61,22 @@
                         <hr class="library-divider" />
 
                         <div class="mb-3 text-start">
-                            <label for="editLogin" class="form-label fw-bold">Change Login (Email):</label>
-                            <input type="email" class="form-control library-input" id="editLogin" value="@User.Identity?.Name">
+                            <label for="editLogin" class="form-label fw-bold">Change Login:</label>
+                            <input asp-for="DisplayName" class="form-control library-input">
+                        </div>
+
+                        <div class="mb-3 text-start">
+                            <label for="editEmail" class="form-label fw-bold">Change Email:</label>
+                            <input asp-for="Email" class="form-control library-input">
                         </div>
 
                         <div class="mb-3 text-start">
                             <label for="newPassword" class="form-label fw-bold">Change Password:</label>
-                            <input type="password" class="form-control library-input" id="newPassword" placeholder="Enter new password">
+                            <input asp-for="NewPassword" class="form-control library-input" id="newPassword" placeholder="Enter new password">
                         </div>
                         <div class="mb-4 text-start">
                             <label for="confirmPassword" class="form-label fw-bold">Confirm New Password:</label>
-                            <input type="password" class="form-control library-input" id="confirmPassword" placeholder="Confirm new password">
+                            <input asp-for="ConfirmedPassword" class="form-control library-input" id="confirmPassword" placeholder="Confirm new password">
                         </div>
 
                         <div class="d-flex gap-3">
