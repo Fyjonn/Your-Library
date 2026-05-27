@@ -6,20 +6,27 @@
 <link rel="stylesheet" href="~/Styles/profile_style.css" asp-append-version="true" />
 
 <div class="container mt-5 text-center library-profile-container">
-<div class="container mt-5 text-center library-profile-container">
-    <div class="profile-header mb-4">
-        <h2 class="display-5 font-weight-bold">My Profile </h2>
-        <p class="lead text-muted">Tutaj powinien byc login</p>
-    </div>
+    <div class="container mt-5 text-center library-profile-container">
+        <div class="profile-header mb-4">
+            <h2 class="display-5 font-weight-bold">My Profile </h2>
+            <p class="lead text-muted">Tutaj powinien byc login</p>
+        </div>
 
-    <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="profile-card p-4 bg-white rounded shadow-sm">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="profile-card p-4 bg-white rounded shadow-sm">
 
-                <div id="profile-view-mode">
-                    <div class="avatar-container mb-3 mx-auto">
-                        <span class="profile-avatar-emoji">@Model.Avatar</span>
-                    </div>
+                    <div id="profile-view-mode">
+                        <div class="avatar-container mb-3 mx-auto">
+                            @if (!string.IsNullOrEmpty(Model.AvatarImagePath))
+                            {
+                                <img src="@Model.AvatarImagePath" class="profile-avatar-image" />
+                            }
+                            else
+                            {
+                                <span class="profile-avatar-emoji">@Model.Avatar</span>
+                            }
+                        </div>
 
                     <h3 class="profile-username">@User.Identity?.Name</h3>
                    
@@ -36,6 +43,7 @@
                     <h4 class="mb-4 text-start" style="color: #2d4a43; font-weight: 600;">Edycja Profilu</h4>
 
                     <form method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="AvatarImagePath" />
 
                         <div class="mb-4 text-start">
                             <label class="form-label d-block fw-bold">Wybierz gotowy awatar:</label>
@@ -55,7 +63,7 @@
 
                         <div class="mb-4 text-start">
                             <label for="customAvatar" class="form-label fw-bold">Or add your own photo:</label>
-                            <input class="form-control library-input" type="file" id="customAvatar" accept="image/*">
+                            <input asp-for="AvatarImage" class="form-control library-input" type="file" id="avatarUpload" accept=".jpg,.jpeg,.png">
                         </div>
 
                         <hr class="library-divider" />
@@ -104,5 +112,31 @@
             editMode.style.display = "none";
         }
     }
+
+    const avatarInput = document.getElementById("avatarUpload");
+
+    avatarInput.addEventListener("change",function(){
+        const file = this.files[0];
+
+        if(!file) return;
+
+        const allowedTypes= ["image/jpeg","image/png"];
+
+        const maxSize = 5*1024*1024;
+
+        if(!allowedTypes.includes(file.type)){
+            alert("Only JPG and PNG images are alowed");
+
+            this.value="";
+            return;
+        }
+
+        if(file.size > maxSize){
+            alert("File size cannot excede 5MB");
+
+            this.value="";
+            return;
+        }
+    });
 </script>
 

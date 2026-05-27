@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Hosting;
 using YourLibrary.Models;
 
 namespace YourLibrary.Controllers
@@ -9,10 +10,13 @@ namespace YourLibrary.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public ProfileController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        private readonly IWebHostEnvironment _environment;
+
+        public ProfileController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IWebHostEnvironment environment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _environment = environment;
         }
 
         [HttpGet]
@@ -25,6 +29,7 @@ namespace YourLibrary.Controllers
                 DisplayName = user.DisplayName,
                 Email = user.Email,
                 Avatar = string.IsNullOrEmpty(user.Avatar)? "🌿":user.Avatar,
+                AvatarImagePath = user.AvatarImagePath,
             };
 
             return View(model); 
@@ -39,6 +44,76 @@ namespace YourLibrary.Controllers
             user.UserName = model.DisplayName;
             user.Email = model.Email;
             user.Avatar = model.Avatar;
+            user.AvatarImagePath = model.AvatarImagePath;
+
+            if(model.AvatarImage == null && !string.IsNullOrEmpty(model.Avatar))
+            {
+                if (!string.IsNullOrEmpty(model.AvatarImagePath))
+                {
+                    var oldImagePath = Path.Combine(
+                        _environment.WebRootPath,
+                        user.AvatarImagePath.TrimStart('/'));
+
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+                user.AvatarImagePath = null;
+            }
+
+            if(model.AvatarImage != null)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                var extensions = Path.GetExtension(model.AvatarImage.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(extensions))
+                {
+                    ModelState.AddModelError("", "Only JPG and PNG files are allowed");
+                    model.AvatarImagePath = user.AvatarImagePath;
+                    model.Avatar = user.Avatar;
+                    return View(model);
+                }
+
+                if(model.AvatarImage.Length > 5 * 1024 * 1025)
+                {
+                    ModelState.AddModelError("", "File size cannot exceed 5MB");
+                    model.AvatarImagePath = user.AvatarImagePath;
+                    model.Avatar = user.Avatar;
+                    return View(model);
+                }
+
+                var filename = Guid.NewGuid().ToString() + extensions;
+
+                var uploadPath = Path.Combine(
+                    _environment.WebRootPath,
+                    "uploads",
+                    "avatars");
+
+                Directory.CreateDirectory(uploadPath);
+
+                var filePath = Path.Combine(uploadPath, filename);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.AvatarImage.CopyToAsync(stream);
+                }
+
+                if (!string.IsNullOrEmpty(user.AvatarImagePath))
+                {
+                    var oldImagePath = Path.Combine(
+                        _environment.WebRootPath,
+                        user.AvatarImagePath.TrimStart('/'));
+
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+
+                user.AvatarImagePath = "/uploads/avatars/" + filename;
+            }
+
 
             if (!string.IsNullOrEmpty(model.NewPassword))
             {

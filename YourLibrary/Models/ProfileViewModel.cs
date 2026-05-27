@@ -1,4 +1,5 @@
-﻿namespace YourLibrary.Models
+﻿using Microsoft.AspNetCore.Http;
+namespace YourLibrary.Models
 {
     public class ProfileViewModel
     {
@@ -6,10 +7,14 @@
 
         public string Email { get; set; }
 
-        public string NewPassword { get; set; }
+        public string? NewPassword { get; set; }
 
-        public string ConfirmedPassword { get; set; }
+        public string? ConfirmedPassword { get; set; }
 
         public string Avatar {  get; set; }
+
+        public IFormFile? AvatarImage { get; set; }
+
+        public string? AvatarImagePath { get; set; }
     }
 }

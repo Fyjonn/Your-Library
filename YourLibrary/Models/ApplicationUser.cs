@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 namespace YourLibrary.Models
 {
@@ -7,6 +8,8 @@ namespace YourLibrary.Models
         public string DisplayName { get; set; }
 
         public string Avatar { get; set; } = "🌿";
+
+        public string? AvatarImagePath { get; set; }
         public bool ShelfVisibility { get; set; } = true;
         // Klucze obce
 
