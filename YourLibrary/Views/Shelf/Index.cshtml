@@ -15,7 +15,7 @@
         <h1 id="current-shelf-title" class="display-5 fw-bold text-primary">Reading</h1>
     </div>
 
-    <div class="d-flex justify-content-center mb-5">
+    <div class="d-flex justify-content-center mb-4">
         <div class="dropdown shadow-sm">
             <button class="btn btn-outline-primary btn-lg dropdown-toggle px-4" type="button" id="shelfDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-filter-left me-2"></i>Select shelf
@@ -45,29 +45,166 @@
         </div>
     </div>
 
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-6">
+            <div class="input-group shadow-sm mb-2">
+                <span class="input-group-text bg-white border-end-0 text-muted">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="shelfSearchInput" class="form-control border-start-0 ps-1" placeholder="Search books on this shelf..." />
+            </div>
+            <div class="d-flex justify-content-center gap-3 fs-7 text-muted">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="searchType" id="searchByTitle" value="title" checked>
+                    <label class="form-check-label" for="searchByTitle">Title</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="searchType" id="searchByAuthor" value="author">
+                    <label class="form-check-label" for="searchByAuthor">Author</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="tab-content" id="shelfTabsContent">
 
         <div class="shelf-pane d-block" id="reading">
-            <div class="row row-cols-1 row-cols-md-3 g-4" id="reading-books-container">
-                <p class="text-muted text-center w-100 py-4">Brak książek na półce Reading.</p>
+            <div class="container-books">
+                @if (!Model.Any(b => b.ReadStatus.ToString() == "Reading"))
+                {
+                    <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce Reading.</p>
+                }
+                else
+                {
+                    <div class="table-responsive shadow-sm rounded">
+                        <table class="table table-hover align-middle bg-white mb-0">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Tytuł</th>
+                                    <th>Autor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var userBook in Model.Where(b => b.ReadStatus.ToString() == "Reading"))
+                                {
+                                    <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
+                                        <td>
+                                            <a href="/UserBook/Details/@userBook.UserBookId" class="fw-bold text-decoration-none text-primary">
+                                                <i class="bi bi-book me-2"></i>@userBook.Book?.Title
+                                            </a>
+                                        </td>
+                                        <td class="text-secondary">@userBook.Book?.Author</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
 
         <div class="shelf-pane d-none" id="toread">
-            <div class="row row-cols-1 row-cols-md-3 g-4" id="toread-books-container">
-                <p class="text-muted text-center w-100 py-4">Brak książek na półce To Read.</p>
+            <div class="container-books">
+                @if (!Model.Any(b => b.ReadStatus.ToString() == "ToRead"))
+                {
+                    <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce To Read.</p>
+                }
+                else
+                {
+                    <div class="table-responsive shadow-sm rounded">
+                        <table class="table table-hover align-middle bg-white mb-0">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Tytuł</th>
+                                    <th>Autor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var userBook in Model.Where(b => b.ReadStatus.ToString() == "ToRead"))
+                                {
+                                    <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
+                                        <td>
+                                            <a href="/UserBook/Details/@userBook.UserBookId" class="fw-bold text-decoration-none text-primary">
+                                                <i class="bi bi-book me-2"></i>@userBook.Book?.Title
+                                            </a>
+                                        </td>
+                                        <td class="text-secondary">@userBook.Book?.Author</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
 
         <div class="shelf-pane d-none" id="dnf">
-            <div class="row row-cols-1 row-cols-md-3 g-4" id="dnf-books-container">
-                <p class="text-muted text-center w-100 py-4">Brak książek na półce DNF.</p>
+            <div class="container-books">
+                @if (!Model.Any(b => b.ReadStatus.ToString() == "DNF"))
+                {
+                    <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce DNF.</p>
+                }
+                else
+                {
+                    <div class="table-responsive shadow-sm rounded">
+                        <table class="table table-hover align-middle bg-white mb-0">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Tytuł</th>
+                                    <th>Autor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var userBook in Model.Where(b => b.ReadStatus.ToString() == "DNF"))
+                                {
+                                    <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
+                                        <td>
+                                            <a href="/UserBook/Details/@userBook.UserBookId" class="fw-bold text-decoration-none text-primary">
+                                                <i class="bi bi-book me-2"></i>@userBook.Book?.Title
+                                            </a>
+                                        </td>
+                                        <td class="text-secondary">@userBook.Book?.Author</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
 
         <div class="shelf-pane d-none" id="read">
-            <div class="row row-cols-1 row-cols-md-3 g-4" id="read-books-container">
-                <p class="text-muted text-center w-100 py-4">Brak książek na półce Read.</p>
+            <div class="container-books">
+                @if (!Model.Any(b => b.ReadStatus.ToString() == "Read"))
+                {
+                    <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce Read.</p>
+                }
+                else
+                {
+                    <div class="table-responsive shadow-sm rounded">
+                        <table class="table table-hover align-middle bg-white mb-0">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Tytuł</th>
+                                    <th>Autor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var userBook in Model.Where(b => b.ReadStatus.ToString() == "Read"))
+                                {
+                                    <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
+                                        <td>
+                                            <a href="/UserBook/Details/@userBook.UserBookId" class="fw-bold text-decoration-none text-primary">
+                                                <i class="bi bi-book me-2"></i>@userBook.Book?.Title
+                                            </a>
+                                        </td>
+                                        <td class="text-secondary">@userBook.Book?.Author</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
 
@@ -81,16 +218,14 @@
 
 @section Scripts {
     <script>
+        // Logika przełączania półek (Zostaje Twoja + czyszczenie searchbaru przy zmianie półki)
         document.querySelectorAll('.dropdown-item').forEach(item => {
             item.addEventListener('click', function () {
-                // 1. Pobierz nazwę wybranej półki i jej identyfikator docelowy
                 const shelfName = this.textContent.trim();
                 const targetSelector = this.getAttribute('data-shelf-target');
 
-                // 2. Podmień nagłówek u góry strony
                 document.getElementById('current-shelf-title').textContent = shelfName;
 
-                // 3. Ukryj wszystkie półki i pokaż tylko wybraną
                 document.querySelectorAll('.shelf-pane').forEach(pane => {
                     pane.classList.remove('d-block');
                     pane.classList.add('d-none');
@@ -98,10 +233,65 @@
                 document.querySelector(targetSelector).classList.remove('d-none');
                 document.querySelector(targetSelector).classList.add('d-block');
 
-                // 4. Zmień aktywny element wizualny wewnątrz rozwijanej listy
                 document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
                 this.classList.add('active');
+
+                // Wyczyszczenie wyszukiwarki przy zmianie karty półki
+                const searchInput = document.getElementById('shelfSearchInput');
+                searchInput.value = '';
+                filterBooks();
             });
         });
+
+        // NOWOŚĆ: Skrypt wyszukiwania i filtrowania książek w locie (Lokalnie na aktywnej karcie)
+        const searchInput = document.getElementById('shelfSearchInput');
+        const radioTitle = document.getElementById('searchByTitle');
+
+        searchInput.addEventListener('input', filterBooks);
+        document.querySelectorAll('input[name="searchType"]').forEach(radio => {
+            radio.addEventListener('change', filterBooks);
+        });
+
+        function filterBooks() {
+            const query = searchInput.value.trim().toLowerCase();
+            const searchBy = radioTitle.checked ? 'title' : 'author';
+
+            // Filtrujemy tylko wewnątrz aktualnie otwartej (widocznej) półki
+            const activePane = document.querySelector('.shelf-pane.d-block');
+            if (!activePane) return;
+
+            const books = activePane.querySelectorAll('.book-card-item');
+            let visibleCount = 0;
+
+            books.forEach(book => {
+                const attrValue = book.getAttribute(`data-${searchBy}`) || '';
+
+                if (attrValue.includes(query)) {
+                    book.classList.remove('d-none');
+                    visibleCount++;
+                } else {
+                    book.classList.add('d-none');
+                }
+            });
+
+            // Dynamiczna informacja o braku wyników wyszukiwania na danej półce
+            let noResultsMsg = activePane.querySelector('.no-search-results');
+            const defaultEmptyMsg = activePane.querySelector('.no-books-msg');
+
+            if (visibleCount === 0 && query !== '') {
+                if (!noResultsMsg && !defaultEmptyMsg) {
+                    noResultsMsg = document.createElement('p');
+                    noResultsMsg.className = 'text-danger text-center w-100 py-4 no-search-results';
+                    noResultsMsg.textContent = 'Nie znaleziono książek pasujących do filtrów.';
+                    activePane.querySelector('.container-books').appendChild(noResultsMsg);
+                } else if (noResultsMsg) {
+                    noResultsMsg.classList.remove('d-none');
+                }
+            } else {
+                if (noResultsMsg) {
+                    noResultsMsg.classList.add('d-none');
+                }
+            }
+        }
     </script>
 }

@@ -1,0 +1,67 @@
+﻿@model YourLibrary.Models.UserBook
+
+@{
+    ViewData["Title"] = "Szczegóły książki";
+}
+
+<div class="container mt-4" style="max-width: 700px;">
+    <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+            <h4 class="mb-0"><i class="bi bi-info-circle me-2"></i>Informacje o książce</h4>
+            <span class="badge bg-light text-primary fs-6">@Model.ReadStatus</span>
+        </div>
+        <div class="card-body p-4">
+
+            <div class="row mb-3 border-bottom pb-2">
+                <div class="col-sm-4 fw-bold text-muted">Tytuł:</div>
+                <div class="col-sm-8 fs-5 fw-bold text-dark">@Model.Book?.Title</div>
+            </div>
+
+            <div class="row mb-3 border-bottom pb-2">
+                <div class="col-sm-4 fw-bold text-muted">Autor:</div>
+                <div class="col-sm-8 fs-5 text-secondary">@Model.Book?.Author</div>
+            </div>
+
+            <div class="row mb-3 border-bottom pb-2">
+                <div class="col-sm-4 fw-bold text-muted">Format (Media):</div>
+                <div class="col-sm-8">@Model.Media</div>
+            </div>
+
+            <div class="row mb-3 border-bottom pb-2">
+                <div class="col-sm-4 fw-bold text-muted">Miejsce przechowywania:</div>
+                <div class="col-sm-8">@(string.IsNullOrEmpty(Model.Location) ? "Nie określono" : Model.Location)</div>
+            </div>
+
+            <div class="row mb-3 border-bottom pb-2">
+                <div class="col-sm-4 fw-bold text-muted">Statusy posiadania:</div>
+                <div class="col-sm-8">
+                    <span class="badge @(Model.IsOwned ? "bg-success" : "bg-secondary") me-1">
+                        @(Model.IsOwned ? "Posiadam własną" : "Nie posiadam własnej")
+                    </span>
+                    <span class="badge @(Model.IsBorrowed ? "bg-warning text-dark" : "bg-secondary") me-1">
+                        @(Model.IsBorrowed ? "Pożyczona" : "Niepożyczona")
+                    </span>
+                    <span class="badge @(Model.Bookmark ? "bg-info text-dark" : "bg-secondary")">
+                        @(Model.Bookmark ? "Ma zakładkę" : "Brak zakładki")
+                    </span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <div class="fw-bold text-muted mb-1">Twoje notatki:</div>
+                <div class="p-3 bg-light rounded border-start border-primary border-3">
+                    <span class="fst-italic text-dark">
+                        @(string.IsNullOrEmpty(Model.Notes) ? "Brak dodatkowych notatek do tej książki." : Model.Notes)
+                    </span>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between pt-2">
+                <a href="/Shelf" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Powrót do półki
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

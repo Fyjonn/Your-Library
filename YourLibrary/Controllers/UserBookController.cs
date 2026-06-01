@@ -57,7 +57,7 @@ namespace YourLibrary.Controllers
                 _context.UserBooks.Add(userbook);
                 _context.SaveChanges();
 
-                return RedirectToAction(nameof(ViewAll));
+                return RedirectToAction("Index", "Shelf");
             }
             return View(userbook);
         }
@@ -65,7 +65,7 @@ namespace YourLibrary.Controllers
         // za skomplikowane żeby zrobić go automatycznie tzreba będzie klepać ręcznie
 
         [HttpGet]
-        public IActionResult ViewAll()
+        public IActionResult Index()
         {
             string currentUserId = _userManager.GetUserId(User);
             var myBooks = _context.UserBooks
@@ -73,6 +73,24 @@ namespace YourLibrary.Controllers
                 .Where(ub => ub.ApplicationUserId == currentUserId)
                 .ToList();
             return View(myBooks);
+        }
+
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            string currentUserId = _userManager.GetUserId(User);
+
+            var userBook = _context.UserBooks
+                .Include(ub => ub.Book)
+                .FirstOrDefault(ub => ub.UserBookId == id && ub.ApplicationUserId == currentUserId);
+
+            if (userBook == null)
+            {
+                return NotFound();
+            }
+
+            return View(userBook);
+
         }
     }
 }
