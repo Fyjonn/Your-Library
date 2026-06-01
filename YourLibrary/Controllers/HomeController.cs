@@ -15,6 +15,11 @@ namespace YourLibrary.Controllers
 
         public IActionResult Index()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
+
             return View();
         }
 

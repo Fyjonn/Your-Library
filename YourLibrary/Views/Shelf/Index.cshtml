@@ -80,8 +80,8 @@
                         <table class="table table-hover align-middle bg-white mb-0">
                             <thead class="table-primary">
                                 <tr>
-                                    <th>Tytuł</th>
-                                    <th>Autor</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -220,7 +220,6 @@
 
 @section Scripts {
     <script>
-        // Logika przełączania półek (Zostaje Twoja + czyszczenie searchbaru przy zmianie półki)
         document.querySelectorAll('.dropdown-item').forEach(item => {
             item.addEventListener('click', function () {
                 const shelfName = this.textContent.trim();

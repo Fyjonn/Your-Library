@@ -7,7 +7,7 @@ using YourLibrary.Models;
 
 namespace YourLibrary.Controllers
 {
-    [Authorize] // Tylko zalogowani użytkownicy mogą zobaczyć swoją półkę
+    [Authorize] 
     public class ShelfController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,16 +21,13 @@ namespace YourLibrary.Controllers
 
         public IActionResult Index()
         {
-            // 1. Pobieramy ID zalogowanego użytkownika
             string currentUserId = _userManager.GetUserId(User);
 
-            // 2. Wyciągamy z bazy jego książki razem z danymi o tytule/autorze
             var myBooks = _context.UserBooks
                 .Include(ub => ub.Book)
                 .Where(ub => ub.ApplicationUserId == currentUserId)
                 .ToList();
 
-            // 3. Przekazujemy listę do widoku Shelf/Index.cshtml (Kluczowa poprawka!)
             return View(myBooks);
         }
     }

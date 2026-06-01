@@ -3,12 +3,12 @@
 <div class="container mt-4" style="max-width: 600px;">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">➕ Dodaj książkę do swojej półki</h4>
+            <h4 class="mb-0">➕ Add book to your shelf</h4>
         </div>
         <div class="card-body">
 
             <div class="mb-4 p-3 bg-light border rounded">
-                <label class="form-label fw-bold text-primary">🔍 Znajdź książkę automatycznie w Google</label>
+                <label class="form-label fw-bold text-primary">🔍 Find your book Google</label>
                 <div class="input-group">
                     <input type="text" id="apiSearchQuery" class="form-control" placeholder="Search by title or author" />
                     <button class="btn btn-primary" type="button" id="btnSearchApi">Search</button>
@@ -97,7 +97,7 @@
 
             if (!query) return;
 
-            resultsDiv.innerHTML = '<div class="list-group-item text-muted">Szukanie w Google Books...</div>';
+                    resultsDiv.innerHTML = '<div class="list-group-item text-muted"> Searching in Google Books...</div>';
             resultsDiv.classList.remove('d-none');
 
             fetch(`/api/books/search?query=${encodeURIComponent(query)}`)
@@ -106,13 +106,13 @@
                     resultsDiv.innerHTML = '';
 
                     if (!data.items || data.items.length === 0) {
-                        resultsDiv.innerHTML = '<div class="list-group-item text-danger">Nie znaleziono żadnej książki.</div>';
+                        resultsDiv.innerHTML = '<div class="list-group-item text-danger">No book found.</div>';
                         return;
                     }
 
                     data.items.forEach(item => {
-                        const title = item.volumeInfo.title || "Brak tytułu";
-                        const authors = item.volumeInfo.authors ? item.volumeInfo.authors.join(', ') : "Nieznany autor";
+                        const title = item.volumeInfo.title || "No title";
+                        const authors = item.volumeInfo.authors ? item.volumeInfo.authors.join(', ') : "Unknown author";
 
                         const button = document.createElement('button');
                         button.type = 'button';
@@ -131,7 +131,7 @@
                     });
                 })
                 .catch(error => {
-                    resultsDiv.innerHTML = '<div class="list-group-item text-danger">Błąd podczas pobierania danych.</div>';
+                            resultsDiv.innerHTML = '<div class="list-group-item text-danger">Error while downloading data.</div>';
                     console.error(error);
                 });
         });
