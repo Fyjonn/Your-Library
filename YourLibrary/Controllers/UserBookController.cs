@@ -2,77 +2,70 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 using YourLibrary.Data;
 using YourLibrary.Models;
 
-
 namespace YourLibrary.Controllers
 {
-    [Authorize] // zalogowani uzytkownicy
+    [Authorize] // Dostęp tylko dla zalogowanych użytkowników
     public class UserBookController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        // wstrzykujemy
+
         public UserBookController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-
-        // Akcje
-
-        // localhst:XXXX/UserBook/Create - żeby wejść na ten widok
-
         [HttpGet]
         public IActionResult Create()
         {
-            // dodajemy tylko ksiazke na razie, nie cale userbook
             return View(new UserBook { Book = new Book() });
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(UserBook userbook)
         {
+            // 1. Pobieramy ID zalogowanego użytkownika i przypisujemy do rekordu
             string currentUserId = _userManager.GetUserId(User);
             userbook.ApplicationUserId = currentUserId;
 
+            // 2. Wyciągamy wartości bezpośrednio z formularza (odporność na pola readonly API)
+            var formTitle = Request.Form["Book.Title"].ToString();
+            var formAuthor = Request.Form["Book.Author"].ToString();
 
-            ModelState.Remove("ApplicationUserId");
-            ModelState.Remove("ApplicationUser");
-            ModelState.Remove("Book");
-
-            if (ModelState.IsValid)
+            if (userbook.Book == null)
             {
-                if (userbook.Book != null && userbook.BookId == 0)
-                {
-                    _context.Books.Add(userbook.Book);
-                    _context.SaveChanges();
+                userbook.Book = new Book();
+            }
+            userbook.Book.Title = formTitle;
+            userbook.Book.Author = formAuthor;
+            userbook.Book.ReviewId = null; // Zabezpieczenie przed brakiem powiązanej recenzji
 
-                    userbook.BookId = userbook.Book.BookId;
-                }
+            // 3. Sprawdzamy kluczowy warunek – jeśli mamy tytuł, możemy bezpiecznie zapisywać
+            if (!string.IsNullOrEmpty(userbook.Book.Title))
+            {
+                // Najpierw zapisujemy samą książkę do tabeli Books
+                _context.Books.Add(userbook.Book);
+                _context.SaveChanges();
 
+                // Przypisujemy wygenerowane BookId do naszej relacji użytkownika
+                userbook.BookId = userbook.Book.BookId;
+
+                // Teraz zapisujemy rekord na półce użytkownika
                 _context.UserBooks.Add(userbook);
                 _context.SaveChanges();
 
+                // Przekierowanie na półkę
                 return RedirectToAction("Index", "Shelf");
             }
+
+            // Jeśli tytuł był pusty, dorzucamy błąd do widoku i wracamy do formularza
+            ModelState.AddModelError("Book.Title", "Tytuł książki nie może być pusty.");
             return View(userbook);
-        }
-
-        // za skomplikowane żeby zrobić go automatycznie tzreba będzie klepać ręcznie
-
-        [HttpGet]
-        public IActionResult Index()
-        {
-            string currentUserId = _userManager.GetUserId(User);
-            var myBooks = _context.UserBooks
-                .Include(ub => ub.Book)
-                .Where(ub => ub.ApplicationUserId == currentUserId)
-                .ToList();
-            return View(myBooks);
         }
 
         [HttpGet]
@@ -84,13 +77,13 @@ namespace YourLibrary.Controllers
                 .Include(ub => ub.Book)
                 .FirstOrDefault(ub => ub.UserBookId == id && ub.ApplicationUserId == currentUserId);
 
-            if (userBook == null)
+            // Zabezpieczenie przed brakiem rekordu lub usuniętą książką
+            if (userBook == null || userBook.Book == null)
             {
                 return NotFound();
             }
 
             return View(userBook);
-
         }
     }
 }

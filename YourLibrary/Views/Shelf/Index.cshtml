@@ -70,7 +70,7 @@
 
         <div class="shelf-pane d-block" id="reading">
             <div class="container-books">
-                @if (!Model.Any(b => b.ReadStatus.ToString() == "Reading"))
+                @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "Reading", StringComparison.OrdinalIgnoreCase)))
                 {
                     <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce Reading.</p>
                 }
@@ -85,7 +85,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var userBook in Model.Where(b => b.ReadStatus.ToString() == "Reading"))
+                                @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "Reading", StringComparison.OrdinalIgnoreCase)))
                                 {
                                     <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
                                         <td>
@@ -105,7 +105,7 @@
 
         <div class="shelf-pane d-none" id="toread">
             <div class="container-books">
-                @if (!Model.Any(b => b.ReadStatus.ToString() == "ToRead"))
+                @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
                 {
                     <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce To Read.</p>
                 }
@@ -120,7 +120,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var userBook in Model.Where(b => b.ReadStatus.ToString() == "ToRead"))
+                                @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
                                 {
                                     <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
                                         <td>
@@ -140,7 +140,7 @@
 
         <div class="shelf-pane d-none" id="dnf">
             <div class="container-books">
-                @if (!Model.Any(b => b.ReadStatus.ToString() == "DNF"))
+                @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
                 {
                     <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce DNF.</p>
                 }
@@ -155,7 +155,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var userBook in Model.Where(b => b.ReadStatus.ToString() == "DNF"))
+                                @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
                                 {
                                     <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
                                         <td>
@@ -175,7 +175,7 @@
 
         <div class="shelf-pane d-none" id="read">
             <div class="container-books">
-                @if (!Model.Any(b => b.ReadStatus.ToString() == "Read"))
+                @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "Read", StringComparison.OrdinalIgnoreCase)))
                 {
                     <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce Read.</p>
                 }
@@ -190,7 +190,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var userBook in Model.Where(b => b.ReadStatus.ToString() == "Read"))
+                                @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "Read", StringComparison.OrdinalIgnoreCase)))
                                 {
                                     <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
                                         <td>
@@ -215,6 +215,8 @@
     </a>
 
 </div>
+
+
 
 @section Scripts {
     <script>

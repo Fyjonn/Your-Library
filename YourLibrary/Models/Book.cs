@@ -19,7 +19,7 @@ namespace YourLibrary.Models
         public virtual List<UserBook> UserBooks { get; set; } = new List<UserBook>();
 
         // z review
-        public int ReviewId { get; set; }
-        public virtual Review Review { get; set; }
+        public int? ReviewId { get; set; }
+        public virtual Review? Review { get; set; }
     }
 }
