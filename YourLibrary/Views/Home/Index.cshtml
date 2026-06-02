@@ -2,46 +2,52 @@
     ViewData["Title"] = "My Library";
 }
 
-<div class="library-container text-center">
-    <div class="library-hero mb-5">
-        <h1 class="library-title">Welcom to My Library</h1>
-    </div>
-
-    <div class="row justify-content-center gap-4 px-3">
-        <div class="cards">
-            <a asp-controller="Profile" asp-action="Index" class="library-card-link">
-                <div class="library-card">
-                    <h3 class="card-headline">My Profile</h3>
-                    <div class="book-image-wrapper">
-                        <img src="https://png.pngtree.com/png-vector/20250111/ourmid/pngtree-open-book-clipart-wide-with-pages-spread-clip-art-png-image_15149179.png"
-                             alt="Książka" class="library-book-img" />
-                    </div>
-                </div>
-            </a>
+<div class="home-page-wrapper">
+    <div class="library-container text-center">
+        <div class="library-hero mb-5">
+            <h1 class="library-title">Welcome to My Library</h1>
         </div>
 
-        <div class="cards">
-            <a asp-controller="Shelf" asp-action="Index" class="library-card-link">
-                <div class="library-card">
-                    <h3 class="card-headline">Shelf</h3>
-                    <div class="book-image-wrapper">
-                        <img src="https://png.pngtree.com/png-vector/20250111/ourmid/pngtree-open-book-clipart-wide-with-pages-spread-clip-art-png-image_15149179.png"
-                             alt="Książka" class="library-book-img" />
-                    </div>
-                </div>
-            </a>
-        </div>
+        <div class="container px-md-4">
+            <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
 
-        <div class="cards">
-            <a asp-controller="Friendship" asp-action="Index" class="library-card-link">
-                <div class="library-card">
-                    <h3 class="card-headline">Friends</h3>
-                    <div class="book-image-wrapper">
-                        <img src="https://png.pngtree.com/png-vector/20250111/ourmid/pngtree-open-book-clipart-wide-with-pages-spread-clip-art-png-image_15149179.png"
-                             alt="Książka" class="library-book-img" />
-                    </div>
+                <div class="col">
+                    <a asp-controller="Profile" asp-action="Index" class="library-card-link">
+                        <div class="library-card">
+                            <h3 class="card-headline">My Profile</h3>
+                            <div class="book-image-wrapper">
+                                <img src="https://png.pngtree.com/png-vector/20250111/ourmid/pngtree-open-book-clipart-wide-with-pages-spread-clip-art-png-image_15149179.png"
+                                     alt="Książka" class="library-book-img" />
+                            </div>
+                        </div>
+                    </a>
                 </div>
-            </a>
+
+                <div class="col">
+                    <a asp-controller="Shelf" asp-action="Index" class="library-card-link">
+                        <div class="library-card">
+                            <h3 class="card-headline">Shelf</h3>
+                            <div class="book-image-wrapper">
+                                <img src="https://png.pngtree.com/png-vector/20250111/ourmid/pngtree-open-book-clipart-wide-with-pages-spread-clip-art-png-image_15149179.png"
+                                     alt="Książka" class="library-book-img" />
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col">
+                    <a asp-controller="Friendship" asp-action="Index" class="library-card-link">
+                        <div class="library-card">
+                            <h3 class="card-headline">Friends</h3>
+                            <div class="book-image-wrapper">
+                                <img src="https://png.pngtree.com/png-vector/20250111/ourmid/pngtree-open-book-clipart-wide-with-pages-spread-clip-art-png-image_15149179.png"
+                                     alt="Książka" class="library-book-img" />
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>

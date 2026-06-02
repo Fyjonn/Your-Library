@@ -1,0 +1,127 @@
+﻿
+body {
+    background-image: linear-gradient(rgba(30, 54, 48, 0.4), rgba(30, 54, 48, 0.4)), url('https://t4.ftcdn.net/jpg/03/20/86/93/360_F_320869363_2xgd64uUdIrJ9hAJqaHzGCZeK6qgSVdL.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+}
+
+.account-identity-container {
+    max-width: 500px;
+    margin: 6rem auto;
+    padding: 3rem 2.5rem;
+    border-radius: 12px;
+    background: #f7f2e4 !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(0, 0, 0, 0.02) !important;
+    border: 2px solid #dfd5be !important;
+    color: #2d4a43 !important;
+    position: relative;
+    z-index: 10;
+}
+
+    .account-identity-container .row > .col-md-6:nth-child(2),
+    .account-identity-container .row > .col-md-5:nth-child(2),
+    .account-identity-container h3,
+    #external-account,
+    .col-md-offset-2 {
+        display: none !important;
+    }
+
+    .account-identity-container .row,
+    .account-identity-container .col-md-4,
+    .account-identity-container .col-md-5,
+    .account-identity-container .col-md-6,
+    .account-identity-container .col-md-7,
+    .account-identity-container form {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+    }
+
+    .account-identity-container h1 {
+        font-family: 'Georgia', serif;
+        color: #1e3630 !important;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .account-identity-container h2 {
+        display: none !important;
+    }
+
+    .account-identity-container label,
+    .account-identity-container .form-check-label {
+        color: #2d4a43 !important;
+        font-weight: 600;
+    }
+
+    .account-identity-container .form-control {
+        background-color: #fff !important;
+        border: 1px solid #c8bfa7 !important;
+        color: #1e3630 !important;
+        padding: 0.75rem;
+        border-radius: 4px;
+    }
+
+        .account-identity-container .form-control:focus {
+            border-color: #bfa15f !important;
+            box-shadow: 0 0 0 0.25rem rgba(191, 161, 95, 0.2) !important;
+        }
+
+    .account-identity-container .btn-primary {
+        background-color: #2d4a43 !important;
+        border-color: #2d4a43 !important;
+        color: #fcfaf2 !important;
+        padding: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+
+        .account-identity-container .btn-primary:hover {
+            background-color: #1e3630 !important;
+            border-color: #bfa15f !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+    .account-identity-container a {
+        color: #bfa15f !important;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 0.5rem;
+    }
+
+        .account-identity-container a:hover {
+            color: #1e3630 !important;
+            text-decoration: underline;
+        }
+
+.identity-switcher {
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+    padding: 4px;
+    margin-bottom: 2rem;
+}
+
+    .identity-switcher a {
+        flex: 1;
+        text-align: center;
+        padding: 0.5rem;
+        border-radius: 4px;
+        color: #2d4a43 !important;
+        font-weight: 500;
+        text-decoration: none !important;
+        margin-top: 0 !important;
+    }
+
+        .identity-switcher a.active-tab {
+            background-color: #2d4a43;
+            color: #fcfaf2 !important;
+            font-weight: 600;
+        }

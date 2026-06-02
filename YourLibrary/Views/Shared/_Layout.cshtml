@@ -21,52 +21,64 @@
                 <div class="container-fluid">
                     <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MYLIBRARY</a>
 
-                    <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#libraryNavbar" aria-controls="libraryNavbar"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 
-                    <div class="collapse navbar-collapse" id="libraryNavbar">
-                        <ul class="navbar-nav ms-auto mt-2 mt-md-0">
-                            @if (SignInManager.IsSignedIn(User))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Profile" ? "active" : "")"
-                                       asp-area="" asp-controller="Profile" asp-action="Index">
-                                        <i class="bi bi-person me-2"></i>My Profile
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Shelf" ? "active" : "")"
-                                       asp-area="" asp-controller="Shelf" asp-action="Index">
-                                        <i class="bi bi-bookshelf me-2"></i>My Shelf
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Friendship" ? "active" : "")"
-                                       asp-area="" asp-controller="Friendship" asp-action="Index">
-                                        <i class="bi bi-people me-2"></i>Friendship
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                                        <button type="submit" class="nav-link logout-btn-link">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
-                                </li>
-                            }
-                        </ul>
-                    </div>
+                        // SCENARIUSZ 1: Jesteśmy na stronie głównej (Home) -> Brak hamburgera, tylko Logout
+                        if (currentController == "Home")
+                        {
+                            <div class="d-flex align-items-center ms-auto">
+                                <ul class="navbar-nav flex-row">
+                                    <li class="nav-item">
+                                        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                            <button type="submit" class="nav-link logout-btn-link px-2">
+                                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        // SCENARIUSZ 2: Wszystkie pozostałe podstrony -> Pełne menu hamburgerowe
+                        else
+                        {
+                            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#libraryNavbar" aria-controls="libraryNavbar"
+                                    aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+
+                            <div class="collapse navbar-collapse" id="libraryNavbar">
+                                <ul class="navbar-nav ms-auto mt-2 mt-md-0">
+                                    <li class="nav-item">
+                                        <a class="nav-link @(currentController == "Profile" ? "active" : "")" asp-area="" asp-controller="Profile" asp-action="Index">
+                                            <i class="bi bi-person me-2"></i>My Profile
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(currentController == "Shelf" ? "active" : "")" asp-area="" asp-controller="Shelf" asp-action="Index">
+                                            <i class="bi bi-bookshelf me-2"></i>My Shelf
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link @(currentController == "Friendship" ? "active" : "")" asp-area="" asp-controller="Friendship" asp-action="Index">
+                                            <i class="bi bi-people me-2"></i>Friendship
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                            <button type="submit" class="nav-link logout-btn-link">
+                                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                    }
                 </div>
             </nav>
         </header>
@@ -82,5 +94,61 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true" );></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const path = window.location.pathname;
+        const isLogin = path.includes("/Account/Login");
+        const isRegister = path.includes("/Account/Register");
+
+        if (isLogin || isRegister) {
+        // 1. DYNAMICZNE PODPIĘCIE PLIKU CSS
+        const loginStyles = document.createElement("link");
+        loginStyles.rel = "stylesheet";
+        loginStyles.href = "/css/login_style.css";
+        document.head.appendChild(loginStyles);
+
+        // 2. STYLIZACJA KONTENERA
+        const mainContent = document.querySelector("main[role='main']");
+        if (mainContent) {
+        mainContent.classList.add("account-identity-container");
+
+        // UKRYWANIE ELEMENTÓW ZA POMOCĄ JS (Gwarancja sukcesu)
+        // Szukamy nagłówków h3, które zawierają słowo "service" lub "account"
+        const h3s = mainContent.querySelectorAll("h3");
+        h3s.forEach(h3 => {
+        if (h3.textContent.toLowerCase().includes("service") || h3.textContent.toLowerCase().includes("account")) {
+        // Usuwamy całą sekcję lub kolumnę, w której ten nagłówek się znajduje
+        const parentColumn = h3.closest(".col-md-6, .col-md-5, .col-md-4");
+        if (parentColumn) {
+        parentColumn.remove();
+        } else {
+        h3.remove();
+        }
+        }
+        });
+
+        // 3. GENEROWANIE PRZEŁĄCZNIKA LOGIN / REGISTER
+        // Sprawdzamy czy przełącznik już nie istnieje, żeby go nie dublować
+        if (!document.querySelector(".identity-switcher")) {
+        const switcher = document.createElement("div");
+        switcher.className = "identity-switcher";
+        switcher.innerHTML = `
+        <a href="/Identity/Account/Login" class="${isLogin ? 'active-tab' : ''}">Log In</a>
+        <a href="/Identity/Account/Register" class="${isRegister ? 'active-tab' : ''}">Register</a>
+        `;
+
+        const heading = mainContent.querySelector("h1");
+        if (heading) {
+        heading.insertAdjacentElement("afterend", switcher);
+        } else {
+        mainContent.insertBefore(switcher, mainContent.firstChild);
+        }
+        }
+        }
+        }
+        });
+    </script>
 </body>
+
+
 </html>
