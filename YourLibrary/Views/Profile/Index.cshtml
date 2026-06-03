@@ -1,87 +1,90 @@
-﻿@{
+﻿@model YourLibrary.Models.ProfileViewModel
+
+@{
     ViewData["Title"] = "My Profile";
 }
-@model YourLibrary.Models.ProfileViewModel
 
-<link rel="stylesheet" href="~/Styles/profile_style.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/profile_style.css" asp-append-version="true" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<div class="container mt-5 text-center library-profile-container">
-        <div class="profile-header mb-4">
-            <h2 class="display-5 font-weight-bold">My Profile </h2>
-        </div>
+<div class="container mt-5 pb-5 library-profile-container">
 
-        <div class="row justify-content-center">
-            <div class="col-md-7">
-                <div class="profile-card p-4 bg-white rounded shadow-sm">
+    <div class="profile-header text-center mb-4">
+        <h2 class="display-5 fw-bold" style="color: #ffffff;">My Profile</h2>
+    </div>
 
-                    <div id="profile-view-mode">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+
+            <div class="profile-card p-4 text-center mb-4">
+
+                <div id="profile-view-mode">
                     <div class="avatar-container mb-3 mx-auto" style="width: 110px !important; height: 110px !important; overflow: hidden !important; border-radius: 50% !important; display: flex !important; align-items: center; justify-content: center; position: relative;">
-                        @if (!string.IsNullOrEmpty(Model.AvatarImagePath))
+                        @if (Model != null && !string.IsNullOrEmpty(Model.AvatarImagePath))
                         {
                             <img src="@Model.AvatarImagePath" class="profile-avatar-image" alt="Avatar" style="width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; border-radius: 50% !important;" />
                         }
                         else
                         {
-                            <span class="profile-avatar-emoji">@Model.Avatar</span>
+                            <span class="profile-avatar-emoji">@(Model?.Avatar ?? "🌿")</span>
                         }
                     </div>
 
-                    <h3 class="profile-username">@User.Identity?.Name</h3>
-                   
+                    <h3 class="profile-username fw-bold">@User.Identity?.Name</h3>
 
                     <hr class="library-divider" />
 
-
-                    <button type="button" class="btn btn-library-gold w-100" onclick="toggleEditMode(true)">
-                        Edit Profile
+                    <button type="button" class="btn btn-library-gold w-100 py-2 fw-bold" onclick="toggleEditMode(true)">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Profile
                     </button>
                 </div>
 
                 <div id="profile-edit-mode" style="display: none;">
-                    <h4 class="mb-4 text-start" style="color: #2d4a43; font-weight: 600;">Edit Profile</h4>
+                    <h4 class="mb-4 text-start" style="color: #1e3d33; font-weight: 600;"><i class="bi bi-pencil-square me-2"></i>Edit Profile</h4>
 
                     <form method="post" enctype="multipart/form-data">
                         <input type="hidden" asp-for="AvatarImagePath" />
 
                         <div class="mb-4 text-start">
-                            <label class="form-label d-block fw-bold">Choose your avatar:</label>
+                            <label class="form-label d-block fw-bold custom-label-muted">Choose your avatar:</label>
                             <div class="avatar-picker-grid">
-                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌿" checked><span>🌿</span></label>
-                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="📖"><span>📖</span></label>
-                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌱"><span>🌱</span></label>
-                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="📚"><span>📚</span></label>
-                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌸"><span>🌸</span></label>
-                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌵"><span>🌵</span></label>
-                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="☕"><span>☕</span></label>
-                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🍂"><span>🍂</span></label>
-                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🪴"><span>🪴</span></label>
-                                    <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🦉"><span>🦉</span></label>
+                                <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌿" checked><span>🌿</span></label>
+                                <label class="avatar-option"><input asp-for="Avatar" type="radio" value="📖"><span>📖</span></label>
+                                <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌱"><span>🌱</span></label>
+                                <label class="avatar-option"><input asp-for="Avatar" type="radio" value="📚"><span>📚</span></label>
+                                <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌸"><span>🌸</span></label>
+                                <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🌵"><span>🌵</span></label>
+                                <label class="avatar-option"><input asp-for="Avatar" type="radio" value="☕"><span>☕</span></label>
+                                <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🍂"><span>🍂</span></label>
+                                <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🪴"><span>🪴</span></label>
+                                <label class="avatar-option"><input asp-for="Avatar" type="radio" value="🦉"><span>🦉</span></label>
                             </div>
                         </div>
 
                         <div class="mb-4 text-start">
-                            <label for="customAvatar" class="form-label fw-bold">Or add your own photo:</label>
+                            <label for="avatarUpload" class="form-label fw-bold custom-label-muted">Or add your own photo:</label>
                             <input asp-for="AvatarImage" class="form-control library-input" type="file" id="avatarUpload" accept=".jpg,.jpeg,.png">
                         </div>
 
                         <hr class="library-divider" />
 
                         <div class="mb-3 text-start">
-                            <label for="editLogin" class="form-label fw-bold">Change Login:</label>
+                            <label class="form-label fw-bold custom-label-muted">Change Login:</label>
                             <input asp-for="DisplayName" class="form-control library-input">
                         </div>
 
                         <div class="mb-3 text-start">
-                            <label for="editEmail" class="form-label fw-bold">Change Email:</label>
+                            <label class="form-label fw-bold custom-label-muted">Change Email:</label>
                             <input asp-for="Email" class="form-control library-input">
                         </div>
 
                         <div class="mb-3 text-start">
-                            <label for="newPassword" class="form-label fw-bold">Change Password:</label>
+                            <label class="form-label fw-bold custom-label-muted">Change Password:</label>
                             <input asp-for="NewPassword" class="form-control library-input" id="newPassword" placeholder="Enter new password">
                         </div>
+
                         <div class="mb-4 text-start">
-                            <label for="confirmPassword" class="form-label fw-bold">Confirm New Password:</label>
+                            <label class="form-label fw-bold custom-label-muted">Confirm New Password:</label>
                             <input asp-for="ConfirmedPassword" class="form-control library-input" id="confirmPassword" placeholder="Confirm new password">
                         </div>
 
@@ -92,49 +95,182 @@
                     </form>
                 </div>
 
-            </div>
-        </div>
+            </div> 
+            <div id="dashboard-widgets-row" class="row">
 
+                <div class="col-12 col-md-6 mb-4">
+                    <div class="dashboard-section-card shadow-sm h-100" data-section-url="/Shelf">
+                        <div class="section-card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2"></i>Latest books u added</h5>
+                            <span class="view-all-link">View Shelf <i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="section-card-body mt-3">
+                            <ul class="list-unstyled mb-0 dashboard-list">
+                                <li class="dashboard-item-row" data-item-url="/UserBook/Details/1">
+                                    <span class="item-title fw-bold">The Brave Days of Old</span>
+                                    <span class="item-sub text-muted d-block small">Mrs. Valentine</span>
+                                </li>
+                                <li class="dashboard-item-row mt-2" data-item-url="/UserBook/Details/2">
+                                    <span class="item-title fw-bold">Władca Pierścieni</span>
+                                    <span class="item-sub text-muted d-block small">J.R.R. Tolkien</span>
+                                </li>
+                                <li class="dashboard-item-row mt-2" data-item-url="/UserBook/Details/3">
+                                    <span class="item-title fw-bold">Wiedźmin: Ostatnie życzenie</span>
+                                    <span class="item-sub text-muted d-block small">Andrzej Sapkowski</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 mb-4">
+                    <div class="dashboard-section-card shadow-sm h-100" data-section-url="/Friendship">
+                        <div class="section-card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold"><i class="bi bi-people me-2"></i>Latest friends u added</h5>
+                            <span class="view-all-link">View Friends <i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="section-card-body mt-3">
+                            <ul class="list-unstyled mb-0 dashboard-list">
+                                <li class="dashboard-item-row" data-item-url="/Friendship/Details/1">
+                                    <span class="item-title fw-bold">🌿 JanKowalski</span>
+                                    <span class="item-sub text-muted d-block small">Active 2m ago</span>
+                                </li>
+                                <li class="dashboard-item-row mt-2" data-item-url="/Friendship/Details/2">
+                                    <span class="item-title fw-bold">☕ Bookworm99</span>
+                                    <span class="item-sub text-muted d-block small">Active 1h ago</span>
+                                </li>
+                                <li class="dashboard-item-row mt-2" data-item-url="/Friendship/Details/3">
+                                    <span class="item-title fw-bold">📖 AnnaNowak</span>
+                                    <span class="item-sub text-muted d-block small">Active 3d ago</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 mb-4">
+                    <div class="dashboard-section-card shadow-sm h-100" data-section-url="/Shelf">
+                        <div class="section-card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Latest books u borrowed</h5>
+                            <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="section-card-body mt-3">
+                            <ul class="list-unstyled mb-0 dashboard-list">
+                                <li class="dashboard-item-row" data-item-url="/UserBook/Details/4">
+                                    <span class="item-title fw-bold">Harry Potter</span>
+                                    <span class="item-sub text-muted d-block small">From: Tomasz</span>
+                                </li>
+                                <li class="dashboard-item-row mt-2" data-item-url="/UserBook/Details/5">
+                                    <span class="item-title fw-bold">Dune</span>
+                                    <span class="item-sub text-muted d-block small">From: Biblioteka Główna</span>
+                                </li>
+                                <li class="dashboard-item-row mt-2" data-item-url="/UserBook/Details/6">
+                                    <span class="item-title fw-bold">Zbrodnia i Kara</span>
+                                    <span class="item-sub text-muted d-block small">From: Kasia</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 mb-4">
+                    <div class="dashboard-section-card shadow-sm h-100" data-section-url="/Shelf">
+                        <div class="section-card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold"><i class="bi bi-box-arrow-up-left me-2"></i>Books you rented lately</h5>
+                            <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
+                        </div>
+                        <div class="section-card-body mt-3">
+                            <ul class="list-unstyled mb-0 dashboard-list">
+                                <li class="dashboard-item-row" data-item-url="/UserBook/Details/7">
+                                    <span class="item-title fw-bold">Hobbit</span>
+                                    <span class="item-sub text-muted d-block small">To: Michał</span>
+                                </li>
+                                <li class="dashboard-item-row mt-2" data-item-url="/UserBook/Details/8">
+                                    <span class="item-title fw-bold">Pan Tadeusz</span>
+                                    <span class="item-sub text-muted d-block small">To: Karolina</span>
+                                </li>
+                                <li class="dashboard-item-row mt-2" data-item-url="/UserBook/Details/9">
+                                    <span class="item-title fw-bold">Sherlock Holmes</span>
+                                    <span class="item-sub text-muted d-block small">To: Paweł</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div> 
+            </div>
+</div>
 </div>
 
 <script>
+    // Kompleksowe przełączanie trybów z gwarancją chowania dolnych widżetów
     function toggleEditMode(isEdit) {
         var viewMode = document.getElementById("profile-view-mode");
         var editMode = document.getElementById("profile-edit-mode");
+        var widgetsRow = document.getElementById("dashboard-widgets-row");
 
         if (isEdit) {
             viewMode.style.display = "none";
             editMode.style.display = "block";
+            if (widgetsRow) {
+                widgetsRow.style.setProperty("display", "none", "important");
+            }
         } else {
             viewMode.style.display = "block";
             editMode.style.display = "none";
+            if (widgetsRow) {
+                widgetsRow.style.display = "flex"; // powrót do domyślnego flex dla .row
+            }
         }
     }
 
-    const avatarInput = document.getElementById("avatarUpload");
+    // Nawigacja po kliknięciu w kafelki oraz wiersze dashboardu
+    document.addEventListener("DOMContentLoaded", function() {
 
-    avatarInput.addEventListener("change",function(){
-        const file = this.files[0];
+        // Kliknięcie w całą sekcję dashboardu
+        document.querySelectorAll('.dashboard-section-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const sectionUrl = this.getAttribute('data-section-url');
+                if (sectionUrl) {
+                    window.location.href = sectionUrl;
+                }
+            });
+        });
 
-        if(!file) return;
+        // Kliknięcie w konkretny wiersz (Książkę / Znajomego)
+        document.querySelectorAll('.dashboard-item-row').forEach(row => {
+            row.addEventListener('click', function(e) {
+                e.stopPropagation(); // Zatrzymuje propagację bąbelkowania
+                const itemUrl = this.getAttribute('data-item-url');
+                if (itemUrl) {
+                    window.location.href = itemUrl;
+                }
+            });
+        });
 
-        const allowedTypes= ["image/jpeg","image/png"];
+        // Walidacja wgrywanego awatara po stronie klienta
+        const avatarInput = document.getElementById("avatarUpload");
+        if (avatarInput) {
+            avatarInput.addEventListener("change", function() {
+                const file = this.files[0];
+                if (!file) return;
 
-        const maxSize = 5*1024*1024;
+                const allowedTypes = ["image/jpeg", "image/png"];
+                const maxSize = 5 * 1024 * 1024;
 
-        if(!allowedTypes.includes(file.type)){
-            alert("Only JPG and PNG images are alowed");
+                if (!allowedTypes.includes(file.type)) {
+                    alert("Only JPG and PNG images are allowed");
+                    this.value = "";
+                    return;
+                }
 
-            this.value="";
-            return;
-        }
-
-        if(file.size > maxSize){
-            alert("File size cannot excede 5MB");
-
-            this.value="";
-            return;
+                if (file.size > maxSize) {
+                    alert("File size cannot exceed 5MB");
+                    this.value = "";
+                    return;
+                }
+            });
         }
     });
 </script>
-

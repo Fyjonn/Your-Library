@@ -1,35 +1,168 @@
+/* Paleta kolorów aplikacji */
+:root {
+    --primary-green: #23443c;
+    --accent-gold: #bba16c;
+    --cream-bg: #fbf5e6;
+    --table-header-bg: #e8dfca;
+    --text-dark: #23443c;
+    --text-muted: #6e7a75;
+}
+
+/* Nagłówek i opisy tekstowe */
+.custom-shelf-title {
+    color: var(--accent-gold) !important;
+    font-family: 'Georgia', serif;
+}
+
+.no-books-msg, .custom-error-msg {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 1.1rem;
+}
+
+.custom-error-msg {
+    color: #b13434 !important; /* Akcent błędu w tonacji retro */
+}
+
+/* Przycisk rozwijany (Dropdown) */
+.btn-custom-dropdown {
+    background-color: var(--primary-green) !important;
+    color: var(--cream-bg) !important;
+    border: 1px solid var(--accent-gold);
+    border-radius: 4px;
+    font-family: 'Georgia', serif;
+    transition: all 0.2s ease;
+}
+
+    .btn-custom-dropdown:hover, .btn-custom-dropdown:focus {
+        background-color: var(--cream-bg);
+        color: var(--primary-green);
+        border-color: #fff;
+    }
+
+/* Menu rozwijane */
+.custom-dropdown-menu {
+    background-color: var(--cream-bg);
+    border: 1px solid var(--accent-gold);
+}
+
+    .custom-dropdown-menu .dropdown-item {
+        color: var(--primary-green);
+        font-weight: 500;
+    }
+
+        .custom-dropdown-menu .dropdown-item:hover {
+            background-color: var(--table-header-bg);
+            color: var(--primary-green);
+        }
+
+        .custom-dropdown-menu .dropdown-item.active {
+            background-color: var(--primary-green) !important;
+            color: var(--cream-bg) !important;
+        }
+
+/* Kontenery i paski wyszukiwania */
+.custom-search-group {
+    border: 1px solid var(--accent-gold);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.custom-search-icon {
+    background-color: var(--cream-bg) !important;
+    color: var(--primary-green) !important;
+    border: none !important;
+}
+
+.custom-search-input {
+    background-color: var(--cream-bg) !important;
+    color: var(--text-dark) !important;
+    border: none !important;
+}
+
+    .custom-search-input:focus {
+        box-shadow: none;
+    }
+
+/* Kontrolki Radio */
+.custom-radio-group {
+    color: var(--accent-gold);
+}
+
+    .custom-radio-group .form-check-input:checked {
+        background-color: var(--primary-green);
+        border-color: var(--accent-gold);
+    }
+
+/* Tabele i widok książek */
+.custom-table-container {
+    border: 1px solid var(--accent-gold);
+    background-color: var(--cream-bg);
+}
+
+.custom-library-table {
+    background-color: var(--cream-bg) !important;
+}
+
+    .custom-library-table thead {
+        background-color: var(--table-header-bg) !important;
+        border-bottom: 2px solid var(--accent-gold);
+    }
+
+    .custom-library-table th {
+        color: var(--primary-green) !important;
+        font-family: 'Georgia', serif;
+        font-weight: bold;
+        padding: 12px;
+    }
+
+/* Wiersze klikalne (Cały wiersz jako odnośnik) */
+.book-clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.custom-library-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #e1d8bf;
+}
+
+/* Kolor tytułu książki (Zablokowana zmiana barwy przy hover) */
+.custom-book-title-cell {
+    color: var(--primary-green) !important;
+}
+
+.custom-author-text {
+    color: var(--text-muted) !important;
+}
+
+/* Podświetlenie całego wiersza przy hover (Tekst pozostaje bez zmian) */
+.custom-library-table tbody tr:hover {
+    background-color: #f3ebd4 !important;
+}
+/* Pływający przycisk akcji (FAB) */
 .btn-fab {
     position: fixed;
     bottom: 30px;
     right: 30px;
     width: 60px;
     height: 60px;
-    background-color: #0d6efd;
-    color: white;
+    background-color: var(--primary-green);
+    color: var(--cream-bg);
+    border: 1px solid var(--accent-gold);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 28px;
     text-decoration: none;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
     z-index: 1050;
 }
- 
 
     .btn-fab:hover {
-        background-color: #0b5ed7;
-        color: white;
+        background-color: var(--cream-bg);
+        color: var(--primary-green);
         transform: scale(1.1);
-    }
-
-.nav-pills .nav-link {
-    color: #495057;
-    font-weight: 500;
-    border-radius: 8px;
-}
-
-    .nav-pills .nav-link.active {
-        background-color: #0d6efd;
-        box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.3) !important;
     }

@@ -1,28 +1,118 @@
-.friend-card, .invitation-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border-radius: 12px;
+/* --- FORMATOWANIE PODSTRONY ZNAJOMYCH W STYLU HOME --- */
+
+.friendship-page-container {
+    font-family: 'Georgia', serif;
 }
 
-    .friend-card:hover, .invitation-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1) !important;
+    .friendship-page-container .page-main-title {
+        color: #f7f2e4 !important;
+        text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+        font-size: 2.8rem;
     }
 
-.invitations-section {
-    background-color: #f8f9fa;
-    border-radius: 16px;
-    border: 1px dashed #dee2e6;
+.friend-search-card {
+    background-color: #f7f2e4 !important;
+    border: 1px solid #cbdcd4 !important;
+    border-radius: 14px;
 }
 
+    .friend-search-card .search-headline {
+        color: #1e3630 !important;
+    }
+
+    .friend-search-card .search-icon-box {
+        background-color: #ffffff !important;
+        border-color: #f7f2e4 !important;
+        color: #1e3630 !important;
+    }
+
+    .friend-search-card .search-input {
+        border-color: #cbdcd4 !important;
+        background-color: #ffffff !important;
+        color: #1e3630 !important;
+    }
+
+        .friend-search-card .search-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(30, 54, 48, 0.15) !important;
+            border-color: #1e3630 !important;
+        }
+
+.btn-library-submit {
+    background-color: #1e3630 !important;
+    color: #fcfaf2 !important;
+    border: none !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+    .btn-library-submit:hover {
+        background-color: #2d4a43 !important;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+    }
+
+
+.friendship-page-container .section-headline,
+.friendship-page-container .section-subtitle {
+    color: #fcfaf2 !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.invitations-section {
+    background-color: #f7f2e4 !important;
+    border: 1px solid #cbdcd4 !important;
+    border-radius: 16px;
+}
+
+    .invitations-section .section-headline {
+        color: #1e3630 !important;
+        text-shadow: none !important;
+    }
+
+.no-data-text {
+    color: #4f6e65 !important;
+    font-style: italic;
+}
+
+.invitation-card, .friend-card {
+    background-color: #f4f8f6 !important;
+    border: 1px solid #d4e2dc !important;
+    border-radius: 12px;
+    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease;
+}
+
+    .invitation-card:hover, .friend-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+        border-color: #bfa15f !important;
+    }
+
 .user-avatar {
-    width: 45px;
-    height: 45px;
-    background-color: #e9ecef;
-    color: #495057;
+    width: 48px;
+    height: 48px;
+    background-color: #1e3630 !important;
+    color: #fcfaf2 !important;
     font-weight: bold;
     font-size: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.friend-avatar {
+    background-color: #2d4a43 !important;
+}
+
+.empty-state-box {
+    color: #fcfaf2 !important;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.empty-icon {
+    color: #bfa15f !important; 
+}
+
+.empty-text {
+    font-style: italic;
 }

@@ -4,62 +4,69 @@
     ViewData["Title"] = "Details";
 }
 
-<div class="container mt-4" style="max-width: 700px;">
-    <div class="card shadow border-0">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
-            <h4 class="mb-0"><i class="bi bi-info-circle me-2"></i>Information about the book</h4>
-            <span class="badge bg-light text-primary fs-6">@Model.ReadStatus</span>
+@section Styles {
+    <link rel="stylesheet" href="~/css/userbook_style.css" asp-append-version="true" />
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<div class="container mt-5 mb-5" style="max-width: 700px;">
+    <div class="card shadow-sm border-0 custom-userbook-card">
+        <div class="card-header d-flex justify-content-between align-items-center py-3 custom-userbook-header">
+            <h4 class="mb-0"><i class="bi bi-book-half me-2"></i>Info</h4>
+            <span class="badge custom-badge-status fs-6">@Model.ReadStatus</span>
         </div>
         <div class="card-body p-4">
 
-            <div class="row mb-3 border-bottom pb-2">
-                <div class="col-sm-4 fw-bold text-muted">Title:</div>
-                <div class="col-sm-8 fs-5 fw-bold text-dark">@Model.Book?.Title</div>
+            <div class="row mb-3 custom-border-bottom pb-2">
+                <div class="col-sm-4 fw-bold custom-label-muted">Title:</div>
+                <div class="col-sm-8 fs-5 fw-bold custom-value-title">@Model.Book?.Title</div>
             </div>
 
-            <div class="row mb-3 border-bottom pb-2">
-                <div class="col-sm-4 fw-bold text-muted">Author:</div>
-                <div class="col-sm-8 fs-5 text-secondary">@Model.Book?.Author</div>
+            <div class="row mb-3 custom-border-bottom pb-2">
+                <div class="col-sm-4 fw-bold custom-label-muted">Author:</div>
+                <div class="col-sm-8 fs-5 custom-value-dark">@Model.Book?.Author</div>
             </div>
 
-            <div class="row mb-3 border-bottom pb-2">
-                <div class="col-sm-4 fw-bold text-muted"> Media format:</div>
-                <div class="col-sm-8">@Model.Media</div>
+            <div class="row mb-3 custom-border-bottom pb-2">
+                <div class="col-sm-4 fw-bold custom-label-muted">Media format:</div>
+                <div class="col-sm-8 custom-value-dark">@Model.Media</div>
             </div>
 
-            <div class="row mb-3 border-bottom pb-2">
-                <div class="col-sm-4 fw-bold text-muted">Location:</div>
-                <div class="col-sm-8">
-                    @(string.IsNullOrEmpty(Model.Location) ? "Not specified." : Model.Location)</div>
+            <div class="row mb-3 custom-border-bottom pb-2">
+                <div class="col-sm-4 fw-bold custom-label-muted">Location:</div>
+                <div class="col-sm-8 custom-value-dark">
+                    @(string.IsNullOrEmpty(Model.Location) ? "Not specified." : Model.Location)
+                </div>
             </div>
 
-            <div class="row mb-3 border-bottom pb-2">
-                <div class="col-sm-4 fw-bold text-muted">Ownership Status:</div>
-                <div class="col-sm-8">
-                    <span class="badge @(Model.IsOwned ? "bg-success" : "bg-secondary") me-1">
+            <div class="row mb-3 custom-border-bottom pb-2">
+                <div class="col-sm-4 fw-bold custom-label-muted">Ownership Status:</div>
+                <div class="col-sm-8 d-flex flex-wrap gap-1">
+                    <span class="badge @(Model.IsOwned ? "custom-badge-active" : "custom-badge-inactive")">
                         @(Model.IsOwned ? "I own this book." : "I don't own this book.")
                     </span>
-                    <span class="badge @(Model.IsBorrowed ? "bg-warning text-dark" : "bg-secondary") me-1">
+                    <span class="badge @(Model.IsBorrowed ? "custom-badge-active" : "custom-badge-inactive")">
                         @(Model.IsBorrowed ? "Borrowed." : "Not borrowed.")
                     </span>
-                    <span class="badge @(Model.Bookmark ? "bg-info text-dark" : "bg-secondary")">
+                    <span class="badge @(Model.Bookmark ? "custom-badge-active" : "custom-badge-inactive")">
                         @(Model.Bookmark ? "It has a bookmark." : "No bookmark.")
                     </span>
                 </div>
             </div>
 
             <div class="mb-4">
-                <div class="fw-bold text-muted mb-1">Your notes:</div>
-                <div class="p-3 bg-light rounded border-start border-primary border-3">
-                    <span class="fst-italic text-dark">
+                <div class="fw-bold custom-label-muted mb-2">Your notes:</div>
+                <div class="p-3 rounded custom-notes-box">
+                    <span class="fst-italic">
                         @(string.IsNullOrEmpty(Model.Notes) ? "No additional notes for this book." : Model.Notes)
                     </span>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between pt-2">
-                <a href="/Shelf" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-1"></i> Back to shelf
+            <div class="d-flex justify-content-start pt-2">
+                <a href="/Shelf" class="btn btn-custom-backpx-4">
+                    <i class="bi bi-arrow-left me-2"></i>Back to shelf
                 </a>
             </div>
 

@@ -9,51 +9,35 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<div class="container mt-4 pb-5 position-relative">
+<div class="container mt-4 pb-5 position-relative library-shelf-container">
 
     <div class="text-center mb-4">
-        <h1 id="current-shelf-title" class="display-5 fw-bold text-primary">Reading</h1>
+        <h1 id="current-shelf-title" class="display-5 fw-bold custom-shelf-title">Reading</h1>
     </div>
 
     <div class="d-flex justify-content-center mb-4">
         <div class="dropdown shadow-sm">
-            <button class="btn btn-outline-primary btn-lg dropdown-toggle px-4" type="button" id="shelfDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-custom-dropdown btn-lg dropdown-toggle px-4" type="button" id="shelfDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-filter-left me-2"></i>Select shelf
             </button>
-            <ul class="dropdown-menu dropdown-menu-end text-center shadow" aria-labelledby="shelfDropdownMenu">
-                <li>
-                    <button class="dropdown-item active" type="button" data-shelf-target="#reading">
-                        <i class="bi bi-book-half me-2"></i>Reading
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item" type="button" data-shelf-target="#toread">
-                        <i class="bi bi-bookmark-plus me-2"></i>To Read
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item" type="button" data-shelf-target="#dnf">
-                        <i class="bi bi-x-circle me-2"></i>DNF
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item" type="button" data-shelf-target="#read">
-                        <i class="bi bi-check2-circle me-2"></i>Read
-                    </button>
-                </li>
+            <ul class="dropdown-menu dropdown-menu-end text-center shadow custom-dropdown-menu" aria-labelledby="shelfDropdownMenu">
+                <li><button class="dropdown-item active" type="button" data-shelf-target="#reading"><i class="bi bi-book-half me-2"></i>Reading</button></li>
+                <li><button class="dropdown-item" type="button" data-shelf-target="#toread"><i class="bi bi-bookmark-plus me-2"></i>To Read</button></li>
+                <li><button class="dropdown-item" type="button" data-shelf-target="#dnf"><i class="bi bi-x-circle me-2"></i>DNF</button></li>
+                <li><button class="dropdown-item" type="button" data-shelf-target="#read"><i class="bi bi-check2-circle me-2"></i>Read</button></li>
             </ul>
         </div>
     </div>
 
     <div class="row justify-content-center mb-5">
         <div class="col-md-6">
-            <div class="input-group shadow-sm mb-2">
-                <span class="input-group-text bg-white border-end-0 text-muted">
+            <div class="input-group shadow-sm mb-2 custom-search-group">
+                <span class="input-group-text border-end-0 text-muted custom-search-icon">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" id="shelfSearchInput" class="form-control border-start-0 ps-1" placeholder="Search books on this shelf..." />
+                <input type="text" id="shelfSearchInput" class="form-control border-start-0 ps-1 custom-search-input" placeholder="Search books on this shelf..." />
             </div>
-            <div class="d-flex justify-content-center gap-3 fs-7 text-muted">
+            <div class="d-flex justify-content-center gap-3 fs-7 custom-radio-group">
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="radio" name="searchType" id="searchByTitle" value="title" checked>
                     <label class="form-check-label" for="searchByTitle">Title</label>
@@ -68,17 +52,18 @@
 
     <div class="tab-content" id="shelfTabsContent">
 
+        <!-- Półka: Reading -->
         <div class="shelf-pane d-block" id="reading">
             <div class="container-books">
                 @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "Reading", StringComparison.OrdinalIgnoreCase)))
                 {
-                    <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce Reading.</p>
+                    <p class="text-center py-4 no-books-msg">No books on the "Reading" shelf".</p>
                 }
                 else
                 {
-                    <div class="table-responsive shadow-sm rounded">
-                        <table class="table table-hover align-middle bg-white mb-0">
-                            <thead class="table-primary">
+                    <div class="table-responsive shadow-sm rounded custom-table-container">
+                        <table class="table table-hover align-middle mb-0 custom-library-table">
+                            <thead>
                                 <tr>
                                     <th>Title</th>
                                     <th>Author</th>
@@ -87,13 +72,11 @@
                             <tbody>
                                 @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "Reading", StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
-                                        <td>
-                                            <a href="/UserBook/Details/@userBook.UserBookId" class="fw-bold text-decoration-none text-primary">
-                                                <i class="bi bi-book me-2"></i>@userBook.Book?.Title
-                                            </a>
+                                    <tr class="book-clickable-row book-card-item" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
+                                        <td class="fw-bold custom-book-title-cell">
+                                            <i class="bi bi-book me-2"></i>@userBook.Book?.Title
                                         </td>
-                                        <td class="text-secondary">@userBook.Book?.Author</td>
+                                        <td class="custom-author-text">@userBook.Book?.Author</td>
                                     </tr>
                                 }
                             </tbody>
@@ -103,32 +86,31 @@
             </div>
         </div>
 
+        <!-- Półka: To Read -->
         <div class="shelf-pane d-none" id="toread">
             <div class="container-books">
                 @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
                 {
-                    <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce To Read.</p>
+                    <p class="text-center py-4 no-books-msg">No books on the "To Read" shelf.</p>
                 }
                 else
                 {
-                    <div class="table-responsive shadow-sm rounded">
-                        <table class="table table-hover align-middle bg-white mb-0">
-                            <thead class="table-primary">
+                    <div class="table-responsive shadow-sm rounded custom-table-container">
+                        <table class="table table-hover align-middle mb-0 custom-library-table">
+                            <thead>
                                 <tr>
-                                    <th>Tytuł</th>
-                                    <th>Autor</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
-                                        <td>
-                                            <a href="/UserBook/Details/@userBook.UserBookId" class="fw-bold text-decoration-none text-primary">
-                                                <i class="bi bi-book me-2"></i>@userBook.Book?.Title
-                                            </a>
+                                    <tr class="book-clickable-row book-card-item" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
+                                        <td class="fw-bold custom-book-title-cell">
+                                            <i class="bi bi-book me-2"></i>@userBook.Book?.Title
                                         </td>
-                                        <td class="text-secondary">@userBook.Book?.Author</td>
+                                        <td class="custom-author-text">@userBook.Book?.Author</td>
                                     </tr>
                                 }
                             </tbody>
@@ -138,17 +120,19 @@
             </div>
         </div>
 
+        <!-- Półka: DNF -->
         <div class="shelf-pane d-none" id="dnf">
             <div class="container-books">
                 @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
                 {
-                    <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce DNF.</p>
+                    <p class="text-center py-4 no-books-msg">No books on the "DNF" shelf.
+                    </p>
                 }
                 else
                 {
-                    <div class="table-responsive shadow-sm rounded">
-                        <table class="table table-hover align-middle bg-white mb-0">
-                            <thead class="table-primary">
+                    <div class="table-responsive shadow-sm rounded custom-table-container">
+                        <table class="table table-hover align-middle mb-0 custom-library-table">
+                            <thead>
                                 <tr>
                                     <th>Tytuł</th>
                                     <th>Autor</th>
@@ -157,13 +141,11 @@
                             <tbody>
                                 @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
-                                        <td>
-                                            <a href="/UserBook/Details/@userBook.UserBookId" class="fw-bold text-decoration-none text-primary">
-                                                <i class="bi bi-book me-2"></i>@userBook.Book?.Title
-                                            </a>
+                                    <tr class="book-clickable-row book-card-item" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
+                                        <td class="fw-bold custom-book-title-cell">
+                                            <i class="bi bi-book me-2"></i>@userBook.Book?.Title
                                         </td>
-                                        <td class="text-secondary">@userBook.Book?.Author</td>
+                                        <td class="custom-author-text">@userBook.Book?.Author</td>
                                     </tr>
                                 }
                             </tbody>
@@ -173,17 +155,18 @@
             </div>
         </div>
 
+        <!-- Półka: Read -->
         <div class="shelf-pane d-none" id="read">
             <div class="container-books">
                 @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "Read", StringComparison.OrdinalIgnoreCase)))
                 {
-                    <p class="text-muted text-center py-4 no-books-msg">Brak książek na półce Read.</p>
+                    <p class="text-center py-4 no-books-msg">No books on the "Read" shelf".</p>
                 }
                 else
                 {
-                    <div class="table-responsive shadow-sm rounded">
-                        <table class="table table-hover align-middle bg-white mb-0">
-                            <thead class="table-primary">
+                    <div class="table-responsive shadow-sm rounded custom-table-container">
+                        <table class="table table-hover align-middle mb-0 custom-library-table">
+                            <thead>
                                 <tr>
                                     <th>Tytuł</th>
                                     <th>Autor</th>
@@ -192,13 +175,11 @@
                             <tbody>
                                 @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "Read", StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <tr class="book-card-item" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
-                                        <td>
-                                            <a href="/UserBook/Details/@userBook.UserBookId" class="fw-bold text-decoration-none text-primary">
-                                                <i class="bi bi-book me-2"></i>@userBook.Book?.Title
-                                            </a>
+                                    <tr class="book-clickable-row book-card-item" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
+                                        <td class="fw-bold custom-book-title-cell">
+                                            <i class="bi bi-book me-2"></i>@userBook.Book?.Title
                                         </td>
-                                        <td class="text-secondary">@userBook.Book?.Author</td>
+                                        <td class="custom-author-text">@userBook.Book?.Author</td>
                                     </tr>
                                 }
                             </tbody>
@@ -210,16 +191,32 @@
 
     </div>
 
-    <a href="/UserBook/Create" class="btn-fab shadow-lg" title="Dodaj nową książkę">
+    <!-- Zaktualizowany FAB: posiada ramkę hover oraz natywny tekst dymka informacyjnego -->
+    <a href="/UserBook/Create" class="btn-fab shadow-lg" title="Add book to your shelf">
         <i class="bi bi-plus-lg"></i>
     </a>
 
 </div>
 
-
-
 @section Scripts {
     <script>
+        // Obsługa kliknięcia w CAŁY wiersz tabeli
+        function initRowClickListeners() {
+            document.querySelectorAll('.book-clickable-row').forEach(row => {
+                row.addEventListener('click', function () {
+                    const url = this.getAttribute('data-url');
+                    if (url) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        }
+
+        // Inicjalizacja przy pierwszym załadowaniu
+        document.addEventListener("DOMContentLoaded", function() {
+            initRowClickListeners();
+        });
+
         document.querySelectorAll('.dropdown-item').forEach(item => {
             item.addEventListener('click', function () {
                 const shelfName = this.textContent.trim();
@@ -237,14 +234,12 @@
                 document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
                 this.classList.add('active');
 
-                // Wyczyszczenie wyszukiwarki przy zmianie karty półki
                 const searchInput = document.getElementById('shelfSearchInput');
                 searchInput.value = '';
                 filterBooks();
             });
         });
 
-        // NOWOŚĆ: Skrypt wyszukiwania i filtrowania książek w locie (Lokalnie na aktywnej karcie)
         const searchInput = document.getElementById('shelfSearchInput');
         const radioTitle = document.getElementById('searchByTitle');
 
@@ -257,7 +252,6 @@
             const query = searchInput.value.trim().toLowerCase();
             const searchBy = radioTitle.checked ? 'title' : 'author';
 
-            // Filtrujemy tylko wewnątrz aktualnie otwartej (widocznej) półki
             const activePane = document.querySelector('.shelf-pane.d-block');
             if (!activePane) return;
 
@@ -275,15 +269,14 @@
                 }
             });
 
-            // Dynamiczna informacja o braku wyników wyszukiwania na danej półce
             let noResultsMsg = activePane.querySelector('.no-search-results');
             const defaultEmptyMsg = activePane.querySelector('.no-books-msg');
 
             if (visibleCount === 0 && query !== '') {
                 if (!noResultsMsg && !defaultEmptyMsg) {
                     noResultsMsg = document.createElement('p');
-                    noResultsMsg.className = 'text-danger text-center w-100 py-4 no-search-results';
-                    noResultsMsg.textContent = 'Nie znaleziono książek pasujących do filtrów.';
+                    noResultsMsg.className = 'text-center w-100 py-4 no-search-results custom-error-msg';
+                            noResultsMsg.textContent = 'No books found that match your filters.';
                     activePane.querySelector('.container-books').appendChild(noResultsMsg);
                 } else if (noResultsMsg) {
                     noResultsMsg.classList.remove('d-none');

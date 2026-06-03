@@ -1,184 +1,225 @@
-﻿
+﻿/* ==========================================================================
+   KONTENER GŁÓWNY I KONTROLKI WYŚWIETLANIA (Wyrównanie i Szerokość)
+   ========================================================================== */
+#profile-view-mode, #profile-edit-mode {
+    color: #ffffff !important;
+    width: 100% !important; /* Wymuszenie pełnej szerokości kontenera kolumny */
+}
+
 .library-profile-container {
-    color: #2d4a43;
+    width: 100% !important;
+    max-width: 1200px; /* Dopasuj do max szerokości reszty Twojej strony */
+    margin: 0 auto !important;
+    padding: 0 15px !important;
 }
 
-.profile-card {
-    border: 2px solid #e6dfd1;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(45, 74, 67, 0.06) !important;
-    background-image: radial-gradient(#eef2ef 1px, transparent 1px);
-    background-size: 20px 20px;
+/* ==========================================================================
+   BLOKI I KARTY (ZMIANA: Idealnie równe beżowe karty)
+   ========================================================================== */
+.profile-card, .dashboard-section-card {
+    background-color: rgba(245, 240, 230, 0.95) !important; /* Ciepły, elegancki beż */
+    border: 1px solid rgba(212, 204, 185, 1) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(5px);
+    padding: 24px !important;
+    width: 100% !important; /* Każda karta dostosowuje się do szerokości kolumny bootstrapa */
+    box-sizing: border-box !important;
 }
 
+.dashboard-section-card {
+    cursor: pointer;
+    margin-bottom: 24px !important; /* Równe odstępy w pionie między kartami */
+}
+
+/* Nagłówki, ikony i teksty wewnątrz beżowych kart */
+.profile-username, .edit-mode-title, .section-card-header h5 {
+    font-weight: 700 !important;
+    color: #1e3d33 !important; /* Ciemnozielony tekst */
+    margin-bottom: 0;
+}
+
+.section-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(30, 61, 51, 0.1);
+    padding-bottom: 12px;
+}
+
+    .section-card-header h5 i {
+        color: #1e3d33 !important;
+        margin-right: 8px;
+    }
+
+/* Odnośniki "View Shelf" / "View All" */
+.view-all-link, .view-all-link i {
+    color: #2d5a4c !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+}
+
+    .view-all-link:hover {
+        text-decoration: underline !important;
+    }
+
+/* ==========================================================================
+   ELEMENTY LISTY (Wiersze wewnątrz kart)
+   ========================================================================== */
+.dashboard-list {
+    padding-left: 0 !important;
+    margin-top: 15px !important;
+    list-style: none !important;
+}
+
+.dashboard-item-row {
+    padding: 14px 18px !important;
+    background-color: rgba(30, 61, 51, 0.05) !important;
+    border: 1px solid rgba(30, 61, 51, 0.1) !important;
+    border-radius: 8px !important;
+    margin-bottom: 10px !important;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+    .dashboard-item-row:last-child {
+        margin-bottom: 0 !important;
+    }
+
+    .dashboard-item-row:hover {
+        background-color: rgba(30, 61, 51, 0.1) !important;
+        transform: translateX(6px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    }
+
+.item-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #1e3d33 !important;
+}
+
+.item-sub, .text-muted {
+    color: #555555 !important;
+    font-size: 0.85rem !important;
+}
+
+/* ==========================================================================
+   TRYB EDYCJI, INPUTY I FORMULARZE
+   ========================================================================== */
+.custom-label-muted, .form-label {
+    color: #1e3d33 !important;
+    font-weight: 600 !important;
+}
+
+.library-input {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(30, 61, 51, 0.3) !important;
+    color: #1e3d33 !important;
+    border-radius: 6px !important;
+    padding: 10px 12px !important;
+}
+
+    .library-input:focus {
+        border-color: #1e3d33 !important;
+        box-shadow: 0 0 0 0.25rem rgba(30, 61, 51, 0.15) !important;
+    }
+
+.library-divider {
+    border-top: 1px solid rgba(30, 61, 51, 0.15) !important;
+    opacity: 1 !important;
+    margin: 25px 0 !important;
+}
+
+/* Siatka wyboru emoji (Avatar picker) */
+.avatar-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.avatar-option input[type="radio"] {
+    display: none !important;
+}
+
+.avatar-option span {
+    display: inline-block;
+    width: 45px;
+    height: 45px;
+    line-height: 43px;
+    text-align: center;
+    font-size: 1.4rem;
+    background: rgba(30, 61, 51, 0.06);
+    border: 1px solid rgba(30, 61, 51, 0.15);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.avatar-option input[type="radio"]:checked + span {
+    background: #1e3d33 !important;
+    border-color: #1e3d33 !important;
+    color: #ffffff !important;
+    transform: scale(1.1);
+}
+
+/* ==========================================================================
+   PRZYCISKI I EMOTIKONY
+   ========================================================================== */
 .avatar-container {
-    width: 110px !important;
-    height: 110px !important;
-    background-color: #2d4a43;
-    border: 3px solid #bfa15f;
+    width: 90px;
+    height: 90px;
+    background-color: rgba(30, 61, 51, 0.06);
+    border: 2px solid #1e3d33;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(45, 74, 67, 0.15);
-    transition: transform 0.4s ease;
-    overflow: hidden !important;
-    position: relative;
+    margin-bottom: 15px;
 }
 
-.avatar-container img {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: cover !important;
-    border-radius: 50% !important;
-    display: block !important;
-}
-.avatar-container:hover {
-        transform: scale(1.05) rotate(5deg);
-    }
-
-    .avatar-container span {
-        width: 100% !important;
-        height: 100% !important;
-        font-size: 3.5rem !important;
-        font-weight: 1000;
-    }
 .profile-avatar-emoji {
-    font-size: 3.5rem !important;
-    font-weight: 1000;
+    font-size: 2.5rem !important;
 }
-
-
-.profile-avatar-image {
-    width: 100%; 
-    height: 100%; 
-    border-radius: 50%; 
-    object-fit: cover; 
-    display: block;
-}
-
-.profile-username {
-    font-weight: 700;
-    color: #1c332e;
-    margin-top: 10px;
-}
-
-.profile-badge {
-    font-style: italic;
-    color: #607c68;
-    font-size: 1rem;
-}
-
-.counter-number {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #2d4a43;
-    display: block;
-}
-
-.library-divider {
-    border-top: 1px solid #e6dfd1 !important;
-    opacity: 1;
-    margin: 1.5rem 0;
-}
-
-.avatar-picker-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-top: 8px;
-}
-
-.avatar-option {
-    cursor: pointer;
-    text-align: center;
-    position: relative;
-}
-
-    .avatar-option input {
-        position: absolute;
-        opacity: 0; 
-        cursor: pointer;
-    }
-
-    .avatar-option span {
-        display: block;
-        font-size: 1.8rem;
-        padding: 8px;
-        background-color: #fcfaf2;
-        border: 2px solid #e6dfd1;
-        border-radius: 8px;
-        transition: all 0.25s ease;
-    }
-
-    .avatar-option input:checked + span {
-        background-color: #2d4a43;
-        border-color: #bfa15f;
-        transform: scale(1.08);
-    }
-
-.library-input {
-    border: 2px solid #e6dfd1 !important;
-    border-radius: 8px !important;
-    background-color: #fcfaf2 !important;
-    color: #2d4a43 !important;
-    padding: 10px 12px !important;
-    transition: border-color 0.3s ease !important;
-}
-
-    .library-input:focus {
-        border-color: #2d4a43 !important;
-        box-shadow: 0 0 0 0.25rem rgba(45, 74, 67, 0.15) !important;
-    }
 
 .btn-library-gold {
-    background-color: #bfa15f !important;
+    background-color: #1e3d33 !important;
     color: #ffffff !important;
-    font-weight: 600 !important;
-    border-radius: 8px !important;
-    padding: 12px !important;
     border: none !important;
-    transition: background-color 0.3s ease, transform 0.2s ease !important;
+    font-weight: 700 !important;
+    padding: 10px 20px !important;
+    border-radius: 6px !important;
+    transition: background-color 0.2s ease;
 }
 
     .btn-library-gold:hover {
-        background-color: #a88d50 !important;
-        transform: translateY(-2px);
+        background-color: #142a23 !important;
     }
 
 .btn-library-green {
-    background-color: #2d4a43 !important;
-    color: #fcfaf2 !important;
-    font-weight: 600 !important;
-    border-radius: 8px !important;
-    padding: 10px !important;
+    background-color: #28a745 !important;
+    color: #ffffff !important;
     border: none !important;
-    transition: background-color 0.3s ease !important;
+    font-weight: 700 !important;
 }
 
-    .btn-library-green:hover {
-        background-color: #1c332e !important;
-    }
-
 .btn-library-cancel {
-    background-color: #fcfaf2 !important;
-    color: #607c68 !important;
-    border: 2px solid #e6dfd1 !important;
+    background-color: transparent !important;
+    color: #ff6b6b !important;
+    border: 1px solid #ff6b6b !important;
     font-weight: 600 !important;
-    border-radius: 8px !important;
-    padding: 10px !important;
-    transition: all 0.3s ease !important;
 }
 
     .btn-library-cancel:hover {
-        background-color: #e6dfd1 !important;
-        color: #2d4a43 !important;
+        background-color: #ff6b6b !important;
+        color: #ffffff !important;
     }
 
-@media screen and (max-width: 576px) {
-    .avatar-picker-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
+/* ==========================================================================
+   STRICT SEKCJA UKRYWANIA DLA EDYCJI PROFILU
+   ========================================================================== */
+/* Ukrywa cały wiersz zawierający dolne kafelki, kiedy formularz edycji jest otwarty */
+#profile-edit-mode:not([style*="display: none"]) ~ #dashboard-widgets-row {
+    display: none !important;
 }
