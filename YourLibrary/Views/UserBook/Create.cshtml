@@ -71,18 +71,18 @@
                     <label class="form-label d-block custom-label-muted mb-2"><i class="bi bi-sliders me-1"></i> Options</label>
 
                     <div class="form-check custom-checkbox mb-2">
-                        <input class="form-check-input" type="checkbox" asp-for="Bookmark">
-                        <label class="form-check-label custom-value-dark" asp-for="Bookmark">Do you have a bookmark in your book?</label>
+                        <input class="form-check-input" type="checkbox" id="Bookmark" name="Bookmark" value="true" @(Model?.Bookmark == true ? "checked" : "")>
+                        <label class="form-check-label custom-value-dark" for="Bookmark">Do you have a bookmark in your book?</label>
                     </div>
 
                     <div class="form-check custom-checkbox mb-2">
-                        <input class="form-check-input" type="checkbox" asp-for="IsOwned">
-                        <label class="form-check-label custom-value-dark" asp-for="IsOwned">Do you own this book?</label>
+                        <input class="form-check-input" type="checkbox" id="IsOwned" name="IsOwned" value="true" @(Model?.IsOwned == true ? "checked" : "")>
+                        <label class="form-check-label custom-value-dark" for="IsOwned">Do you own this book?</label>
                     </div>
 
                     <div class="form-check custom-checkbox">
-                        <input class="form-check-input" type="checkbox" asp-for="IsBorrowed">
-                        <label class="form-check-label custom-value-dark" asp-for="IsBorrowed">Is this book borrowed?</label>
+                        <input class="form-check-input" type="checkbox" id="IsBorrowed" name="IsBorrowed" value="true" @(Model?.IsBorrowed == true ? "checked" : "")>
+                        <label class="form-check-label custom-value-dark" for="IsBorrowed">Is this book borrowed?</label>
                     </div>
                 </div>
 
@@ -117,15 +117,19 @@
 
     <script>
         document.getElementById('btnSearchApi').addEventListener('click', function () {
-            const query = document.getElementById('apiSearchQuery').value;
+            const originalQuery = document.getElementById('apiSearchQuery').value;
             const resultsDiv = document.getElementById('apiResults');
 
-            if (!query) return;
+            if (!originalQuery) return;
 
             resultsDiv.innerHTML = '<div class="list-group-item text-muted bg-transparent border-0 italic-loading">🔍 Searching in Google Books...</div>';
             resultsDiv.classList.remove('d-none');
 
-            fetch(`/api/books/search?query=${encodeURIComponent(query)}`)
+            // usuwamy polskie zanki do zapytania
+            const cleanQuery = originalQuery.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            // wysylamy zapytanie
+            fetch(`/api/books/search?query=${encodeURIComponent(cleanQuery)}`)
                 .then(response => response.json())
                 .then(data => {
                     resultsDiv.innerHTML = '';

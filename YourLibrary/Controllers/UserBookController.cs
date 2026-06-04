@@ -77,5 +77,82 @@ namespace YourLibrary.Controllers
 
             return View(userBook);
         }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            string currentUserId = _userManager.GetUserId(User);
+
+            var userBook = _context.UserBooks
+                .Include(ub => ub.Book)
+                .FirstOrDefault(ub => ub.UserBookId == id && ub.ApplicationUserId == currentUserId);
+
+            if (userBook == null || userBook.Book == null)
+            {
+                return NotFound();
+            }
+
+            return View(userBook);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(UserBook userbook)
+        {
+            string currentUserId = _userManager.GetUserId(User);
+            userbook.ApplicationUserId = currentUserId;
+
+            ModelState.Remove("ApplicationUserId");
+            ModelState.Remove("ApplicationUser");
+            ModelState.Remove("Book");
+            ModelState.Remove("Review");
+            ModelState.Remove("Borrows");
+
+            if (!ModelState.IsValid)
+            {
+                userbook.Book = _context.Books.FirstOrDefault(b => b.BookId == userbook.BookId);
+                return View(userbook);
+            }
+
+            _context.UserBooks.Update(userbook);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Shelf"); //powrot do polki
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            string currentUserId = _userManager.GetUserId(User);
+
+            var userBook = _context.UserBooks
+                .Include(ub => ub.Book)
+                .FirstOrDefault(ub => ub.UserBookId == id && ub.ApplicationUserId == currentUserId);
+
+            if (userBook == null || userBook.Book == null)
+            {
+                return NotFound();
+            }
+
+            return View(userBook);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            string currentUserId = _userManager.GetUserId(User);
+
+            var userbook = _context.UserBooks
+                .FirstOrDefault(x => x.UserBookId == id && x.ApplicationUserId == currentUserId);
+
+            if (userbook != null)
+            {
+                _context.UserBooks.Remove(userbook);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Index", "Shelf");
+        }
     }
 }
