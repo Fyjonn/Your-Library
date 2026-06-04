@@ -1,40 +1,40 @@
-﻿/* ==========================================================================
-   KONTENER GŁÓWNY I KONTROLKI WYŚWIETLANIA (Wyrównanie i Szerokość)
-   ========================================================================== */
+﻿
 #profile-view-mode, #profile-edit-mode {
-    color: #ffffff !important;
-    width: 100% !important; /* Wymuszenie pełnej szerokości kontenera kolumny */
+    color: #fbf5e6 !important;
+    width: 100% !important; 
+}
+
+.profile-header h2 {
+    color: #fbf5e6 !important;
 }
 
 .library-profile-container {
     width: 100% !important;
-    max-width: 1200px; /* Dopasuj do max szerokości reszty Twojej strony */
+    max-width: 1200px;
     margin: 0 auto !important;
     padding: 0 15px !important;
 }
 
-/* ==========================================================================
-   BLOKI I KARTY (ZMIANA: Idealnie równe beżowe karty)
-   ========================================================================== */
+
 .profile-card, .dashboard-section-card {
-    background-color: rgba(245, 240, 230, 0.95) !important; /* Ciepły, elegancki beż */
+    background-color: rgba(245, 240, 230, 0.95) !important; 
     border: 1px solid rgba(212, 204, 185, 1) !important;
     border-radius: 12px !important;
     backdrop-filter: blur(5px);
     padding: 24px !important;
-    width: 100% !important; /* Każda karta dostosowuje się do szerokości kolumny bootstrapa */
+    width: 100% !important; 
     box-sizing: border-box !important;
 }
 
 .dashboard-section-card {
     cursor: pointer;
-    margin-bottom: 24px !important; /* Równe odstępy w pionie między kartami */
+    margin-bottom: 24px !important; 
 }
 
-/* Nagłówki, ikony i teksty wewnątrz beżowych kart */
+
 .profile-username, .edit-mode-title, .section-card-header h5 {
     font-weight: 700 !important;
-    color: #1e3d33 !important; /* Ciemnozielony tekst */
+    color: #1e3d33 !important;
     margin-bottom: 0;
 }
 
@@ -51,7 +51,7 @@
         margin-right: 8px;
     }
 
-/* Odnośniki "View Shelf" / "View All" */
+
 .view-all-link, .view-all-link i {
     color: #2d5a4c !important;
     font-weight: 600 !important;
@@ -62,9 +62,7 @@
         text-decoration: underline !important;
     }
 
-/* ==========================================================================
-   ELEMENTY LISTY (Wiersze wewnątrz kart)
-   ========================================================================== */
+
 .dashboard-list {
     padding-left: 0 !important;
     margin-top: 15px !important;
@@ -104,9 +102,7 @@
     font-size: 0.85rem !important;
 }
 
-/* ==========================================================================
-   TRYB EDYCJI, INPUTY I FORMULARZE
-   ========================================================================== */
+
 .custom-label-muted, .form-label {
     color: #1e3d33 !important;
     font-weight: 600 !important;
@@ -131,7 +127,6 @@
     margin: 25px 0 !important;
 }
 
-/* Siatka wyboru emoji (Avatar picker) */
 .avatar-picker-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
@@ -164,9 +159,7 @@
     transform: scale(1.1);
 }
 
-/* ==========================================================================
-   PRZYCISKI I EMOTIKONY
-   ========================================================================== */
+
 .avatar-container {
     width: 90px;
     height: 90px;
@@ -198,28 +191,35 @@
     }
 
 .btn-library-green {
-    background-color: #28a745 !important;
+    background-color: #1e3d33 !important;
     color: #ffffff !important;
     border: none !important;
     font-weight: 700 !important;
+    padding: 10px 20px !important;
+    border-radius: 6px !important;
+    transition: background-color 0.2s ease;
 }
+
+
+    .btn-library-green:hover {
+        background-color: #142a23 !important;
+    }
 
 .btn-library-cancel {
     background-color: transparent !important;
-    color: #ff6b6b !important;
-    border: 1px solid #ff6b6b !important;
-    font-weight: 600 !important;
+    color: #23443c !important;
+    border: 1px solid #23443c !important;
+    font-family: 'Georgia', serif;
+    transition: all 0.2s ease;
 }
 
     .btn-library-cancel:hover {
-        background-color: #ff6b6b !important;
-        color: #ffffff !important;
+        background-color: #e8dfca !important;
+        color: #23443c !important;
+        border-color: #bba16c !important;
     }
 
-/* ==========================================================================
-   STRICT SEKCJA UKRYWANIA DLA EDYCJI PROFILU
-   ========================================================================== */
-/* Ukrywa cały wiersz zawierający dolne kafelki, kiedy formularz edycji jest otwarty */
+
 #profile-edit-mode:not([style*="display: none"]) ~ #dashboard-widgets-row {
     display: none !important;
 }

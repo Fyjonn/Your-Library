@@ -1,4 +1,3 @@
-/* Paleta kolorów aplikacji */
 :root {
     --primary-green: #23443c;
     --accent-gold: #bba16c;
@@ -8,9 +7,8 @@
     --text-muted: #6e7a75;
 }
 
-/* Nagłówek i opisy tekstowe */
 .custom-shelf-title {
-    color: var(--accent-gold) !important;
+    color: var(--cream-bg) !important;
     font-family: 'Georgia', serif;
 }
 
@@ -21,10 +19,9 @@
 }
 
 .custom-error-msg {
-    color: #b13434 !important; /* Akcent błędu w tonacji retro */
+    color: #b13434 !important; 
 }
 
-/* Przycisk rozwijany (Dropdown) */
 .btn-custom-dropdown {
     background-color: var(--primary-green) !important;
     color: var(--cream-bg) !important;
@@ -40,7 +37,6 @@
         border-color: #fff;
     }
 
-/* Menu rozwijane */
 .custom-dropdown-menu {
     background-color: var(--cream-bg);
     border: 1px solid var(--accent-gold);
@@ -61,7 +57,6 @@
             color: var(--cream-bg) !important;
         }
 
-/* Kontenery i paski wyszukiwania */
 .custom-search-group {
     border: 1px solid var(--accent-gold);
     border-radius: 4px;
@@ -84,7 +79,6 @@
         box-shadow: none;
     }
 
-/* Kontrolki Radio */
 .custom-radio-group {
     color: var(--accent-gold);
 }
@@ -94,7 +88,6 @@
         border-color: var(--accent-gold);
     }
 
-/* Tabele i widok książek */
 .custom-table-container {
     border: 1px solid var(--accent-gold);
     background-color: var(--cream-bg);
@@ -116,7 +109,6 @@
         padding: 12px;
     }
 
-/* Wiersze klikalne (Cały wiersz jako odnośnik) */
 .book-clickable-row {
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -127,7 +119,6 @@
     border-bottom: 1px solid #e1d8bf;
 }
 
-/* Kolor tytułu książki (Zablokowana zmiana barwy przy hover) */
 .custom-book-title-cell {
     color: var(--primary-green) !important;
 }
@@ -136,11 +127,9 @@
     color: var(--text-muted) !important;
 }
 
-/* Podświetlenie całego wiersza przy hover (Tekst pozostaje bez zmian) */
 .custom-library-table tbody tr:hover {
     background-color: #f3ebd4 !important;
 }
-/* Pływający przycisk akcji (FAB) */
 .btn-fab {
     position: fixed;
     bottom: 30px;
