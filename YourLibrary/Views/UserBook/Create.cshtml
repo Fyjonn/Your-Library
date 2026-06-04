@@ -37,6 +37,11 @@
                 <!-- Dane książki (uzupełniane automatycznie przez API) -->
                 <h5 class="custom-label-muted border-bottom pb-2 mb-3"><i class="bi bi-book me-2"></i>Your book</h5>
                 <div class="mb-3">
+                <div class="text-center mb-4 d-none" id="coverPreviewContainer">
+                    <img id="bookCoverPreview" src="" alt="Book Cover Preview" class="img-thumbnail shadow-sm rounded" style="max-height: 180px; border: 2px solid var(--accent-gold);" />
+                </div>
+
+                <div class="form-group mb-3">
                     <label asp-for="Book.Title" class="form-label custom-label-muted">Title</label>
                     <input asp-for="Book.Title" id="bookTitle" class="form-control custom-form-control" style="opacity: 0.85;" required readonly />
                 </div>
@@ -45,13 +50,31 @@
                     <input asp-for="Book.Author" id="bookAuthor" class="form-control custom-form-control" style="opacity: 0.85;" required readonly />
                 </div>
 
+                <div class="form-group mb-3">
+                    <label class="control-label custom-label-muted">Genre</label>
+                    <input asp-for="Book.Genre" id="bookGenre" class="form-control custom-input-dark" />
+                    <span asp-validation-for="Book.Genre" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="control-label custom-label-muted">Age Rating</label>
+                    <input asp-for="Book.AgeRating" id="bookAgeRating" class="form-control custom-input-dark" />
+                    <span asp-validation-for="Book.AgeRating" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="control-label custom-label-muted">Description</label>
+                    <textarea asp-for="Book.Description" id="bookDescription" class="form-control custom-input-dark" rows="4"></textarea>
+                    <span asp-validation-for="Book.Description" class="text-danger"></span>
+                </div>
+
                 <!-- Parametry półki użytkownika -->
                 <h5 class="custom-label-muted border-bottom pb-2 mt-4 mb-3"><i class="bi bi-layers me-2"></i>My shelf</h5>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label asp-for="Media" class="form-label custom-label-muted">Media format</label>
-                        <select asp-for="Media" class="form-select custom-form-control" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()">
+                        <select asp-for="Media" id="mediaSelect" class="form-select custom-form-control" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()">
                             <option value="">-- Select format --</option>
                         </select>
                         <span asp-validation-for="Media" class="text-danger small"></span>
@@ -67,7 +90,7 @@
                 </div>
 
                 <!-- Statusy (Checkboxy retro w ujednoliconym panelu) -->
-                <div class="mb-3 p-3 rounded custom-checkbox-group" style="background-color: #f5edd6; border: 1px solid var(--accent-gold);">
+                <div class="mb-3 p-3 rounded custom-checkbox-group d-none" id="optionsCheckboxGroup" style="background-color: #f5edd6; border: 1px solid var(--accent-gold);">
                     <label class="form-label d-block custom-label-muted mb-2"><i class="bi bi-sliders me-1"></i> Options</label>
 
                     <div class="form-check custom-checkbox mb-2">
@@ -87,9 +110,9 @@
                 </div>
 
                 <!-- Miejsce przechowywania i notatki -->
-                <div class="mb-3">
+                <div class="mb-3 d-none" id="locationGroup">
                     <label asp-for="Location" class="form-label custom-label-muted">Where do you keep your book?</label>
-                    <input asp-for="Location" class="form-control custom-form-control" placeholder="e.g. Bedroom, desk, main shelf..." />
+                    <input asp-for="Location" id="bookLocation" class="form-control custom-form-control" placeholder="e.g. Bedroom, desk, main shelf..." />
                 </div>
                 <div class="mb-4">
                     <label asp-for="Notes" class="form-label custom-label-muted">Your notes</label>
@@ -116,62 +139,122 @@
     }
 
     <script>
-        document.getElementById('btnSearchApi').addEventListener('click', function () {
-            const originalQuery = document.getElementById('apiSearchQuery').value;
+        let debounceTimer;
+
+        document.getElementById('apiSearchQuery').addEventListener('input', function () {
+            const originalQuery = this.value.trim();
             const resultsDiv = document.getElementById('apiResults');
 
-            if (!originalQuery) return;
+            if (!originalQuery) {
+                resultsDiv.innerHTML = '';
+                resultsDiv.classList.add('d-none');
+                return;
+            }
 
-            resultsDiv.innerHTML = '<div class="list-group-item text-muted bg-transparent border-0 italic-loading">🔍 Searching in Google Books...</div>';
-            resultsDiv.classList.remove('d-none');
+            clearTimeout(debounceTimer);
 
-            // usuwamy polskie zanki do zapytania
-            const cleanQuery = originalQuery.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            debounceTimer = setTimeout(() => {
+                resultsDiv.innerHTML = '<div class="list-group-item text-muted bg-transparent border-0 italic-loading">🔍 Searching in Google Books...</div>';
+                resultsDiv.classList.remove('d-none');
 
-            // wysylamy zapytanie
-            fetch(`/api/books/search?query=${encodeURIComponent(cleanQuery)}`)
-                .then(response => response.json())
-                .then(data => {
-                    resultsDiv.innerHTML = '';
+                fetch(`/api/books/search?query=${encodeURIComponent(originalQuery)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultsDiv.innerHTML = '';
 
-                    if (!data.items || data.items.length === 0) {
-                        resultsDiv.innerHTML = '<div class="list-group-item text-danger bg-transparent border-0">No book found.</div>';
-                        return;
-                    }
+                        if (!data.items || data.items.length === 0) {
+                            resultsDiv.innerHTML = '<div class="list-group-item text-danger bg-transparent border-0">No book found.</div>';
+                            return;
+                        }
 
-                    data.items.forEach(item => {
-                        const title = item.volumeInfo.title || "No title";
-                        const authors = item.volumeInfo.authors ? item.volumeInfo.authors.join(', ') : "Unknown author";
+                        data.items.forEach(item => {
+                            const title = item.volumeInfo.title || "No title";
+                            const authors = item.volumeInfo.authors ? item.volumeInfo.authors.join(', ') : "Unknown author";
+                            const description = item.volumeInfo.description || "";
+                            const genre = item.volumeInfo.categories ? item.volumeInfo.categories.join(', ') : "";
+                            const ageRating = item.volumeInfo.maturityRating === "MATURE" ? "18+" : "General";
 
-                        const button = document.createElement('button');
-                        button.type = 'button';
-                        // Dodanie klas dopasowujących elementy listy do klimatu ciemnozielonego i beżu
-                        button.className = 'list-group-item list-group-item-action text-start api-result-item';
-                        button.innerHTML = `<strong>${title}</strong> <br><small class="text-muted-custom">${authors}</small>`;
+                            const imageUrl = item.volumeInfo.imageLinks ? item.volumeInfo.imageLinks.thumbnail : "https://via.placeholder.com/40x60?text=No+Cover";
 
-                        button.addEventListener('click', function () {
-                            document.getElementById('bookTitle').value = title;
-                            document.getElementById('bookAuthor').value = authors;
+                            const button = document.createElement('button');
+                            button.type = 'button';
+                            button.className = 'list-group-item list-group-item-action text-start api-result-item d-flex align-items-center gap-3 py-2';
 
-                            resultsDiv.classList.add('d-none');
-                            resultsDiv.innerHTML = '';
+                            button.innerHTML = `
+                                <img src="${imageUrl}" alt="cover" class="rounded shadow-sm" style="width: 40px; height: 60px; object-fit: cover; flex-shrink: 0;" />
+                                <div class="flex-grow-1">
+                                    <strong class="d-block text-dark">${title}</strong>
+                                    <small class="text-muted-custom">${authors}</small>
+                                </div>
+                            `;
+
+                            button.addEventListener('click', function () {
+                                document.getElementById('bookTitle').value = title;
+                                document.getElementById('bookAuthor').value = authors;
+                                if(document.getElementById('bookDescription')) document.getElementById('bookDescription').value = description;
+                                if(document.getElementById('bookGenre')) document.getElementById('bookGenre').value = genre;
+                                if(document.getElementById('bookAgeRating')) document.getElementById('bookAgeRating').value = ageRating;
+                                if(document.getElementById('bookImageUrl')) document.getElementById('bookImageUrl').value = imageUrl;
+
+                                const previewImg = document.getElementById('bookCoverPreview');
+                                const previewContainer = document.getElementById('coverPreviewContainer');
+                                if (previewImg && previewContainer) {
+                                    previewImg.src = imageUrl;
+                                    previewContainer.classList.remove('d-none');
+                                }
+
+                                resultsDiv.classList.add('d-none');
+                                resultsDiv.innerHTML = '';
+                                document.getElementById('apiSearchQuery').value = '';
+                            });
+
+                            resultsDiv.appendChild(button);
                         });
-
-                        resultsDiv.appendChild(button);
+                    })
+                    .catch(error => {
+                        resultsDiv.innerHTML = '<div class="list-group-item text-danger bg-transparent border-0">Error while downloading data.</div>';
+                        console.error(error);
                     });
-                })
-                .catch(error => {
-                    resultsDiv.innerHTML = '<div class="list-group-item text-danger bg-transparent border-0">Error while downloading data.</div>';
-                    console.error(error);
-                });
+            }, 400);
         });
 
-        // Ukrywanie wyników wyszukiwania po kliknięciu poza obszar listy
         document.addEventListener('click', function (e) {
             const resultsDiv = document.getElementById('apiResults');
-            if (e.target.id !== 'apiSearchQuery' && e.target.id !== 'btnSearchApi') {
+            if (e.target.id !== 'apiSearchQuery') {
                 resultsDiv.classList.add('d-none');
             }
         });
+        const mediaSelect = document.getElementById('mediaSelect');
+        const optionsGroup = document.getElementById('optionsCheckboxGroup');
+        const locationGroup = document.getElementById('locationGroup');
+
+        function toggleOptionsVisibility() {
+            const selectedText = mediaSelect.options[mediaSelect.selectedIndex].text.toLowerCase();
+
+
+            if (selectedText.includes('print')) {
+                optionsGroup.classList.remove('d-none');
+                locationGroup.classList.remove('d-none');
+            } else {
+                optionsGroup.classList.add('d-none');
+                locationGroup.classList.add('d-none');
+
+                document.getElementById('Bookmark').checked = false;
+                document.getElementById('IsOwned').checked = false;
+                document.getElementById('IsBorrowed').checked = false;
+
+                const locationInput = document.getElementById('bookLocation');
+                if (locationInput) {
+                    locationInput.value = ''; // Czyszczenie wpisanej lokalizacji
+                }
+            }
+        }
+
+        mediaSelect.addEventListener('change', toggleOptionsVisibility);
+
+        if (mediaSelect.value) {
+            toggleOptionsVisibility();
+        }
     </script>
 }
+

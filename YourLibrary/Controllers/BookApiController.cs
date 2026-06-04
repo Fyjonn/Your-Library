@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Globalization;
+using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -23,10 +27,15 @@ namespace YourLibrary.Controllers
         {
             if (string.IsNullOrWhiteSpace(query))
                 return BadRequest("Query cannot be empty");
+            // bez polskich znakow
+            string cleanQuery = RemoveDiacritics(query.Trim());
+
+            // tytul lub autor
+            string smartQuery = $"{cleanQuery} OR inauthor:{cleanQuery} OR intitle:{cleanQuery}";
 
             string apiKey = _configuration["GoogleBooksApi:ApiKey"];
 
-            string url = $"https://www.googleapis.com/books/v1/volumes?q={Uri.EscapeDataString(query)}&key={apiKey}&maxResults=5";
+            string url = $"https://www.googleapis.com/books/v1/volumes?q={Uri.EscapeDataString(smartQuery)}&key={apiKey}&maxResults=8";
 
             var client = _httpClientFactory.CreateClient();
             var response = client.GetAsync(url).Result;
@@ -36,8 +45,24 @@ namespace YourLibrary.Controllers
 
             var content = response.Content.ReadAsStringAsync().Result;
 
-            // json
             return Content(content, "application/json");
+        }
+
+        private string RemoveDiacritics(string text)
+        {
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
     }
 }
