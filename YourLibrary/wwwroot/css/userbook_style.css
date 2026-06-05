@@ -149,3 +149,32 @@
     color: black;
     background-color: var(--cream-bg) !important;
 }
+
+.btn-custom-delete {
+    background-color: #8c2d2d !important;
+    color: var(--cream-bg) !important;
+    border: 1px solid var(--accent-gold) !important;
+    font-family: 'Georgia', serif;
+    transition: all 0.2s ease;
+}
+
+    .btn-custom-delete:hover {
+        background-color: #6b2020 !important;
+        color: #fff !important;
+        border-color: #fff !important;
+    }
+
+.custom-switches-box {
+    background-color: var(--table-header-bg) !important;
+    border-color: var(--accent-gold) !important;
+}
+
+.custom-userbook-header h4,
+.custom-label-muted {
+    font-family: 'Georgia', serif !important;
+}
+
+.custom-checkbox .form-check-input:focus {
+    border-color: var(--primary-green) !important;
+    box-shadow: 0 0 0 0.25rem rgba(35, 68, 60, 0.15) !important;
+}

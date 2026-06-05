@@ -1,41 +1,61 @@
-
+/* Kontener i Ogólne czcionki */
 .friendship-page-container {
     font-family: 'Georgia', serif;
 }
 
+    /* Tytuł strony na środku, beżowy, bez ikon */
     .friendship-page-container .page-main-title {
         color: #f7f2e4 !important;
-        text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+        text-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
         font-size: 2.8rem;
+        font-weight: bold;
+        margin-bottom: 0;
     }
 
-.friend-search-card {
+/* Stylizacja kart bocznych / głównych sekcji */
+.friend-search-card,
+.invitations-section,
+.friends-list-section,
+.borrow-section,
+.rent-section {
     background-color: #f7f2e4 !important;
     border: 1px solid #cbdcd4 !important;
     border-radius: 14px;
 }
 
-    .friend-search-card .search-headline {
-        color: #1e3630 !important;
+/* Nagłówki sekcji */
+.search-headline,
+.section-headline,
+.list-headline {
+    color: #1e3630 !important;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* Wyszukiwarka wewnątrz listy przyjaciół */
+.list-search-box {
+    max-width: 280px;
+}
+
+/* Pola wejściowe / inputy */
+.search-icon-box {
+    background-color: #ffffff !important;
+    border-color: #cbdcd4 !important;
+    color: #1e3630 !important;
+}
+
+.search-input {
+    border-color: #cbdcd4 !important;
+    background-color: #ffffff !important;
+    color: #1e3630 !important;
+}
+
+    .search-input:focus {
+        box-shadow: 0 0 0 0.25rem rgba(30, 54, 48, 0.15) !important;
+        border-color: #1e3630 !important;
     }
 
-    .friend-search-card .search-icon-box {
-        background-color: #ffffff !important;
-        border-color: #f7f2e4 !important;
-        color: #1e3630 !important;
-    }
-
-    .friend-search-card .search-input {
-        border-color: #cbdcd4 !important;
-        background-color: #ffffff !important;
-        color: #1e3630 !important;
-    }
-
-        .friend-search-card .search-input:focus {
-            box-shadow: 0 0 0 0.25rem rgba(30, 54, 48, 0.15) !important;
-            border-color: #1e3630 !important;
-        }
-
+/* Przycisk akcji biblioteki */
 .btn-library-submit {
     background-color: #1e3630 !important;
     color: #fcfaf2 !important;
@@ -46,70 +66,87 @@
     .btn-library-submit:hover {
         background-color: #2d4a43 !important;
         color: #ffffff !important;
-        transform: translateY(-1px);
     }
 
-
-.friendship-page-container .section-headline,
-.friendship-page-container .section-subtitle {
-    color: #fcfaf2 !important;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-}
-
-.invitations-section {
-    background-color: #f7f2e4 !important;
-    border: 1px solid #cbdcd4 !important;
-    border-radius: 16px;
-}
-
-    .invitations-section .section-headline {
-        color: #1e3630 !important;
-        text-shadow: none !important;
-    }
-
-.no-data-text {
-    color: #4f6e65 !important;
-    font-style: italic;
-}
-
-.invitation-card, .friend-card {
+/* Elementy wewnętrzne rzędów / listy */
+.custom-item-row,
+.invitation-card,
+.friend-card {
     background-color: #f4f8f6 !important;
     border: 1px solid #d4e2dc !important;
-    border-radius: 12px;
-    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease;
+    border-radius: 10px;
 }
 
-    .invitation-card:hover, .friend-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
-        border-color: #bfa15f !important;
+/* ==== PRZESUWNIK (SUWAK) DLA LISTY PRZYJACIÓŁ ==== */
+/* Średnia wysokość jednego elementu to ok. 76px. 5 elementów = ~380px */
+.friends-scroll-viewport {
+    max-height: 382px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Ograniczony kontener dla zaproszeń obok wyszukiwarki */
+.scroll-content-small {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+    /* Stylizacja suwaka (Retro Vintage Scrollbar) */
+    .friends-scroll-viewport::-webkit-scrollbar,
+    .scroll-content-small::-webkit-scrollbar {
+        width: 7px;
     }
 
+    .friends-scroll-viewport::-webkit-scrollbar-track,
+    .scroll-content-small::-webkit-scrollbar-track {
+        background: #eaedf0;
+        border-radius: 10px;
+    }
+
+    .friends-scroll-viewport::-webkit-scrollbar-thumb,
+    .scroll-content-small::-webkit-scrollbar-thumb {
+        background-color: #1e3630;
+        border-radius: 10px;
+    }
+
+/* Awatary użytkowników */
 .user-avatar {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     background-color: #1e3630 !important;
     color: #fcfaf2 !important;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
 .friend-avatar {
     background-color: #2d4a43 !important;
 }
 
+.mini-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+}
+
+/* Stany puste i teksty pomocnicze */
+.no-data-text {
+    color: #4f6e65 !important;
+    font-style: italic;
+}
+
 .empty-state-box {
-    color: #fcfaf2 !important;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    color: #4f6e65 !important;
+    text-align: center;
+    padding: 20px 0;
 }
 
 .empty-icon {
-    color: #bfa15f !important; 
+    color: #bfa15f !important;
 }
 
 .empty-text {
