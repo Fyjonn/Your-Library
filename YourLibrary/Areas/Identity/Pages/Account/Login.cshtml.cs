@@ -15,9 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using YourLibrary.Models;
-using AspNetCoreGeneratedDocument;
 
-using YourLibrary.Models;
 
 namespace YourLibrary.Areas.Identity.Pages.Account
 {
