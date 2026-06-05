@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization; 
 using YourLibrary.Models;
+using YourLibrary.Data;
+using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 
 namespace YourLibrary.Controllers
 {
@@ -12,12 +15,14 @@ namespace YourLibrary.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IWebHostEnvironment _environment;
+        private readonly ApplicationDbContext _context;
 
-        public ProfileController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IWebHostEnvironment environment)
+        public ProfileController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IWebHostEnvironment environment, ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _environment = environment;
+            _context = context;
         }
 
         [HttpGet]
@@ -30,6 +35,9 @@ namespace YourLibrary.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            var latestFriends = await _context.Friendships.Include(x => x.Requester).Include(x => x.Receiver).Where(x =>
+            x.FriendStatus == EnumFriendStatus.Accepted && (x.RequesterId == user.Id || x.ReceiverId == user.Id)).OrderByDescending(x => x.CreatedAt).Take(3).ToListAsync();
+
             var model = new ProfileViewModel
             {
                 DisplayName = user.DisplayName ?? "Użytkownik",
@@ -37,7 +45,18 @@ namespace YourLibrary.Controllers
                 Avatar = string.IsNullOrEmpty(user.Avatar) ? "🌿" : user.Avatar,
                 AvatarImagePath = user.AvatarImagePath,
                 LatestBooks = new List<BookViewModel>(),
-                LatestFriends = new List<FriendViewModel>()
+                LatestFriends = latestFriends.Select(x =>
+                {
+                    var friend = x.RequesterId == user.Id ? x.Receiver : x.Requester;
+                    return new FriendViewModel
+                    {
+                        Name = friend.UserName,
+                        LastActive = $"Friends since: {x.CreatedAt:dd:MM:yyyy}",
+                        Avatar = friend.Avatar,
+                        AvatarImagePath = friend.AvatarImagePath
+                    };
+                })
+                .ToList()
             };
 
          

@@ -1,4 +1,6 @@
-﻿@{
+﻿@model YourLibrary.Models.FriendshipPageViewModel
+
+@{
     ViewData["Title"] = "Friends";
 }
 
@@ -14,10 +16,22 @@
         <h1 class="page-main-title">Your Friends</h1>
     </div>
 
+    <!--
+    <p>Received: @Model.ReceivedInvitations.Count</p>
+    <p>Sent: @Model.SentInvitations.Count</p>
+    <p>Friends: @Model.Friends.Count</p>
+    -->
+
     <div class="row g-4 mb-4">
         <div class="col-md-6">
             <div class="friend-search-card p-4 shadow h-100 d-flex flex-column justify-content-center">
                 <h6 class="fw-bold search-headline mb-3">Add new friend</h6>
+
+                @if(TempData["FriendError"] != null)
+                {
+                    <div id="friendErrorAlert" class="alert alert-danger alert-dismissible fade show">@TempData["FriendError"]</div>
+                }
+
                 <form asp-action="SendInvitation" method="post" class="w-100">
                     <div class="input-group">
                         <span class="input-group-text search-icon-box"><i class="bi bi-search"></i></span>
@@ -33,38 +47,88 @@
         <div class="col-md-6">
             <div class="invitations-section p-4 shadow h-100">
                 <h6 class="fw-bold section-headline mb-3">Waiting Invitations</h6>
-                <div class="scroll-content-small">
-                    <div class="card invitation-card mb-2 border-0 shadow-sm">
-                        <div class="card-body d-flex align-items-center justify-content-between p-2">
-                            <div class="d-flex align-items-center">
-                                <div class="user-avatar mini-avatar me-2">A</div>
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark small">AnnaKowalska</h6>
-                                    <small class="text-muted" style="font-size: 0.75rem;">Chce dołączyć do znajomych</small>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <button type="button" class="btn btn-success btn-sm py-0 px-2 rounded-pill" style="font-size: 0.8rem;">Tak</button>
-                                <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 rounded-pill" style="font-size: 0.8rem;">Nie</button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="card invitation-card mb-2 border-0 shadow-sm">
-                        <div class="card-body d-flex align-items-center justify-content-between p-2">
-                            <div class="d-flex align-items-center">
-                                <div class="user-avatar mini-avatar me-2">T</div>
+                <div class="scroll-content-small">
+                    <!--tu mozesz to nizej zedytowac stylistycznie Emilia-->
+                    @foreach (var invitation in Model.SentInvitations)
+                    {
+                        <div class="card invitation-card mb-2 border-0 shadow-sm">
+                            <div class="card-body d-flex align-items-center justify-content-between p-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar mini-avatar me-2">
+                                        @invitation.Receiver.UserName.Substring(0, 1).ToUpper()
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <h6 class="fw-bold mb-0 text-dark small">Tomasz90</h6>
-                                    <small class="text-muted" style="font-size: 0.75rem;">Chce dołączyć do znajomych</small>
+                                    <h6 class="fw-bold mb-0 text-dark small">
+                                        @invitation.Receiver.UserName
+                                    </h6>
+
+                                    <small class="text-muted" style="font-size: 0.75rem;">Invitation sent</small>
+
                                 </div>
                             </div>
+
                             <div class="d-flex gap-1">
-                                <button type="button" class="btn btn-success btn-sm py-0 px-2 rounded-pill" style="font-size: 0.8rem;">Tak</button>
-                                <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 rounded-pill" style="font-size: 0.8rem;">Nie</button>
+                                <span class="badge bg-secondary rounded-pill">Pending</span>
+
+                                <form asp-action="CancelInvitation" method="post" class="d-inline">
+
+                                    <input type="hidden" name="friendshipId" value="@invitation.FriendshipId" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">Cancel</button>
+
+                                </form>
                             </div>
                         </div>
-                    </div>
+                    }
+
+                    @foreach (var invitation in Model.ReceivedInvitations)
+                    {
+                        <div class="card invitation-card mb-2 border-0 shadow-sm">
+                            <div class="card-body d-flex align-items-center justify-content-between p-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar mini-avatar me-2">
+                                        @invitation.Receiver.UserName.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-dark small">@invitation.Requester.UserName</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;">Wants to be your friend</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <form asp-action="AcceptInvitation" method="post">
+                                        <input type="hidden" name="friendshipId" value="@invitation.FriendshipId" />
+                                        <button type="submit" class="btn btn-success btn-sm py-0 px-2 rounded-pill" style="font-size: 0.8rem;">Yes</button>
+                                    </form>
+
+                                    <form asp-action="RejectInvitation" method="post">
+                                        <input type="hidden" name="friendshipId" value="@invitation.FriendshipId" />
+                                        <button type="submit" class="btn btn-outline-danger btn-sm py-0 px-2 rounded-pill" style="font-size: 0.8rem;">No</button>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    
+                    @* <div class="card invitation-card mb-2 border-0 shadow-sm"> *@
+                    @*     <div class="card-body d-flex align-items-center justify-content-between p-2"> *@
+                    @*         <div class="d-flex align-items-center"> *@
+                    @*             <div class="user-avatar mini-avatar me-2">T</div> *@
+                    @*             <div> *@
+                    @*                 <h6 class="fw-bold mb-0 text-dark small">Tomasz90</h6> *@
+                    @*                 <small class="text-muted" style="font-size: 0.75rem;">Chce dołączyć do znajomych</small> *@
+                    @*             </div> *@
+                    @*         </div> *@
+                    @*         <div class="d-flex gap-1"> *@
+                    @*             <button type="button" class="btn btn-success btn-sm py-0 px-2 rounded-pill" style="font-size: 0.8rem;">Tak</button> *@
+                    @*             <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 rounded-pill" style="font-size: 0.8rem;">Nie</button> *@
+                    @*         </div> *@
+                    @*     </div> *@
+                    @* </div> *@
+                    
                 </div>
             </div>
         </div>
@@ -72,7 +136,7 @@
 
     <div class="friends-list-section p-4 mb-4 shadow">
         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 gap-2">
-            <h5 class="fw-bold list-headline mb-0">List of friends (6)</h5>
+            <h5 class="fw-bold list-headline mb-0">List of friends (@Model.Friends.Count)</h5>
             <div class="input-group list-search-box">
                 <span class="input-group-text search-icon-box"><i class="bi bi-filter"></i></span>
                 <input type="text" id="inlineFriendSearch" class="form-control search-input" placeholder="Search friend from list..." onkeyup="filterFriendsList()" />
@@ -81,107 +145,132 @@
 
         <div class="friends-scroll-viewport">
             <div class="row row-cols-1 g-2" id="friendsContainer">
-                <div class="col friend-list-item-row" data-username="bookworm99">
-                    <div class="card friend-card border-0 shadow-sm">
-                        <div class="card-body d-flex align-items-center justify-content-between p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="user-avatar friend-avatar text-white me-3">B</div>
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark">BookWorm99</h6>
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="BookWorm99">
-                                <i class="bi bi-person-x-fill px-1"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="col friend-list-item-row" data-username="czytelnik_marian">
-                    <div class="card friend-card border-0 shadow-sm">
-                        <div class="card-body d-flex align-items-center justify-content-between p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="user-avatar friend-avatar text-white me-3">C</div>
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark">czytelnik_marian</h6>
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="czytelnik_marian">
-                                <i class="bi bi-person-x-fill px-1"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                @foreach(var friendship in Model.Friends)
+                {
+                    var friend = friendship.RequesterId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                    ? friendship.Receiver : friendship.Requester;
 
-                <div class="col friend-list-item-row" data-username="eliza_reads">
-                    <div class="card friend-card border-0 shadow-sm">
-                        <div class="card-body d-flex align-items-center justify-content-between p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="user-avatar friend-avatar text-white me-3">E</div>
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark">eliza_reads</h6>
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span>
+                    <div class="col friend-list-item-row" data-username="@friend.UserName.ToLower()">
+                        <div class="card friend-card border-0 shadow-sm">
+                            <div class="card-body d-flex align-items-center justify-content-between p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar friend-avatar text-white me-3">@friend.UserName.Substring(0,1).ToUpper()</div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-dark">@friend.UserName</h6>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Friend</span>
+                                    </div>
                                 </div>
+                                <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="@friend.UserName" data-friend-id="@friendship.FriendshipId">
+                                    <i class="bi bi-person-x-fill px-1"></i>
+                                </button>
                             </div>
-                            <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="eliza_reads">
-                                <i class="bi bi-person-x-fill px-1"></i>
-                            </button>
                         </div>
                     </div>
-                </div>
 
-                <div class="col friend-list-item-row" data-username="jan_ksiazka">
-                    <div class="card friend-card border-0 shadow-sm">
-                        <div class="card-body d-flex align-items-center justify-content-between p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="user-avatar friend-avatar text-white me-3">J</div>
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark">jan_ksiazka</h6>
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="jan_ksiazka">
-                                <i class="bi bi-person-x-fill px-1"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                }
 
-                <div class="col friend-list-item-row" data-username="kasandra">
-                    <div class="card friend-card border-0 shadow-sm">
-                        <div class="card-body d-flex align-items-center justify-content-between p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="user-avatar friend-avatar text-white me-3">K</div>
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark">Kasandra</h6>
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="Kasandra">
-                                <i class="bi bi-person-x-fill px-1"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                @* <div class="col friend-list-item-row" data-username="bookworm99"> *@
+                @*     <div class="card friend-card border-0 shadow-sm"> *@
+                @*         <div class="card-body d-flex align-items-center justify-content-between p-3"> *@
+                @*             <div class="d-flex align-items-center"> *@
+                @*                 <div class="user-avatar friend-avatar text-white me-3">B</div> *@
+                @*                 <div> *@
+                @*                     <h6 class="fw-bold mb-0 text-dark">BookWorm99</h6> *@
+                @*                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span> *@
+                @*                 </div> *@
+                @*             </div> *@
+                @*             <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="BookWorm99"> *@
+                @*                 <i class="bi bi-person-x-fill px-1"></i> *@
+                @*             </button> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
 
-                <div class="col friend-list-item-row" data-username="vintage_lover">
-                    <div class="card friend-card border-0 shadow-sm">
-                        <div class="card-body d-flex align-items-center justify-content-between p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="user-avatar friend-avatar text-white me-3">V</div>
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark">vintage_lover</h6>
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="vintage_lover">
-                                <i class="bi bi-person-x-fill px-1"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                @* <div class="col friend-list-item-row" data-username="czytelnik_marian"> *@
+                @*     <div class="card friend-card border-0 shadow-sm"> *@
+                @*         <div class="card-body d-flex align-items-center justify-content-between p-3"> *@
+                @*             <div class="d-flex align-items-center"> *@
+                @*                 <div class="user-avatar friend-avatar text-white me-3">C</div> *@
+                @*                 <div> *@
+                @*                     <h6 class="fw-bold mb-0 text-dark">czytelnik_marian</h6> *@
+                @*                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span> *@
+                @*                 </div> *@
+                @*             </div> *@
+                @*             <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="czytelnik_marian"> *@
+                @*                 <i class="bi bi-person-x-fill px-1"></i> *@
+                @*             </button> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
+
+                @* <div class="col friend-list-item-row" data-username="eliza_reads"> *@
+                @*     <div class="card friend-card border-0 shadow-sm"> *@
+                @*         <div class="card-body d-flex align-items-center justify-content-between p-3"> *@
+                @*             <div class="d-flex align-items-center"> *@
+                @*                 <div class="user-avatar friend-avatar text-white me-3">E</div> *@
+                @*                 <div> *@
+                @*                     <h6 class="fw-bold mb-0 text-dark">eliza_reads</h6> *@
+                @*                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span> *@
+                @*                 </div> *@
+                @*             </div> *@
+                @*             <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="eliza_reads"> *@
+                @*                 <i class="bi bi-person-x-fill px-1"></i> *@
+                @*             </button> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
+
+                @* <div class="col friend-list-item-row" data-username="jan_ksiazka"> *@
+                @*     <div class="card friend-card border-0 shadow-sm"> *@
+                @*         <div class="card-body d-flex align-items-center justify-content-between p-3"> *@
+                @*             <div class="d-flex align-items-center"> *@
+                @*                 <div class="user-avatar friend-avatar text-white me-3">J</div> *@
+                @*                 <div> *@
+                @*                     <h6 class="fw-bold mb-0 text-dark">jan_ksiazka</h6> *@
+                @*                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span> *@
+                @*                 </div> *@
+                @*             </div> *@
+                @*             <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="jan_ksiazka"> *@
+                @*                 <i class="bi bi-person-x-fill px-1"></i> *@
+                @*             </button> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
+
+                @* <div class="col friend-list-item-row" data-username="kasandra"> *@
+                @*     <div class="card friend-card border-0 shadow-sm"> *@
+                @*         <div class="card-body d-flex align-items-center justify-content-between p-3"> *@
+                @*             <div class="d-flex align-items-center"> *@
+                @*                 <div class="user-avatar friend-avatar text-white me-3">K</div> *@
+                @*                 <div> *@
+                @*                     <h6 class="fw-bold mb-0 text-dark">Kasandra</h6> *@
+                @*                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span> *@
+                @*                 </div> *@
+                @*             </div> *@
+                @*             <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="Kasandra"> *@
+                @*                 <i class="bi bi-person-x-fill px-1"></i> *@
+                @*             </button> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
+
+                @* <div class="col friend-list-item-row" data-username="vintage_lover"> *@
+                @*     <div class="card friend-card border-0 shadow-sm"> *@
+                @*         <div class="card-body d-flex align-items-center justify-content-between p-3"> *@
+                @*             <div class="d-flex align-items-center"> *@
+                @*                 <div class="user-avatar friend-avatar text-white me-3">V</div> *@
+                @*                 <div> *@
+                @*                     <h6 class="fw-bold mb-0 text-dark">vintage_lover</h6> *@
+                @*                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 0.7rem;">Znajomy</span> *@
+                @*                 </div> *@
+                @*             </div> *@
+                @*             <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="vintage_lover"> *@
+                @*                 <i class="bi bi-person-x-fill px-1"></i> *@
+                @*             </button> *@
+                @*         </div> *@
+                @*     </div> *@
+                @* </div> *@
             </div>
         </div>
     </div>
@@ -229,6 +318,11 @@
 <div class="modal fade" id="deleteFriendModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
+
+            <form asp-action="DeleteFriend" method="post">
+                <input type="hidden" id="friendshipIdInput" name="friendshipId" />
+            
+
             <div class="modal-header bg-danger text-white py-2">
                 <h6 class="modal-title fw-bold">Potwierdzenie</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -238,9 +332,11 @@
                 <h5 class="fw-bold text-danger" id="modal-friend-name">Użytkownik</h5>
             </div>
             <div class="modal-footer justify-content-center border-0 pt-0 pb-3">
-                <button type="button" class="btn btn-danger btn-sm px-4 me-2" data-bs-dismiss="modal">Yes</button>
+                <button type="submit" class="btn btn-danger btn-sm px-4 me-2" >Yes</button>
                 <button type="button" class="btn btn-light btn-sm px-4 border" data-bs-dismiss="modal">No</button>
             </div>
+
+            </form>
         </div>
     </div>
 </div>
@@ -268,5 +364,36 @@
                 }
             });
         }
+
+        document.addEventListener('DOMContentLoaded',function(){
+            const modal = document.getElementById('deleteFriendModal');
+
+            modal.addEventListener('show.bs.modal', function(event){
+                const button = event.relatedTarget;
+
+                const friendName = button.getAttribute('data-friend-name');
+
+                const friendshipId = button.getAttribute('data-friend-id');
+
+                document.getElementById('modal-friend-name').textContent = friendName;
+
+                document.getElementById('friendshipIdInput').value = friendshipId;
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded',function(){
+            const alert = document.getElementById("friendErrorAlert");
+
+            if(alert){
+                setTimeout(function(){
+                    alert.classList.remove("show");
+
+                    setTimeout(function(){
+                        alert.remove();
+                    },300)
+                },3000)
+            }
+        })
+
     </script>
 }

@@ -10,7 +10,7 @@
 <div class="container mt-5 pb-5 library-profile-container">
 
     <div class="profile-header text-center mb-4">
-        <h2 class="display-5 fw-bold" ">My Profile</h2>
+        <h2 class="display-5 fw-bold">My Profile</h2>
     </div>
 
     <div class="row justify-content-center">
@@ -131,18 +131,43 @@
                         </div>
                         <div class="section-card-body mt-3">
                             <ul class="list-unstyled mb-0 dashboard-list">
-                                <li class="dashboard-item-row" data-item-url="/Friendship/Details/1">
-                                    <span class="item-title fw-bold">🌿 JanKowalski</span>
-                                    <span class="item-sub text-muted d-block small">Active 2m ago</span>
-                                </li>
-                                <li class="dashboard-item-row mt-2" data-item-url="/Friendship/Details/2">
-                                    <span class="item-title fw-bold">☕ Bookworm99</span>
-                                    <span class="item-sub text-muted d-block small">Active 1h ago</span>
-                                </li>
-                                <li class="dashboard-item-row mt-2" data-item-url="/Friendship/Details/3">
-                                    <span class="item-title fw-bold">📖 AnnaNowak</span>
-                                    <span class="item-sub text-muted d-block small">Active 3d ago</span>
-                                </li>
+
+                                @foreach(var friend in Model.LatestFriends)
+                                {
+                                    <li class="dashboard-item-row">
+                                        <span class="item-title fw-bold">
+                                            @if (!string.IsNullOrEmpty(friend.AvatarImagePath))
+                                            {
+                                                <span class="user-avatar mini-avatar me-1">
+                                                    @friend.Name.Substring(0,1).ToUpper()
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                @friend.Avatar
+                                            }
+                                            @friend.Name
+
+                                        </span>
+
+                                        <span class="item-sub text-muted d-block small">
+                                            @friend.LastActive
+                                        </span>
+                                    </li>
+                                }
+
+                                @* <li class="dashboard-item-row" data-item-url="/Friendship/Details/1"> *@
+                                @*     <span class="item-title fw-bold">🌿 JanKowalski</span> *@
+                                @*     <span class="item-sub text-muted d-block small">Active 2m ago</span> *@
+                                @* </li> *@
+                                @* <li class="dashboard-item-row mt-2" data-item-url="/Friendship/Details/2"> *@
+                                @*     <span class="item-title fw-bold">☕ Bookworm99</span> *@
+                                @*     <span class="item-sub text-muted d-block small">Active 1h ago</span> *@
+                                @* </li> *@
+                                @* <li class="dashboard-item-row mt-2" data-item-url="/Friendship/Details/3"> *@
+                                @*     <span class="item-title fw-bold">📖 AnnaNowak</span> *@
+                                @*     <span class="item-sub text-muted d-block small">Active 3d ago</span> *@
+                                @* </li> *@
                             </ul>
                         </div>
                     </div>

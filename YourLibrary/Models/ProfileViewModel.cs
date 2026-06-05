@@ -34,5 +34,9 @@ namespace YourLibrary.Models
     {
         public string Name { get; set; }
         public string LastActive { get; set; }
+
+        public string? Avatar { get; set; }
+
+        public string? AvatarImagePath { get; set; }
     }
 }

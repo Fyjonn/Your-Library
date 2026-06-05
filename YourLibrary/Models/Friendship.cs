@@ -7,6 +7,8 @@
         public EnumFriendStatus FriendStatus { get; set; }
         //Klucze obce
 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
         // z user
         public string RequesterId { get; set; }
         public virtual ApplicationUser Requester { get; set; }
