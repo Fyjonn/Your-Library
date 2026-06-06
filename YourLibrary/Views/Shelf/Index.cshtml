@@ -53,7 +53,6 @@
 
     <div class="tab-content" id="shelfTabsContent">
 
-        <!-- Półka: Reading -->
         <div class="shelf-pane d-block" id="reading">
             <div class="container-books">
                 @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "Reading", StringComparison.OrdinalIgnoreCase)))
@@ -73,84 +72,12 @@
                             <tbody>
                                 @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "Reading", StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <tr class="book-clickable-row book-card-item" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
-                                        <td class="fw-bold custom-book-title-cell">
-                                            <i class="bi bi-book me-2"></i>@userBook.Book?.Title
-                                        </td>
-                                        <td class="custom-author-text">@userBook.Book?.Author</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- Półka: To Read -->
-        <div class="shelf-pane d-none" id="toread">
-            <div class="container-books">
-                @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
-                {
-                    <p class="text-center py-4 no-books-msg">No books on the "To Read" shelf.</p>
-                }
-                else
-                {
-                    <div class="table-responsive shadow-sm rounded custom-table-container">
-                        <table class="table table-hover align-middle mb-0 custom-library-table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    <tr class="book-clickable-row book-card-item" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
-                                        <td class="fw-bold custom-book-title-cell">
-                                            <i class="bi bi-book me-2"></i>@userBook.Book?.Title
-                                        </td>
-                                        <td class="custom-author-text">@userBook.Book?.Author</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- Półka: DNF -->
-        <div class="shelf-pane d-none" id="dnf">
-            <div class="container-books">
-                @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
-                {
-                    <p class="text-center py-4 no-books-msg">No books on the "DNF" shelf.
-                    </p>
-                }
-                else
-                {
-                    <div class="table-responsive shadow-sm rounded custom-table-container">
-                        <table class="table table-hover align-middle mb-0 custom-library-table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    bool isBorrowedFromFriend = userBook.ApplicationUserId != User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                                    <tr class="book-clickable-row book-card-item @(isBorrowedFromFriend ? "table-success border-start border-success border-4" : "")"
+                                    <tr class="book-clickable-row book-card-item @(userBook.IsBorrowed ? "table-success borrowed-row" : "")"
                                         data-url="/UserBook/Details/@userBook.UserBookId"
                                         data-title="@userBook.Book?.Title?.ToLower()"
                                         data-author="@userBook.Book?.Author?.ToLower()">
-
                                         <td class="fw-bold custom-book-title-cell">
-                                            @if (isBorrowedFromFriend)
+                                            @if (userBook.IsBorrowed)
                                             {
                                                 <i class="bi bi-box-arrow-in-down text-success me-2"></i><span class="text-success">@userBook.Book?.Title (Borrowed)</span>
                                             }
@@ -170,7 +97,94 @@
             </div>
         </div>
 
-        <!-- Półka: Read -->
+        <div class="shelf-pane d-none" id="toread">
+            <div class="container-books">
+                @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
+                {
+                    <p class="text-center py-4 no-books-msg">No books on the "To Read" shelf.</p>
+                }
+                else
+                {
+                    <div class="table-responsive shadow-sm rounded custom-table-container">
+                        <table class="table table-hover align-middle mb-0 custom-library-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    <tr class="book-clickable-row book-card-item @(userBook.IsBorrowed ? "table-success borrowed-row" : "")"
+                                        data-url="/UserBook/Details/@userBook.UserBookId"
+                                        data-title="@userBook.Book?.Title?.ToLower()"
+                                        data-author="@userBook.Book?.Author?.ToLower()">
+                                        <td class="fw-bold custom-book-title-cell">
+                                            @if (userBook.IsBorrowed)
+                                            {
+                                                <i class="bi bi-box-arrow-in-down text-success me-2"></i><span class="text-success">@userBook.Book?.Title (Borrowed)</span>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-book me-2"></i>
+                                                @userBook.Book?.Title
+                                            }
+                                        </td>
+                                        <td class="custom-author-text">@userBook.Book?.Author</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="shelf-pane d-none" id="dnf">
+            <div class="container-books">
+                @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
+                {
+                    <p class="text-center py-4 no-books-msg">No books on the "DNF" shelf.</p>
+                }
+                else
+                {
+                    <div class="table-responsive shadow-sm rounded custom-table-container">
+                        <table class="table table-hover align-middle mb-0 custom-library-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    <tr class="book-clickable-row book-card-item @(userBook.IsBorrowed ? "table-success borrowed-row" : "")"
+                                        data-url="/UserBook/Details/@userBook.UserBookId"
+                                        data-title="@userBook.Book?.Title?.ToLower()"
+                                        data-author="@userBook.Book?.Author?.ToLower()">
+                                        <td class="fw-bold custom-book-title-cell">
+                                            @if (userBook.IsBorrowed)
+                                            {
+                                                <i class="bi bi-box-arrow-in-down text-success me-2"></i><span class="text-success">@userBook.Book?.Title (Borrowed)</span>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-book me-2"></i>
+                                                @userBook.Book?.Title
+                                            }
+                                        </td>
+                                        <td class="custom-author-text">@userBook.Book?.Author</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+
         <div class="shelf-pane d-none" id="read">
             <div class="container-books">
                 @if (!Model.Any(b => string.Equals(b.ReadStatus.ToString(), "Read", StringComparison.OrdinalIgnoreCase)))
@@ -190,9 +204,20 @@
                             <tbody>
                                 @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "Read", StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <tr class="book-clickable-row book-card-item" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
+                                    <tr class="book-clickable-row book-card-item @(userBook.IsBorrowed ? "table-success borrowed-row" : "")"
+                                        data-url="/UserBook/Details/@userBook.UserBookId"
+                                        data-title="@userBook.Book?.Title?.ToLower()"
+                                        data-author="@userBook.Book?.Author?.ToLower()">
                                         <td class="fw-bold custom-book-title-cell">
-                                            <i class="bi bi-book me-2"></i>@userBook.Book?.Title
+                                            @if (userBook.IsBorrowed)
+                                            {
+                                                <i class="bi bi-box-arrow-in-down text-success me-2"></i><span class="text-success">@userBook.Book?.Title (Borrowed)</span>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-book me-2"></i>
+                                                @userBook.Book?.Title
+                                            }
                                         </td>
                                         <td class="custom-author-text">@userBook.Book?.Author</td>
                                     </tr>
@@ -206,7 +231,6 @@
 
     </div>
 
-    <!-- Zaktualizowany FAB: posiada ramkę hover oraz natywny tekst dymka informacyjnego -->
     <a href="/UserBook/Create" class="btn-fab shadow-lg" title="Add book to your shelf">
         <i class="bi bi-plus-lg"></i>
     </a>
@@ -215,7 +239,6 @@
 
 @section Scripts {
     <script>
-        // Obsługa kliknięcia w CAŁY wiersz tabeli
         function initRowClickListeners() {
             document.querySelectorAll('.book-clickable-row').forEach(row => {
                 row.addEventListener('click', function () {
@@ -227,7 +250,6 @@
             });
         }
 
-        // Inicjalizacja przy pierwszym załadowaniu
         document.addEventListener("DOMContentLoaded", function() {
             initRowClickListeners();
         });
@@ -291,7 +313,7 @@
                 if (!noResultsMsg && !defaultEmptyMsg) {
                     noResultsMsg = document.createElement('p');
                     noResultsMsg.className = 'text-center w-100 py-4 no-search-results custom-error-msg';
-                            noResultsMsg.textContent = 'No books found that match your filters.';
+                    noResultsMsg.textContent = 'No books found that match your filters.';
                     activePane.querySelector('.container-books').appendChild(noResultsMsg);
                 } else if (noResultsMsg) {
                     noResultsMsg.classList.remove('d-none');

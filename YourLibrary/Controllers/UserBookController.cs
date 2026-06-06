@@ -100,7 +100,7 @@ namespace YourLibrary.Controllers
         public IActionResult Edit(UserBook userbook)
         {
             string currentUserId = _userManager.GetUserId(User);
-            userbook.ApplicationUserId = currentUserId;
+            //userbook.ApplicationUserId = currentUserId;
 
             ModelState.Remove("ApplicationUserId");
             ModelState.Remove("ApplicationUser");
@@ -114,7 +114,28 @@ namespace YourLibrary.Controllers
                 return View(userbook);
             }
 
-            _context.UserBooks.Update(userbook);
+            var dbUserBook = _context.UserBooks.FirstOrDefault(ub => ub.UserBookId == userbook.UserBookId && ub.ApplicationUserId == currentUserId);
+
+            if (dbUserBook == null)
+            {
+                return NotFound();
+            }
+            dbUserBook.ReadStatus = userbook.ReadStatus;
+            dbUserBook.Location = userbook.Location;
+            dbUserBook.Bookmark = userbook.Bookmark;
+            dbUserBook.Notes = userbook.Notes;
+
+            if (dbUserBook.IsBorrowed)
+            {
+                dbUserBook.IsOwned = false;
+            }
+            else
+            {
+                dbUserBook.Media = userbook.Media;
+                dbUserBook.IsOwned = userbook.IsOwned;
+            }
+
+            //_context.UserBooks.Update(userbook);
             _context.SaveChanges();
 
             return RedirectToAction("Index", "Shelf"); //powrot do polki
@@ -151,6 +172,13 @@ namespace YourLibrary.Controllers
                 _context.UserBooks.Remove(userbook);
                 _context.SaveChanges();
             }
+
+            if (userbook.IsBorrowed)
+            {
+                TempData["FriendError"] = "You cannot delete a book that is currently borrowed!";
+                return RedirectToAction("Index", "Shelf");
+            }
+           
 
             return RedirectToAction("Index", "Shelf");
         }

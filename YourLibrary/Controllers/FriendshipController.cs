@@ -42,11 +42,16 @@ namespace YourLibrary.Controllers
             model.IncomingBorrowRequests = await _context.Borrows.Include(b => b.ApplicationUser).Include(b => b.UserBook).ThenInclude(ub => ub.Book) 
                  .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Requested).ToListAsync();
 
-            model.MyBorrowedBooks = await _context.Borrows.Include(b => b.UserBook).ThenInclude(ub => ub.Book).Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser)
-                .Where(b => b.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed).ToListAsync();
+            model.MyBorrowedBooks = await _context.Borrows.Include(b => b.UserBook).ThenInclude(ub => ub.Book).Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser).Where(b => b.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed).ToListAsync();
 
-            model.MyRentedBooks = await _context.Borrows.Include(b => b.ApplicationUser) .Include(b => b.UserBook).ThenInclude(ub => ub.Book)
-                .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed).ToListAsync();
+          
+            model.MyRentedBooks = await _context.Borrows
+                .Include(b => b.ApplicationUser) 
+                .Include(b => b.UserBook).ThenInclude(ub => ub.Book)
+                .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed)
+                .ToListAsync();
+
+
 
             return View(model);
         }
@@ -91,25 +96,35 @@ namespace YourLibrary.Controllers
         public async Task<IActionResult> AcceptBorrow(int borrowId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            if (currentUser == null) return RedirectToAction(nameof(Index));
-
+            if (currentUser == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
             var borrow = await _context.Borrows
                 .Include(b => b.UserBook)
                 .FirstOrDefaultAsync(b => b.BorrowId == borrowId && b.UserBook.ApplicationUserId == currentUser.Id);
 
-            if (borrow != null)
+            if (borrow != null && borrow.UserBook != null)
             {
                 borrow.StatusBorrow = EnumStatusBorrow.Borrowed;
-                borrow.BorrowDate = DateTime.Now; 
+                borrow.BorrowDate = DateTime.Now;
 
-                _context.Update(borrow);
+                
+                borrow.UserBook.IsBorrowed = true;
+
+             
                 await _context.SaveChangesAsync();
+
+                TempData["FriendSuccess"] = "You have accepted the borrow request!";
+            }
+            else
+            {
+                TempData["FriendError"] = "Borrow request not found or you are not authorized.";
             }
 
             return RedirectToAction(nameof(Index));
         }
-
 
         [HttpPost]
         public async Task<IActionResult> RejectBorrow(int borrowId)

@@ -291,46 +291,55 @@ button.btn-search-submit {
         }
 
 
-    .custom-friend-navbar {
-        background-color: #1a3a5f !important;
-        border-bottom: 2px solid #6fa8dc;
+.custom-friend-navbar {
+    background-color: #1a3a5f !important;
+    border-bottom: 2px solid #6fa8dc;
 
-        .font-serif {
-            font-family: 'Georgia', serif;
-        }
+    .font-serif {
+        font-family: 'Georgia', serif;
+    }
 
-        .btn-friend-back {
-            background-color: transparent !important;
+    .btn-friend-back {
+        background-color: transparent !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.4) !important;
+        font-family: 'Georgia', serif;
+        font-weight: 500;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .btn-friend-back:hover {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            border-color: #ffffff !important;
             color: #ffffff !important;
-            border: 1px solid rgba(255, 255, 255, 0.4) !important;
-            font-family: 'Georgia', serif;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
+            transform: translateY(-1px);
         }
 
-            .btn-friend-back:hover {
-                background-color: rgba(255, 255, 255, 0.15) !important;
-                border-color: #ffffff !important;
-                color: #ffffff !important;
-                transform: translateY(-1px);
-            }
+    .library-shelf-container {
+        z-index: 1;
+    }
 
-        .library-shelf-container {
-            z-index: 1;
+    .text-info-custom {
+        color: #6fa8dc !important;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+
+    .border-white-50 {
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        font-family: 'Georgia', serif;
+    }
+
+        .border-white-50:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-color: #ffffff !important;
         }
+    .borrowed-row {
+        border-start: 4px solid #2ecc71 !important; 
+        background-color: rgba(46, 204, 113, 0.08) !important; 
+        transition: background-color 0.2s ease-in-out;
+    }
 
-        .text-info-custom {
-            color: #6fa8dc !important;
-            text-decoration: underline;
-            text-underline-offset: 4px;
+        .borrowed-row:hover {
+            background-color: rgba(46, 204, 113, 0.15) !important; 
         }
-
-        .border-white-50 {
-            border-color: rgba(255, 255, 255, 0.3) !important;
-            font-family: 'Georgia', serif;
-        }
-
-            .border-white-50:hover {
-                background-color: rgba(255, 255, 255, 0.1) !important;
-                border-color: #ffffff !important;
-            }

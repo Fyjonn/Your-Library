@@ -11,11 +11,7 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-
-
 <div class="container mt-4 pb-5 position-relative library-shelf-container">
-
- 
 
     @if (TempData["FriendSuccess"] != null)
     {
@@ -69,163 +65,229 @@
 
     <div class="tab-content" id="shelfTabsContent">
 
-        <div class="shelf-pane d-block" id="reading">
-            <div class="container-books">
-                @if (!Model.Books.Any(b => string.Equals(b.ReadStatus.ToString(), "Reading", StringComparison.OrdinalIgnoreCase)))
-                {
-                    <p class="text-center py-4 no-books-msg">No books on the "Reading" shelf.</p>
-                }
-                else
-                {
-                    <div class="table-responsive shadow-sm rounded custom-table-container">
-                        <table class="table table-hover align-middle mb-0 custom-library-table">
-                            <thead>
-                                <tr><th>Title</th><th>Author</th><th class="text-end pe-4">Action</th></tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var userBook in Model.Books.Where(b => string.Equals(b.ReadStatus.ToString(), "Reading", StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    <tr class="book-card-item">
-                                        <td class="fw-bold custom-book-title-cell book-clickable-row text-dark" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()" style="cursor:pointer;">
-                                            <i class="bi bi-book me-2 text-secondary"></i>@userBook.Book?.Title
-                                        </td>
-                                        <td class="custom-author-text text-secondary">@userBook.Book?.Author</td>
-                                        <td class="text-end pe-4">
-                                            <form asp-action="RequestBorrow" method="post" class="d-inline">
-                                                <input type="hidden" name="userBookId" value="@userBook.UserBookId" />
-                                                <input type="hidden" name="friendName" value="@Model.FriendName" />
-                                                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold">
-                                                    <i class="bi bi-box-arrow-in-right me-1"></i> Ask to Borrow
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </div>
+@functions {
+    // Helper do ujednolicenia sprawdzania czy książka jest drukowana czy cyfrowa
+    bool IsPrintedMedia(string media)
+    {
+        if (string.IsNullOrEmpty(media)) return true; // Domyślnie traktujemy jako papier jeśli brak wartości
+        var m = media.ToLower();
+        return m == "printed" || m == "paperback" || m == "hardcover" || m == "book";
+    }
+}
 
-        <div class="shelf-pane d-none" id="toread">
-            <div class="container-books">
-                @if (!Model.Books.Any(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
-                {
-                    <p class="text-center py-4 no-books-msg">No books on the "To Read" shelf.</p>
-                }
-                else
-                {
-                    <div class="table-responsive shadow-sm rounded custom-table-container">
-                        <table class="table table-hover align-middle mb-0 custom-library-table">
-                            <thead>
-                                <tr><th>Title</th><th>Author</th><th class="text-end pe-4">Action</th></tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var userBook in Model.Books.Where(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    <tr class="book-card-item">
-                                        <td class="fw-bold custom-book-title-cell book-clickable-row text-dark" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()" style="cursor:pointer;">
-                                            <i class="bi bi-book me-2 text-secondary"></i>@userBook.Book?.Title
-                                        </td>
-                                        <td class="custom-author-text text-secondary">@userBook.Book?.Author</td>
-                                        <td class="text-end pe-4">
-                                            <form asp-action="RequestBorrow" method="post" class="d-inline">
-                                                <input type="hidden" name="userBookId" value="@userBook.UserBookId" />
-                                                <input type="hidden" name="friendName" value="@Model.FriendName" />
-                                                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold">
-                                                    <i class="bi bi-box-arrow-in-right me-1"></i> Ask to Borrow
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
+<div class="shelf-pane d-block" id="reading">
+    <div class="container-books">
+        @if (!Model.Books.Any(b => string.Equals(b.ReadStatus.ToString(), "Reading", StringComparison.OrdinalIgnoreCase)))
+        {
+            <p class="text-center py-4 no-books-msg">No books on the "Reading" shelf.</p>
+        }
+        else
+        {
+            <div class="table-responsive shadow-sm rounded custom-table-container">
+                <table class="table table-hover align-middle mb-0 custom-library-table">
+                    <thead>
+                        <tr><th>Title</th><th>Author</th><th class="text-end pe-4">Action</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var userBook in Model.Books.Where(b => string.Equals(b.ReadStatus.ToString(), "Reading", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            var isPrinted = IsPrintedMedia(userBook.Media.ToString());
+                            <tr class="book-card-item @(userBook.IsBorrowed ? "table-success" : "")" style="@(userBook.IsBorrowed ? "background-color: rgba(46, 204, 113, 0.08);" : "")">
+                                <td class="fw-bold custom-book-title-cell book-clickable-row text-dark" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()" style="cursor:pointer;">
+                                    <i class="bi bi-book me-2 text-secondary"></i>@userBook.Book?.Title
+                                </td>
+                                <td class="custom-author-text text-secondary">@userBook.Book?.Author</td>
+                                <td class="text-end pe-4">
+                                    @if (userBook.IsBorrowed)
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2"><i class="bi bi-journal-arrow-down me-1"></i>Borrowed</span>
+                                    }
+                                    else if (!isPrinted)
+                                    {
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled title="Digital formats cannot be borrowed">
+                                            <i class="bi bi-phone-mute me-1"></i> Digital
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="RequestBorrow" method="post" class="d-inline">
+                                            <input type="hidden" name="userBookId" value="@userBook.UserBookId" />
+                                            <input type="hidden" name="friendName" value="@Model.FriendName" />
+                                            <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold">
+                                                <i class="bi bi-box-arrow-in-right me-1"></i> Ask to Borrow
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        </div>
-
-        <div class="shelf-pane d-none" id="dnf">
-            <div class="container-books">
-                @if (!Model.Books.Any(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
-                {
-                    <p class="text-center py-4 no-books-msg">No books on the "DNF" shelf.</p>
-                }
-                else
-                {
-                    <div class="table-responsive shadow-sm rounded custom-table-container">
-                        <table class="table table-hover align-middle mb-0 custom-library-table">
-                            <thead>
-                                <tr><th>Title</th><th>Author</th><th class="text-end pe-4">Action</th></tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var userBook in Model.Books.Where(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    <tr class="book-card-item">
-                                        <td class="fw-bold custom-book-title-cell book-clickable-row text-dark" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()" style="cursor:pointer;">
-                                            <i class="bi bi-book me-2 text-secondary"></i>@userBook.Book?.Title
-                                        </td>
-                                        <td class="custom-author-text text-secondary">@userBook.Book?.Author</td>
-                                        <td class="text-end pe-4">
-                                            <form asp-action="RequestBorrow" method="post" class="d-inline">
-                                                <input type="hidden" name="userBookId" value="@userBook.UserBookId" />
-                                                <input type="hidden" name="friendName" value="@Model.FriendName" />
-                                                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold">
-                                                    <i class="bi bi-box-arrow-in-right me-1"></i> Ask to Borrow
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <div class="shelf-pane d-none" id="read">
-            <div class="container-books">
-                @if (!Model.Books.Any(b => string.Equals(b.ReadStatus.ToString(), "Read", StringComparison.OrdinalIgnoreCase)))
-                {
-                    <p class="text-center py-4 no-books-msg">No books on the "Read" shelf.</p>
-                }
-                else
-                {
-                    <div class="table-responsive shadow-sm rounded custom-table-container">
-                        <table class="table table-hover align-middle mb-0 custom-library-table">
-                            <thead>
-                                <tr><th>Title</th><th>Author</th><th class="text-end pe-4">Action</th></tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var userBook in Model.Books.Where(b => string.Equals(b.ReadStatus.ToString(), "Read", StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    <tr class="book-card-item">
-                                        <td class="fw-bold custom-book-title-cell book-clickable-row text-dark" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()" style="cursor:pointer;">
-                                            <i class="bi bi-book me-2 text-secondary"></i>@userBook.Book?.Title
-                                        </td>
-                                        <td class="custom-author-text text-secondary">@userBook.Book?.Author</td>
-                                        <td class="text-end pe-4">
-                                            <form asp-action="RequestBorrow" method="post" class="d-inline">
-                                                <input type="hidden" name="userBookId" value="@userBook.UserBookId" />
-                                                <input type="hidden" name="friendName" value="@Model.FriendName" />
-                                                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold">
-                                                    <i class="bi bi-box-arrow-in-right me-1"></i> Ask to Borrow
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-            </div>
-        </div>
-
+        }
     </div>
+</div>
+
+<div class="shelf-pane d-none" id="toread">
+    <div class="container-books">
+        @if (!Model.Books.Any(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
+        {
+            <p class="text-center py-4 no-books-msg">No books on the "To Read" shelf.</p>
+        }
+        else
+        {
+            <div class="table-responsive shadow-sm rounded custom-table-container">
+                <table class="table table-hover align-middle mb-0 custom-library-table">
+                    <thead>
+                        <tr><th>Title</th><th>Author</th><th class="text-end pe-4">Action</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var userBook in Model.Books.Where(b => string.Equals(b.ReadStatus.ToString(), "ToRead", StringComparison.OrdinalIgnoreCase) || string.Equals(b.ReadStatus.ToString(), "To Read", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            var isPrinted = IsPrintedMedia(userBook.Media.ToString());
+                            <tr class="book-card-item @(userBook.IsBorrowed ? "table-success" : "")" style="@(userBook.IsBorrowed ? "background-color: rgba(46, 204, 113, 0.08);" : "")">
+                                <td class="fw-bold custom-book-title-cell book-clickable-row text-dark" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()" style="cursor:pointer;">
+                                    <i class="bi bi-book me-2 text-secondary"></i>@userBook.Book?.Title
+                                </td>
+                                <td class="custom-author-text text-secondary">@userBook.Book?.Author</td>
+                                <td class="text-end pe-4">
+                                    @if (userBook.IsBorrowed)
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2"><i class="bi bi-journal-arrow-down me-1"></i>Borrowed</span>
+                                    }
+                                    else if (!isPrinted)
+                                    {
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled title="Digital formats cannot be borrowed">
+                                            <i class="bi bi-phone-mute me-1"></i> Digital
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="RequestBorrow" method="post" class="d-inline">
+                                            <input type="hidden" name="userBookId" value="@userBook.UserBookId" />
+                                            <input type="hidden" name="friendName" value="@Model.FriendName" />
+                                            <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold">
+                                                <i class="bi bi-box-arrow-in-right me-1"></i> Ask to Borrow
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="shelf-pane d-none" id="dnf">
+    <div class="container-books">
+        @if (!Model.Books.Any(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
+        {
+            <p class="text-center py-4 no-books-msg">No books on the "DNF" shelf.</p>
+        }
+        else
+        {
+            <div class="table-responsive shadow-sm rounded custom-table-container">
+                <table class="table table-hover align-middle mb-0 custom-library-table">
+                    <thead>
+                        <tr><th>Title</th><th>Author</th><th class="text-end pe-4">Action</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var userBook in Model.Books.Where(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            var isPrinted = IsPrintedMedia(userBook.Media.ToString());
+                            <tr class="book-card-item @(userBook.IsBorrowed ? "table-success" : "")" style="@(userBook.IsBorrowed ? "background-color: rgba(46, 204, 113, 0.08);" : "")">
+                                <td class="fw-bold custom-book-title-cell book-clickable-row text-dark" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()" style="cursor:pointer;">
+                                    <i class="bi bi-book me-2 text-secondary"></i>@userBook.Book?.Title
+                                </td>
+                                <td class="custom-author-text text-secondary">@userBook.Book?.Author</td>
+                                <td class="text-end pe-4">
+                                    @if (userBook.IsBorrowed)
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2"><i class="bi bi-journal-arrow-down me-1"></i>Borrowed</span>
+                                    }
+                                    else if (!isPrinted)
+                                    {
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled title="Digital formats cannot be borrowed">
+                                            <i class="bi bi-phone-mute me-1"></i> Digital
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="RequestBorrow" method="post" class="d-inline">
+                                            <input type="hidden" name="userBookId" value="@userBook.UserBookId" />
+                                            <input type="hidden" name="friendName" value="@Model.FriendName" />
+                                            <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold">
+                                                <i class="bi bi-box-arrow-in-right me-1"></i> Ask to Borrow
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="shelf-pane d-none" id="read">
+    <div class="container-books">
+        @if (!Model.Books.Any(b => string.Equals(b.ReadStatus.ToString(), "Read", StringComparison.OrdinalIgnoreCase)))
+        {
+            <p class="text-center py-4 no-books-msg">No books on the "Read" shelf.</p>
+        }
+        else
+        {
+            <div class="table-responsive shadow-sm rounded custom-table-container">
+                <table class="table table-hover align-middle mb-0 custom-library-table">
+                    <thead>
+                        <tr><th>Title</th><th>Author</th><th class="text-end pe-4">Action</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var userBook in Model.Books.Where(b => string.Equals(b.ReadStatus.ToString(), "Read", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            var isPrinted = IsPrintedMedia(userBook.Media.ToString());
+                            <tr class="book-card-item @(userBook.IsBorrowed ? "table-success" : "")" style="@(userBook.IsBorrowed ? "background-color: rgba(46, 204, 113, 0.08);" : "")">
+                                <td class="fw-bold custom-book-title-cell book-clickable-row text-dark" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()" style="cursor:pointer;">
+                                    <i class="bi bi-book me-2 text-secondary"></i>@userBook.Book?.Title
+                                </td>
+                                <td class="custom-author-text text-secondary">@userBook.Book?.Author</td>
+                                <td class="text-end pe-4">
+                                    @if (userBook.IsBorrowed)
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2"><i class="bi bi-journal-arrow-down me-1"></i>Borrowed</span>
+                                    }
+                                    else if (!isPrinted)
+                                    {
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled title="Digital formats cannot be borrowed">
+                                            <i class="bi bi-phone-mute me-1"></i> Digital
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="RequestBorrow" method="post" class="d-inline">
+                                            <input type="hidden" name="userBookId" value="@userBook.UserBookId" />
+                                            <input type="hidden" name="friendName" value="@Model.FriendName" />
+                                            <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold">
+                                                <i class="bi bi-box-arrow-in-right me-1"></i> Ask to Borrow
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+</div>
 </div>
 
 @section Scripts {
@@ -248,7 +310,6 @@
                 const shelfName = this.textContent.trim();
                 const targetSelector = this.getAttribute('data-shelf-target');
 
-                // POPRAWKA: Element teraz istnieje w nowym granatowym pasku i JS się nie wyłoży!
                 const indicator = document.getElementById('shelf-indicator');
                 if (indicator) {
                     indicator.textContent = shelfName;
@@ -307,5 +368,4 @@
             });
         }
     </script>
-}
 }

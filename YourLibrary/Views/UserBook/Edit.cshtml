@@ -7,25 +7,36 @@
 @section Styles {
     <link class="custom-style-tag" rel="stylesheet" href="~/css/userbook_style.css" asp-append-version="true" />
 }
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <div class="container mt-5 mb-5" style="max-width: 700px;">
     <div class="card shadow-sm border-0 custom-userbook-card">
-        <!-- Zmieniony nagłówek na spójny z resztą aplikacji -->
+
         <div class="card-header d-flex justify-content-between align-items-center py-3 custom-userbook-header">
             <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Book Settings</h4>
             <span class="badge custom-badge-status fs-6">@Model.Book?.Title</span>
         </div>
+
         <div class="card-body p-4">
 
-            <form asp-action="Edit">
+            @if (Model.IsBorrowed)
+            {
+                <div class="alert alert-warning border p-3 mb-4 d-flex justify-content-between align-items-center" style="background-color: rgba(46, 204, 113, 0.05); border-color: rgba(46, 204, 113, 0.3) !important;">
+                    <div>
+                        <i class="bi bi-info-circle-fill me-2 text-success"></i>
+                        <span class="fw-bold text-dark">This book is borrowed from a friend. Some options are locked.</span>
+                    </div>
+                </div>
+            }
+
+            <form asp-action="Edit" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <input type="hidden" asp-for="UserBookId" />
                 <input type="hidden" asp-for="BookId" />
                 <input type="hidden" asp-for="ApplicationUserId" />
                 <input type="hidden" asp-for="ReviewId" />
+                <input type="hidden" asp-for="IsBorrowed" />
 
                 <div class="mb-4">
                     <label asp-for="ReadStatus" class="form-label fw-bold custom-label-muted">Reading Status</label>
@@ -40,26 +51,41 @@
 
                 <div class="mb-4">
                     <label asp-for="Media" class="form-label fw-bold custom-label-muted">Media Format (e.g. Paperback, Kindle)</label>
-                    <input asp-for="Media" class="form-control custom-form-control" placeholder="e.g. Book, E-book, Audiobook" />
-                    <span asp-validation-for="Media" class="text-danger fs-7"></span>
+                    @if (Model.IsBorrowed)
+                    {
+                        <input asp-for="Media" class="form-control custom-form-control bg-light text-muted" readonly />
+                        <small class="text-muted"><i class="bi bi-lock-fill me-1"></i>Cannot change format of a borrowed book.</small>
+                    }
+                    else
+                    {
+                        <input asp-for="Media" class="form-control custom-form-control" placeholder="e.g. Book, E-book, Audiobook" />
+                        <span asp-validation-for="Media" class="text-danger fs-7"></span>
+                    }
                 </div>
 
                 <div class="mb-4">
-                    <label asp-for="Location" class="form-label fw-bold custom-label-muted">Shelf Location</label>
-                    <input asp-for="Location" class="form-control custom-form-control" placeholder="e.g. Bedroom shelf, Living room" />
+                    <label asp-for="Location" class="form-label fw-bold custom-label-muted">Shelf Location (Where is it now?)</label>
+                    <input asp-for="Location" class="form-control custom-form-control" placeholder="e.g. My desk, Living room shelf" />
                     <span asp-validation-for="Location" class="text-danger fs-7"></span>
                 </div>
 
-                <!-- Zmiana tła kontenera na styl biblioteczny -->
                 <div class="mb-4 p-3 rounded custom-switches-box border">
                     <div class="form-check form-switch custom-checkbox mb-2">
-                        <input class="form-check-input" type="checkbox" id="IsOwned" name="IsOwned" value="true" @(Model.IsOwned == true ? "checked" : "") />
+                        @if (Model.IsBorrowed)
+                        {
+                            <input type="hidden" asp-for="IsOwned" />
+                            <input class="form-check-input" type="checkbox" id="IsOwned" disabled @(Model.IsOwned == true ? "checked" : "") />
+                        }
+                        else
+                        {
+                            <input class="form-check-input" type="checkbox" id="IsOwned" name="IsOwned" value="true" @(Model.IsOwned == true ? "checked" : "") />
+                        }
                         <label class="form-check-label fw-bold custom-value-dark ms-2" for="IsOwned">I own this book</label>
                     </div>
 
                     <div class="form-check form-switch custom-checkbox mb-2">
-                        <input class="form-check-input" type="checkbox" id="IsBorrowed" name="IsBorrowed" value="true" @(Model.IsBorrowed == true ? "checked" : "") />
-                        <label class="form-check-label fw-bold custom-value-dark ms-2" for="IsBorrowed">This book is currently borrowed</label>
+                        <input class="form-check-input" type="checkbox" id="IsBorrowedDisplay" disabled @(Model.IsBorrowed ? "checked" : "") />
+                        <label class="form-check-label fw-bold custom-value-dark ms-2" for="IsBorrowedDisplay">This book is currently borrowed</label>
                     </div>
 
                     <div class="form-check form-switch custom-checkbox mb-0">
@@ -73,23 +99,7 @@
                     <textarea asp-for="Notes" class="form-control custom-form-control" rows="3" placeholder="Add your notes or thoughts here..."></textarea>
                     <span asp-validation-for="Notes" class="text-danger fs-7"></span>
                 </div>
-                @if (Model.IsBorrowed)
-                {
-                    <div class="alert custom-switches-box border p-3 mt-3 d-flex justify-content-between align-items-center">
-                        <div>
-                            <i class="bi bi-info-circle-fill me-2 text-success"></i>
-                            <span class="fw-bold">Ta książka jest wypożyczona od znajomego.</span>
-                        </div>
-                        <form asp-action="ReturnBorrowedBookDirectly" asp-controller="Friendship" method="post">
-                            <input type="hidden" name="userBookId" value="@Model.UserBookId" />
-                            <button type="submit" class="btn btn-custom-delete btn-sm">
-                                <i class="bi bi-box-arrow-up me-1"></i>Oddaj książkę właścicielowi
-                            </button>
-                        </form>
-                    </div>
-                }
 
-                <!-- Spójne przyciski zapisu/anulowania -->
                 <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-4">
                     <a asp-action="Index" asp-controller="Shelf" class="btn btn-custom-back px-4">
                         <i class="bi bi-arrow-left me-2"></i>Cancel
@@ -99,6 +109,24 @@
                     </button>
                 </div>
             </form>
+
+            @if (Model.IsBorrowed)
+            {
+                <div class="border-top pt-4 mt-4">
+                    <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background-color: rgba(217, 83, 79, 0.05); border: 1px dashed #8b2635;">
+                        <div>
+                            <h6 class="mb-1 fw-bold text-danger">Return Book</h6>
+                            <p class="small text-muted mb-0">Are you done reading? Give the book back to its owner.</p>
+                        </div>
+                        <form asp-action="ReturnBorrowedBookDirectly" asp-controller="Friendship" method="post" class="mb-0">
+                            <input type="hidden" name="userBookId" value="@Model.UserBookId" />
+                            <button type="submit" class="btn btn-danger btn-sm px-3">
+                                <i class="bi bi-box-arrow-up me-1"></i>Return Book
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
 
         </div>
     </div>
