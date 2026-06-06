@@ -117,6 +117,22 @@ namespace YourLibrary.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                var existingLogin = await _userManager.FindByNameAsync(Input.DisplayName);
+
+                if(existingLogin != null)
+                {
+                    ModelState.AddModelError("Input.DisplayName", "Login already taken");
+                    return Page();
+                }
+
+                var existingEmail = await _userManager.FindByEmailAsync(Input.Email);
+
+                if (existingEmail != null)
+                {
+                    ModelState.AddModelError("Input.Email", "Email already registered");
+                    return Page();
+                }
+
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.DisplayName, CancellationToken.None);

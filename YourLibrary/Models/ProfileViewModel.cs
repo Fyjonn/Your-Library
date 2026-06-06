@@ -21,6 +21,10 @@ namespace YourLibrary.Models
 
         public List<BookViewModel> LatestBooks { get; set; } = new List<BookViewModel>();
         public List<FriendViewModel> LatestFriends { get; set; } = new List<FriendViewModel>();
+
+        public bool StayInEditMode { get; set; }
+
+        public bool HasProfileError { get; set; }
     }
 
     public class BookViewModel

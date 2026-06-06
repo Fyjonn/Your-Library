@@ -13,14 +13,16 @@
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <input asp-for="Input.Email" id="emailInput" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                 <label asp-for="Input.Email">Email</label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
+                <div id="emailExistsMessage" class="text-danger small" style="display:none;">Email already registered</div>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.DisplayName" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <input asp-for="Input.DisplayName" id="loginInput" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                 <label asp-for="Input.DisplayName">Login</label>
                 <span asp-validation-for="Input.DisplayName" class="text-danger"></span>
+                <div id="loginExistsMessage" class="text-danger small" style="display:none;">Login already registered</div>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
@@ -69,4 +71,74 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const registerButton = document.getElementById("registerSubmit");
+
+        let emailTaken = false;
+        let loginTaken = false;
+
+        function updateRegisterButton(){
+            registerButton.ariaDisabled = emailTaken || loginTaken;
+        }
+
+        const emailInput = document.getElementById("emailInput");
+        const loginInput = document.getElementById("loginInput");
+
+        const emailMessage = document.getElementById("emailExistsMessage");
+        const loginMessage = document.getElementById("loginExistsMessage");
+
+        emailInput.addEventListener("focus",function(){
+            emailMessage.style.display="none";
+
+            emailTaken = false;
+
+            updateRegisterButton();
+        });
+
+        loginInput.addEventListener("focus",function(){
+            loginMessage.style.display="none";
+
+            loginTaken = false;
+
+            updateRegisterButton();
+        });
+
+        emailInput.addEventListener("blur", async function(){
+            const email = this.value;
+
+            if(!email){
+                return;
+            }
+
+            const response = await fetch(`/Validation/CheckEmail?email=${encodeURIComponent(email)}`);
+
+            const exists = await response.json();
+
+            if(exists){
+                emailMessage.style.display = "block";
+            }
+            updateRegisterButton();
+        });
+
+        loginInput.addEventListener("blur", async function(){
+            const login = this.value;
+
+            if(!login){
+                return;
+            }
+
+            const response = await fetch(`/Validation/CheckLogin?login=${encodeURIComponent(login)}`);
+
+            const exists = await response.json();
+
+            if(exists){
+                loginMessage.style.display = "block";
+            }
+            updateRegisterButton();
+        });
+
+
+    </script>
 }

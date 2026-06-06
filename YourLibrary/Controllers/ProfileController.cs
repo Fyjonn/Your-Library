@@ -85,7 +85,57 @@ namespace YourLibrary.Controllers
             {
                 model.LatestBooks = new List<BookViewModel>();
                 model.LatestFriends = new List<FriendViewModel>();
+
+                model.StayInEditMode = true;
+                model.HasProfileError = true;
+
                 return View(model);
+            }
+
+            if(model.DisplayName != user.DisplayName)
+            {
+                var existingLogin = await _userManager.FindByNameAsync(model.DisplayName);
+
+                if (existingLogin != null)
+                {
+                    ModelState.AddModelError("", "Login already taken");
+
+                    //model.DisplayName = user.DisplayName;
+                    //model.Email = user.Email;
+                    //ModelState.Remove("DisplayName");
+                    //ModelState.Remove("Email");
+
+                    model.LatestBooks = new List<BookViewModel>();
+                    model.LatestFriends = new List<FriendViewModel>();
+
+                    model.StayInEditMode = true;
+                    model.HasProfileError = true;
+
+                    return View(model);
+                }
+            }
+
+            if (model.Email != user.Email)
+            {
+                var existingEmail = await _userManager.FindByEmailAsync(model.Email);
+
+                if (existingEmail != null)
+                {
+                    ModelState.AddModelError("", "Login already taken");
+
+                    //model.DisplayName = user.DisplayName;
+                    //model.Email = user.Email;
+                    //ModelState.Remove("DisplayName");
+                    //ModelState.Remove("Email");
+
+                    model.LatestBooks = new List<BookViewModel>();
+                    model.LatestFriends = new List<FriendViewModel>();
+
+                    model.StayInEditMode = true;
+                    model.HasProfileError = true;
+
+                    return View(model);
+                }
             }
 
             user.DisplayName = model.DisplayName;
@@ -121,6 +171,10 @@ namespace YourLibrary.Controllers
                     model.Avatar = user.Avatar;
                     model.LatestBooks = new List<BookViewModel>();
                     model.LatestFriends = new List<FriendViewModel>();
+
+                    model.StayInEditMode = true;
+                    model.HasProfileError = true;
+
                     return View(model);
                 }
 
@@ -131,6 +185,10 @@ namespace YourLibrary.Controllers
                     model.Avatar = user.Avatar;
                     model.LatestBooks = new List<BookViewModel>();
                     model.LatestFriends = new List<FriendViewModel>();
+
+                    model.StayInEditMode = true;
+                    model.HasProfileError = true;
+
                     return View(model);
                 }
 
@@ -170,6 +228,10 @@ namespace YourLibrary.Controllers
                     ModelState.AddModelError("", "Passwords do not match");
                     model.LatestBooks = new List<BookViewModel>();
                     model.LatestFriends = new List<FriendViewModel>();
+
+                    model.StayInEditMode = true;
+                    model.HasProfileError = true;
+
                     return View(model);
                 }
             }
@@ -183,6 +245,10 @@ namespace YourLibrary.Controllers
                 }
                 model.LatestBooks = new List<BookViewModel>();
                 model.LatestFriends = new List<FriendViewModel>();
+
+                model.StayInEditMode = true;
+                model.HasProfileError = true;
+
                 return View(model);
             }
 
