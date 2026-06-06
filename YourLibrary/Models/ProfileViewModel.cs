@@ -22,6 +22,9 @@ namespace YourLibrary.Models
         public List<BookViewModel> LatestBooks { get; set; } = new List<BookViewModel>();
         public List<FriendViewModel> LatestFriends { get; set; } = new List<FriendViewModel>();
 
+        public List<BorrowedBookViewModel> BorrowedBooks { get; set; } = new List<BorrowedBookViewModel>();
+        public List<RentedBookViewModel> RentedBooks { get; set; } = new List<RentedBookViewModel>();
+
         public bool StayInEditMode { get; set; }
 
         public bool HasProfileError { get; set; }
@@ -42,5 +45,19 @@ namespace YourLibrary.Models
         public string? Avatar { get; set; }
 
         public string? AvatarImagePath { get; set; }
+    }
+
+    public class BorrowedBookViewModel
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string OwnerName { get; set; } 
+    }
+
+    public class RentedBookViewModel
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string BorrowerName { get; set; } 
     }
 }

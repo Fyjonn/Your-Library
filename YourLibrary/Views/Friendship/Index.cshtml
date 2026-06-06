@@ -16,6 +16,33 @@
         <h1 class="page-main-title">Your Friends</h1>
     </div>
 
+    @if (Model.IncomingBorrowRequests != null && Model.IncomingBorrowRequests.Any())
+    {
+        <div class="mb-4">
+            @foreach (var request in Model.IncomingBorrowRequests)
+            {
+                <div class="alert alert-warning border border-warning shadow-sm d-flex justify-content-between align-items-center py-3 px-4 rounded-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-exclamation-circle-fill text-warning fs-5"></i>
+                        <span class="text-dark">
+                            <strong>@request.ApplicationUser.UserName</strong> wants to borrow <strong>@request.UserBook.Book?.Title</strong> from you.
+                        </span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <form asp-action="AcceptBorrow" method="post" class="m-0">
+                            <input type="hidden" name="borrowId" value="@request.BorrowId" />
+                            <button type="submit" class="btn btn-sm btn-success px-3 rounded-pill fw-bold">Lend</button>
+                        </form>
+                        <form asp-action="RejectBorrow" method="post" class="m-0">
+                            <input type="hidden" name="borrowId" value="@request.BorrowId" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger px-3 rounded-pill">Reject</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
     <div class="row g-4 mb-4">
         <div class="col-md-6">
             <div class="friend-search-card p-4 shadow h-100 d-flex flex-column justify-content-center">
@@ -41,9 +68,7 @@
         <div class="col-md-6">
             <div class="invitations-section p-4 shadow h-100">
                 <h6 class="fw-bold section-headline mb-3">Waiting Invitations</h6>
-
                 <div class="scroll-content-small">
-
                     @foreach (var item in Model.SentInvitations)
                     {
                         <div class="card invitation-card">
@@ -59,13 +84,11 @@
                                             @(string.IsNullOrEmpty(item.Receiver.Avatar) ? item.Receiver.UserName.Substring(0, 1).ToUpper() : item.Receiver.Avatar)
                                         }
                                     </div>
-
                                     <div class="invitation-info">
                                         <span class="username">@item.Receiver.UserName</span>
                                         <span class="text-muted">Invitation sent</span>
                                     </div>
                                 </div>
-
                                 <a asp-action="CancelInvitation" asp-route-friendshipId="@item.FriendshipId" class="btn btn-outline-danger">Cancel</a>
                             </div>
                         </div>
@@ -86,13 +109,11 @@
                                             @(string.IsNullOrEmpty(item.Requester.Avatar) ? item.Requester.UserName.Substring(0, 1).ToUpper() : item.Requester.Avatar)
                                         }
                                     </div>
-
                                     <div class="invitation-info">
                                         <span class="username">@item.Requester.UserName</span>
                                         <span class="text-muted">Received request</span>
                                     </div>
                                 </div>
-
                                 <div class="d-flex gap-2">
                                     <form asp-action="AcceptInvitation" method="post" class="d-inline">
                                         <input type="hidden" name="friendshipId" value="@item.FriendshipId" />
@@ -106,7 +127,6 @@
                             </div>
                         </div>
                     }
-
                 </div>
             </div>
         </div>
@@ -122,31 +142,31 @@
         </div>
 
         <div class="friends-scroll-viewport">
-            <div class="row row-cols-1 g-2" id="friendsContainer">
-
+            <div class="row row-cols-1 g-2" id="friendsContainer" style="margin: 0;">
                 @foreach (var item in Model.Friends)
                 {
                     var friend = item.Requester.UserName == User.Identity.Name ? item.Receiver : item.Requester;
 
                     <div class="card friend-card friend-list-item-row" data-username="@friend.UserName.ToLower()">
                         <div class="card-body">
-                            <div class="friend-card-content">
-                                <div class="user-avatar">
-                                    @if (!string.IsNullOrEmpty(friend.AvatarImagePath))
-                                    {
-                                        <img src="@friend.AvatarImagePath" alt="Avatar" class="avatar-circle-img" />
-                                    }
-                                    else
-                                    {
-                                        @(string.IsNullOrEmpty(friend.Avatar) ? friend.UserName.Substring(0, 1).ToUpper() : friend.Avatar)
-                                    }
+                            <a asp-action="Shelf" asp-route-friendName="@friend.UserName" class="text-decoration-none d-flex align-items-center justify-content-between w-100 me-3">
+                                <div class="friend-card-content">
+                                    <div class="user-avatar">
+                                        @if (!string.IsNullOrEmpty(friend.AvatarImagePath))
+                                        {
+                                            <img src="@friend.AvatarImagePath" alt="Avatar" class="avatar-circle-img" />
+                                        }
+                                        else
+                                        {
+                                            @(string.IsNullOrEmpty(friend.Avatar) ? friend.UserName.Substring(0, 1).ToUpper() : friend.Avatar)
+                                        }
+                                    </div>
+                                    <div class="friend-info">
+                                        <span class="username">@friend.UserName</span>
+                                        <span class="badge-friend"><i class="bi bi-folder2-open me-1"></i>View Shelf</span>
+                                    </div>
                                 </div>
-
-                                <div class="friend-info">
-                                    <span class="username">@friend.UserName</span>
-                                    <span class="badge-friend">Friend</span>
-                                </div>
-                            </div>
+                            </a>
 
                             <button type="button" class="btn-delete-friend" data-bs-toggle="modal" data-bs-target="#deleteFriendModal" data-friend-name="@friend.UserName" data-friend-id="@item.FriendshipId">
                                 Cancel friend
@@ -154,7 +174,6 @@
                         </div>
                     </div>
                 }
-
             </div>
         </div>
     </div>
@@ -164,20 +183,23 @@
             <div class="borrow-section p-4 shadow h-100">
                 <h6 class="fw-bold section-headline mb-3"><i class="bi bi-box-arrow-in-right me-2"></i>Books u Borrowed</h6>
                 <div class="borrow-list-container">
-                    <div class="p-3 mb-2 rounded border custom-item-row d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="fw-bold d-block text-dark">Władca Pierścieni</span>
-                            <small class="text-muted">From: BookWorm99</small>
-                        </div>
-                        <span class="badge bg-secondary rounded-pill px-3">Borrowed</span>
-                    </div>
-                    <div class="p-3 mb-2 rounded border custom-item-row d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="fw-bold d-block text-dark">Duma i Uprzedzenie</span>
-                            <small class="text-muted">From: eliza_reads</small>
-                        </div>
-                        <span class="badge bg-secondary rounded-pill px-3">Borrowed</span>
-                    </div>
+                    @if (Model.MyBorrowedBooks == null || !Model.MyBorrowedBooks.Any())
+                    {
+                        <p class="text-muted fs-7 italic text-center py-3">No borrowed books.</p>
+                    }
+                    else
+                    {
+                        @foreach (var b in Model.MyBorrowedBooks)
+                        {
+                            <div class="p-3 mb-2 rounded border custom-item-row d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-bold d-block text-dark">@b.UserBook.Book?.Title</span>
+                                    <small class="text-muted">From: @b.UserBook.ApplicationUser?.UserName</small>
+                                </div>
+                                <span class="badge bg-secondary rounded-pill px-3">Borrowed</span>
+                            </div>
+                        }
+                    }
                 </div>
             </div>
         </div>
@@ -186,13 +208,23 @@
             <div class="rent-section p-4 shadow h-100">
                 <h6 class="fw-bold section-headline mb-3"><i class="bi bi-box-arrow-up-left me-2"></i>Books You Rented</h6>
                 <div class="borrow-list-container">
-                    <div class="p-3 mb-2 rounded border custom-item-row d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="fw-bold d-block text-dark">Wiedźmin: Ostatnie Życzenie</span>
-                            <small class="text-muted">To: czytelnik_marian</small>
-                        </div>
-                        <span class="badge bg-success text-white rounded-pill px-3">Rented</span>
-                    </div>
+                    @if (Model.MyRentedBooks == null || !Model.MyRentedBooks.Any())
+                    {
+                        <p class="text-muted fs-7 italic text-center py-3">No rented books.</p>
+                    }
+                    else
+                    {
+                        @foreach (var r in Model.MyRentedBooks)
+                        {
+                            <div class="p-3 mb-2 rounded border custom-item-row d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-bold d-block text-dark">@r.UserBook.Book?.Title</span>
+                                    <small class="text-muted">To: @r.ApplicationUser?.UserName</small>
+                                </div>
+                                <span class="badge bg-success text-white rounded-pill px-3">Rented</span>
+                            </div>
+                        }
+                    }
                 </div>
             </div>
         </div>
@@ -204,7 +236,6 @@
         <div class="modal-content border-0 shadow">
             <form asp-action="DeleteFriend" method="post">
                 <input type="hidden" id="friendshipIdInput" name="friendshipId" />
-
                 <div class="modal-header bg-danger text-white py-2">
                     <h6 class="modal-title fw-bold">Confirmation</h6>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -236,29 +267,5 @@
                 }
             });
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('deleteFriendModal');
-            if (modal) {
-                modal.addEventListener('show.bs.modal', function(event) {
-                    const button = event.relatedTarget;
-                    const friendName = button.getAttribute('data-friend-name');
-                    const friendshipId = button.getAttribute('data-friend-id');
-
-                    document.getElementById('modal-friend-name').textContent = friendName;
-                    document.getElementById('friendshipIdInput').value = friendshipId;
-                });
-            }
-
-            const alert = document.getElementById("friendErrorAlert");
-            if (alert) {
-                setTimeout(function() {
-                    alert.classList.remove("show");
-                    setTimeout(function() {
-                        alert.remove();
-                    }, 300)
-                }, 3000)
-            }
-        });
     </script>
 }

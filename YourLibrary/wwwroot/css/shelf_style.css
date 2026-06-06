@@ -1,10 +1,10 @@
 :root {
-    --primary-green: #1a3a5f; /* Głęboki niebieski */
-    --accent-gold: #6fa8dc; /* Jasnoniebieski akcent kwiatowy */
-    --cream-bg: #f7faff; /* Bardzo jasny, świeży błękitny krem */
-    --table-header-bg: #e3edf7; /* Stonowany błękit pod nagłówek tabeli */
-    --text-dark: #1a3a5f; /* Ciemnoniebieski tekst */
-    --text-muted: #5a738e; /* Szaroniebieski tekst pomocniczy */
+    --primary-green: #1a3a5f; 
+    --accent-gold: #6fa8dc;
+    --cream-bg: #f7faff; 
+    --table-header-bg: #e3edf7; 
+    --text-dark: #1a3a5f; 
+    --text-muted: #5a738e; 
 }
 
 .custom-shelf-title {
@@ -19,20 +19,44 @@
     font-size: 1.1rem;
 }
 
-.custom-error-msg {
-    color: #c0392b !important;
+.no-books-msg {
+    color: var(--primary-green) !important; 
+    font-style: italic;
+    font-size: 1.15rem;
+    font-weight: 500;
+    background-color: rgba(255, 255, 255, 0.9) !important; 
+    border: 1px dashed var(--accent-gold) !important; 
+    border-radius: 8px !important;
+    padding: 15px 30px !important;
+    display: table !important;
+    margin: 20px auto !important;
+    box-shadow: 0 4px 12px rgba(26, 58, 95, 0.05) !important;
 }
 
-/* ==========================================================================
-   KOLOROWE I WYRAŹNE PRZYCISKI (Zrzut ekranu 012852, 012906, 012943)
-   ========================================================================== */
 
-/* Główny przycisk akcji (np. dropdowny, Save Changes, Edit details) */
+.custom-error-msg,
+form ~ .text-danger,
+.custom-table-container + .text-danger,
+p[class*="error"]:not(.small) {
+    color: #c0392b !important; 
+    font-style: italic;
+    font-size: 1.15rem;
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.95) !important; 
+    border: 1px dashed #c0392b !important; 
+    border-radius: 8px !important;
+    padding: 15px 30px !important;
+    display: table !important;
+    margin: 30px auto !important;
+    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.1) !important;
+    text-align: center !important;
+}
+
 .btn-custom-dropdown,
 .btn-primary,
 button[type="submit"]:not(.btn-danger) {
     background-color: var(--primary-green) !important;
-    color: #ffffff !important; /* Pełny biały dla maksymalnego kontrastu */
+    color: #ffffff !important; 
     border: 1px solid var(--primary-green) !important;
     border-radius: 6px !important;
     padding: 10px 20px !important;
@@ -52,7 +76,6 @@ button[type="submit"]:not(.btn-danger) {
         transform: translateY(-1px);
     }
 
-/* Przycisk powrotu / anulowania (np. Cancel, Back to shelf) */
 .btn-secondary,
 .btn-outline-secondary,
 a[href*="Index"],
@@ -77,10 +100,9 @@ a.btn-light {
         transform: translateY(-1px);
     }
 
-/* Przycisk usuwania pozycji (Delete position / Delete Forever) */
 .btn-danger,
 .btn-custom-delete {
-    background-color: #8b2635 !important; /* Głębokie, eleganckie retro bordo */
+    background-color: #8b2635 !important; 
     color: #ffffff !important;
     border: 1px solid #6b1d29 !important;
     border-radius: 6px !important;
@@ -98,7 +120,6 @@ a.btn-light {
         transform: translateY(-1px);
     }
 
-/* Menu rozwijane */
 .custom-dropdown-menu {
     background-color: var(--cream-bg);
     border: 1px solid var(--accent-gold);
@@ -119,16 +140,12 @@ a.btn-light {
             color: var(--cream-bg) !important;
         }
 
-/* ==========================================================================
-   NOWE WYRÓŻNIONE TŁO DLA WYSZUKIWARKI (Zrzut ekranu 012951)
-   ========================================================================== */
 
-/* Całkowicie nowy kontener-kafelek otaczający wyszukiwarkę Google / lokalną */
 .custom-search-container,
 div:has(> #google-search-form),
 div.border.rounded.p-3:has(input[placeholder*="Search"]),
 form:has(.custom-search-group) {
-    background-color: rgba(255, 255, 255, 0.95) !important; /* Odcięcie od tapety w kwiatuszki */
+    background-color: rgba(255, 255, 255, 0.95) !important; 
     border: 1px solid var(--accent-gold) !important;
     border-radius: 12px !important;
     padding: 22px !important;
@@ -136,7 +153,6 @@ form:has(.custom-search-group) {
     box-shadow: 0 4px 16px rgba(26, 58, 95, 0.06) !important;
 }
 
-/* Pasek wyszukiwania */
 .custom-search-group {
     border: 1px solid var(--accent-gold) !important;
     background-color: #ffffff !important;
@@ -164,7 +180,6 @@ form:has(.custom-search-group) {
         background-color: #ffffff !important;
     }
 
-/* Dedykowany, widoczny przycisk "Search" obok inputa */
 .search-book-container button,
 .custom-search-group + button,
 button.btn-search-submit {
@@ -176,12 +191,22 @@ button.btn-search-submit {
     border: none !important;
 }
 
-/* Opcje pod wyszukiwarką (Title / Author) */
 .custom-radio-group {
     color: var(--primary-green) !important;
-    font-weight: bold;
-    margin-top: 10px;
-    text-shadow: none !important; /* Wyłączone, bo na białym tle kafelka tekst jest idealnie czytelny */
+    font-weight: 700 !important;
+    margin-top: 15px !important;
+    text-shadow: none !important;
+    background-color: rgba(235, 243, 250, 0.95) !important;
+    border: 1px solid rgba(111, 168, 220, 0.4) !important;
+    border-radius: 20px !important;
+    padding: 6px 20px !important;
+    display: flex !important;
+    width: fit-content !important; 
+    margin: 15px auto 0 auto !important; 
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
     .custom-radio-group .form-check-input:checked {
@@ -189,81 +214,123 @@ button.btn-search-submit {
         border-color: var(--primary-green) !important;
     }
 
-/* ==========================================================================
-   TABELA I POZOSTAŁE ELEMENTY
-   ========================================================================== */
 
-.custom-table-container {
-    border: 1px solid var(--accent-gold);
-    background-color: var(--cream-bg);
-    box-shadow: 0 4px 15px rgba(26, 58, 95, 0.08);
-    border-radius: 6px;
-    overflow: hidden;
-}
-
-.custom-library-table {
-    background-color: var(--cream-bg) !important;
-}
-
-    .custom-library-table thead {
-        background-color: var(--table-header-bg) !important;
-        border-bottom: 2px solid var(--accent-gold);
-    }
-
-    .custom-library-table th {
-        color: var(--primary-green) !important;
-        font-family: 'Georgia', serif;
-        font-weight: bold;
-        padding: 12px;
-    }
-
-.book-clickable-row {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.custom-library-table td {
-    padding: 14px 12px;
-    border-bottom: 1px solid #d0deec;
-}
-
-.custom-book-title-cell {
-    color: var(--primary-green) !important;
-    font-weight: 600;
-}
-
-.custom-author-text {
-    color: var(--text-muted) !important;
-}
-
-.custom-library-table tbody tr:hover {
-    background-color: #edf4fc !important;
-}
-
-.btn-fab {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background-color: var(--primary-green);
-    color: var(--cream-bg);
-    border: 1px solid var(--accent-gold);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    text-decoration: none;
-    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-    z-index: 1050;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
-}
-
-    .btn-fab:hover {
+    .custom-table-container {
+        border: 1px solid var(--accent-gold);
         background-color: var(--cream-bg);
-        color: var(--primary-green);
-        transform: scale(1.1);
-        border-color: var(--primary-green);
-        box-shadow: 0 6px 12px rgba(26, 58, 95, 0.3) !important;
+        box-shadow: 0 4px 15px rgba(26, 58, 95, 0.08);
+        border-radius: 6px;
+        overflow: hidden;
     }
+
+    .custom-library-table {
+        background-color: var(--cream-bg) !important;
+    }
+
+        .custom-library-table thead {
+            background-color: var(--table-header-bg) !important;
+            border-bottom: 2px solid var(--accent-gold);
+        }
+
+        .custom-library-table th {
+            color: var(--primary-green) !important;
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+            padding: 12px;
+        }
+
+    .book-clickable-row {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .custom-library-table td {
+        padding: 14px 12px;
+        border-bottom: 1px solid #d0deec;
+    }
+
+    .custom-book-title-cell {
+        color: var(--primary-green) !important;
+        font-weight: 600;
+    }
+
+    .custom-author-text {
+        color: var(--text-muted) !important;
+    }
+
+    .custom-library-table tbody tr:hover {
+        background-color: #edf4fc !important;
+    }
+
+    .btn-fab {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        background-color: var(--primary-green);
+        color: var(--cream-bg);
+        border: 1px solid var(--accent-gold);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        text-decoration: none;
+        transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        z-index: 1050;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+    }
+
+        .btn-fab:hover {
+            background-color: var(--cream-bg);
+            color: var(--primary-green);
+            transform: scale(1.1);
+            border-color: var(--primary-green);
+            box-shadow: 0 6px 12px rgba(26, 58, 95, 0.3) !important;
+        }
+
+
+    .custom-friend-navbar {
+        background-color: #1a3a5f !important;
+        border-bottom: 2px solid #6fa8dc;
+
+        .font-serif {
+            font-family: 'Georgia', serif;
+        }
+
+        .btn-friend-back {
+            background-color: transparent !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            font-family: 'Georgia', serif;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+        }
+
+            .btn-friend-back:hover {
+                background-color: rgba(255, 255, 255, 0.15) !important;
+                border-color: #ffffff !important;
+                color: #ffffff !important;
+                transform: translateY(-1px);
+            }
+
+        .library-shelf-container {
+            z-index: 1;
+        }
+
+        .text-info-custom {
+            color: #6fa8dc !important;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .border-white-50 {
+            border-color: rgba(255, 255, 255, 0.3) !important;
+            font-family: 'Georgia', serif;
+        }
+
+            .border-white-50:hover {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                border-color: #ffffff !important;
+            }

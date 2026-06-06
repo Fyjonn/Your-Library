@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<YourLibrary.Models.UserBook>
+@using System.Security.Claims
 @{
     ViewData["Title"] = "My Shelf";
 }
@@ -134,16 +135,30 @@
                         <table class="table table-hover align-middle mb-0 custom-library-table">
                             <thead>
                                 <tr>
-                                    <th>Tytuł</th>
-                                    <th>Autor</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var userBook in Model.Where(b => string.Equals(b.ReadStatus.ToString(), "DNF", StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <tr class="book-clickable-row book-card-item" data-url="/UserBook/Details/@userBook.UserBookId" data-title="@userBook.Book?.Title?.ToLower()" data-author="@userBook.Book?.Author?.ToLower()">
+                                    bool isBorrowedFromFriend = userBook.ApplicationUserId != User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                                    <tr class="book-clickable-row book-card-item @(isBorrowedFromFriend ? "table-success border-start border-success border-4" : "")"
+                                        data-url="/UserBook/Details/@userBook.UserBookId"
+                                        data-title="@userBook.Book?.Title?.ToLower()"
+                                        data-author="@userBook.Book?.Author?.ToLower()">
+
                                         <td class="fw-bold custom-book-title-cell">
-                                            <i class="bi bi-book me-2"></i>@userBook.Book?.Title
+                                            @if (isBorrowedFromFriend)
+                                            {
+                                                <i class="bi bi-box-arrow-in-down text-success me-2"></i><span class="text-success">@userBook.Book?.Title (Borrowed)</span>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-book me-2"></i>
+                                                @userBook.Book?.Title
+                                            }
                                         </td>
                                         <td class="custom-author-text">@userBook.Book?.Author</td>
                                     </tr>
@@ -284,6 +299,7 @@
             } else {
                 if (noResultsMsg) {
                     noResultsMsg.classList.add('d-none');
+                    noResultsMsg.style.setProperty('display', 'none', 'important');
                 }
             }
         }

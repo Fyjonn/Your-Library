@@ -45,6 +45,23 @@ namespace YourLibrary.Controllers
             Author = b.Book.Author
         }).ToListAsync();
 
+            var borrowedBooks = await _context.Borrows.Include(b => b.UserBook.Book).Include(b => b.UserBook.ApplicationUser)
+                    .Where(b => b.ApplicationUserId == user.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed).OrderByDescending(b => b.BorrowDate).Take(3).Select(b => new BorrowedBookViewModel
+                    {
+                        Id = b.UserBook.BookId,
+                        Title = b.UserBook.Book.Title,
+                        OwnerName = b.UserBook.ApplicationUser.DisplayName ?? b.UserBook.ApplicationUser.UserName
+                    }).ToListAsync();
+
+            var rentedBooks = await _context.Borrows.Include(b => b.UserBook.Book).Include(b => b.ApplicationUser) 
+                .Where(b => b.UserBook.ApplicationUserId == user.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed).OrderByDescending(b => b.BorrowDate).Take(3).Select(b => new RentedBookViewModel
+                {
+                    Id = b.UserBook.BookId,
+                    Title = b.UserBook.Book.Title,
+                    BorrowerName = b.ApplicationUser.DisplayName ?? b.ApplicationUser.UserName
+                }).ToListAsync();
+
+
             var model = new ProfileViewModel
             {
                 DisplayName = user.DisplayName ?? "User",
@@ -52,6 +69,8 @@ namespace YourLibrary.Controllers
                 Avatar = string.IsNullOrEmpty(user.Avatar) ? "🌿" : user.Avatar,
                 AvatarImagePath = user.AvatarImagePath,
                 LatestBooks = latestBooks,
+                BorrowedBooks = borrowedBooks,
+                RentedBooks = rentedBooks,
                 LatestFriends = latestFriends.Select(x =>
                 {
                     var friend = x.RequesterId == user.Id ? x.Receiver : x.Requester;

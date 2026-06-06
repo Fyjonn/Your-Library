@@ -39,8 +39,99 @@ namespace YourLibrary.Controllers
             model.Friends = await _context.Friendships.Include(x => x.Requester).Include(x => x.Receiver)
                 .Where(x => (x.RequesterId ==currentUser.Id || x.ReceiverId == currentUser.Id) && x.FriendStatus == EnumFriendStatus.Accepted).ToListAsync();
 
+            model.IncomingBorrowRequests = await _context.Borrows.Include(b => b.ApplicationUser).Include(b => b.UserBook).ThenInclude(ub => ub.Book) 
+                 .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Requested).ToListAsync();
+
+            model.MyBorrowedBooks = await _context.Borrows.Include(b => b.UserBook).ThenInclude(ub => ub.Book).Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser)
+                .Where(b => b.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed).ToListAsync();
+
+            model.MyRentedBooks = await _context.Borrows.Include(b => b.ApplicationUser) .Include(b => b.UserBook).ThenInclude(ub => ub.Book)
+                .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed).ToListAsync();
+
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> RequestBorrow(int userBookId, string friendName)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            var alreadyRequested = await _context.Borrows
+                .AnyAsync(b => b.UserBookId == userBookId && b.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Requested);
+
+            if (!alreadyRequested)
+            {
+                var borrowRequest = new Borrow
+                {
+                    UserBookId = userBookId,
+                    ApplicationUserId = currentUser.Id,
+                    StatusBorrow = EnumStatusBorrow.Requested,
+                    BorrowDate = DateTime.Now,
+                    ReturnDate = DateTime.Now.AddDays(30) 
+                };
+
+                _context.Borrows.Add(borrowRequest);
+                await _context.SaveChangesAsync();
+                TempData["FriendSuccess"] = "Borrow request sent successfully!";
+            }
+            else
+            {
+                TempData["FriendError"] = "You have already requested this book.";
+            }
+
+            return RedirectToAction("Shelf", new { friendName = friendName });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> AcceptBorrow(int borrowId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return RedirectToAction(nameof(Index));
+
+
+            var borrow = await _context.Borrows
+                .Include(b => b.UserBook)
+                .FirstOrDefaultAsync(b => b.BorrowId == borrowId && b.UserBook.ApplicationUserId == currentUser.Id);
+
+            if (borrow != null)
+            {
+                borrow.StatusBorrow = EnumStatusBorrow.Borrowed;
+                borrow.BorrowDate = DateTime.Now; 
+
+                _context.Update(borrow);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> RejectBorrow(int borrowId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return RedirectToAction(nameof(Index));
+
+
+            var borrow = await _context.Borrows
+                .Include(b => b.UserBook)
+                .FirstOrDefaultAsync(b => b.BorrowId == borrowId && b.UserBook.ApplicationUserId == currentUser.Id);
+
+            if (borrow != null)
+            {
+                _context.Borrows.Remove(borrow);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> SendInvitation(string searchUsername)
@@ -184,5 +275,48 @@ namespace YourLibrary.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Shelf(string friendName)
+        {
+            if (string.IsNullOrEmpty(friendName))
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var friendUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == friendName);
+            if (friendUser == null)
+            {
+                return NotFound();
+            }
+
+            var books = await _context.UserBooks
+                .Include(ub => ub.Book)
+                .Where(ub => ub.ApplicationUserId == friendUser.Id)
+                .ToListAsync();
+
+            var currentlyBorrowedIds = await _context.Borrows
+                .Where(b => b.StatusBorrow == EnumStatusBorrow.Borrowed)
+                .Select(b => b.UserBookId)
+                .ToListAsync();
+
+            var availableBooks = books.Where(ub => !currentlyBorrowedIds.Contains(ub.UserBookId)).ToList();
+
+            var viewModel = new FriendShelfViewModel
+            {
+                FriendName = friendName,
+                Books = availableBooks
+            };
+
+            return View(viewModel);
+        }
+
     }
 }

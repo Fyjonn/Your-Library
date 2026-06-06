@@ -175,7 +175,6 @@ main svg {
     fill: var(--retro-burgund) !important; 
 }
 
-/* Jeśli ikona jest ścieżką wewnątrz SVG */
 svg path[fill="#dc3545"],
 svg path[fill="#e04f5f"],
 svg path {

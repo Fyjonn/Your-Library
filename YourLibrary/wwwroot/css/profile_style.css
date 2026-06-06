@@ -1,10 +1,10 @@
 ﻿#profile-view-mode, #profile-edit-mode {
-    color: #f4f8fb !important; 
+    color: #f4f8fb !important;
     width: 100% !important;
 }
 
 .profile-header h2 {
-    color: #1a3a5f !important; 
+    color: #1a3a5f !important;
     text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
 }
 
@@ -16,8 +16,8 @@
 }
 
 .profile-card, .dashboard-section-card {
-    background-color: rgba(255, 255, 255, 0.90) !important; 
-    border: 1px solid #cfe2f3 !important; 
+    background-color: rgba(255, 255, 255, 0.90) !important;
+    border: 1px solid #cfe2f3 !important;
     border-radius: 12px !important;
     backdrop-filter: blur(10px);
     padding: 24px !important;
@@ -27,9 +27,14 @@
 }
 
 .dashboard-section-card {
-    cursor: pointer;
+    cursor: pointer !important; 
     margin-bottom: 24px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+    .dashboard-section-card:hover {
+        box-shadow: 0 12px 40px rgba(26, 58, 95, 0.15) !important;
+    }
 
 .profile-username, .edit-mode-title, .section-card-header h5 {
     font-weight: 700 !important;
@@ -56,10 +61,10 @@
     text-decoration: none !important;
 }
 
-    .view-all-link:hover {
-        color: #1a3a5f !important;
-        text-decoration: underline !important;
-    }
+.dashboard-section-card:hover .view-all-link {
+    color: #1a3a5f !important;
+    text-decoration: underline !important;
+}
 
 .dashboard-list {
     padding-left: 0 !important;
@@ -69,24 +74,22 @@
 
 .dashboard-item-row {
     padding: 14px 18px !important;
-    background-color: #f4f8fb !important; 
+    background-color: #f4f8fb !important;
     border: 1px solid #e3edf7 !important;
     border-radius: 8px !important;
     margin-bottom: 10px !important;
     display: flex;
     flex-direction: column;
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
-}
+    cursor: default !important; 
 
     .dashboard-item-row:last-child {
         margin-bottom: 0 !important;
     }
 
     .dashboard-item-row:hover {
-        background-color: #e3edf7 !important;
-        transform: translateX(6px);
-        box-shadow: 0 4px 12px rgba(26, 58, 95, 0.1) !important;
+        background-color: #f4f8fb !important;
+        transform: none !important;
+        box-shadow: none !important;
     }
 
 .item-title {
@@ -96,7 +99,7 @@
 }
 
 .item-sub, .text-muted {
-    color: #5a738e !important; 
+    color: #5a738e !important;
     font-size: 0.85rem !important;
 }
 
