@@ -2,7 +2,6 @@
     font-family: 'Georgia', serif;
 }
 
-    /* Tytuł strony dopasowany do jasnego tła w kwiatuszki */
     .friendship-page-container .page-main-title {
         color: #1a3a5f !important;
         text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
@@ -11,7 +10,6 @@
         margin-bottom: 0;
     }
 
-/* Kontenery sekcji - czysta biel z niebieskim akcentem */
 .friend-search-card, .invitations-section, .friends-list-section, .borrow-section, .rent-section {
     background-color: rgba(255, 255, 255, 0.95) !important;
     border: 1px solid #cfe2f3 !important;
@@ -19,7 +17,6 @@
     box-shadow: 0 4px 15px rgba(26, 58, 95, 0.05);
 }
 
-/* Nagłówki sekcji */
 .search-headline, .section-headline, .list-headline {
     color: #1a3a5f !important;
     font-size: 1.1rem;
@@ -30,7 +27,6 @@
     max-width: 280px;
 }
 
-/* Pola tekstowe i ikony wyszukiwania */
 .search-icon-box {
     background-color: #ffffff !important;
     border-color: #cfe2f3 !important;
@@ -48,7 +44,6 @@
         border-color: #6fa8dc !important;
     }
 
-/* Przycisk akcji biblioteki */
 .btn-library-submit {
     background-color: #1a3a5f !important;
     color: #ffffff !important;
@@ -61,12 +56,118 @@
         color: #ffffff !important;
     }
 
-/* Wiersze listy i kafelki zaproszeń */
 .custom-item-row, .invitation-card, .friend-card {
     background-color: #f4f8fb !important;
     border: 1px solid #e3edf7 !important;
     border-radius: 10px;
+    margin-bottom: 8px;
 }
+
+    .friend-card .card-body,
+    .invitation-card .card-body {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+
+.friend-card-content,
+.invitation-card-content {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px;
+}
+
+.user-avatar {
+    width: 44px !important;
+    height: 44px !important;
+    background-color: #ffffff !important; 
+    border: 2px solid #1a3a5f !important; 
+    color: #1a3a5f !important; 
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    flex-shrink: 0 !important; 
+}
+
+.avatar-circle-img {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    border: 2px solid #1a3a5f !important;
+    object-fit: cover !important;
+    display: block !important;
+    flex-shrink: 0 !important;
+}
+
+.friend-info,
+.invitation-info {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+}
+
+.username {
+    font-family: 'Georgia', serif;
+    font-weight: bold !important;
+    color: #1a3a5f !important;
+    font-size: 1rem !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+}
+
+.invitation-card .text-muted {
+    line-height: 1.2;
+    font-size: 0.9rem;
+}
+
+.badge-friend {
+    background-color: #d1e7dd !important;
+    color: #1a3a5f !important;
+    border: 1px solid #cfe2f3 !important;
+    font-size: 0.75rem !important;
+    padding: 3px 10px !important;
+    border-radius: 20px !important;
+    margin-top: 3px !important;
+}
+
+
+.btn-delete-friend {
+    font-family: 'Georgia', serif;
+    color: #b02a37 !important;
+    text-decoration: none !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    font-size: 0.95rem !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap;
+}
+
+    .btn-delete-friend:hover {
+        color: #8b202a !important;
+        text-decoration: underline !important;
+    }
+
+.invitation-card .btn-outline-danger {
+    color: #b02a37 !important;
+    border-color: #b02a37 !important;
+    background-color: transparent !important;
+    border-radius: 6px !important;
+    padding: 4px 12px !important;
+    font-size: 0.9rem !important;
+    transition: all 0.2s ease-in-out !important;
+    white-space: nowrap;
+}
+
+    .invitation-card .btn-outline-danger:hover {
+        color: #ffffff !important;
+        background-color: #b02a37 !important;
+    }
 
 .friends-scroll-viewport {
     max-height: 382px;
@@ -75,11 +176,13 @@
 }
 
 .scroll-content-small {
-    max-height: 120px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    max-height: 300px;
     overflow-y: auto;
 }
 
-    /* Stylizacja suwaka */
     .friends-scroll-viewport::-webkit-scrollbar,
     .scroll-content-small::-webkit-scrollbar {
         width: 7px;
@@ -97,46 +200,13 @@
         border-radius: 10px;
     }
 
-/* Awatary użytkowników */
-.user-avatar {
-    width: 44px;
-    height: 44px;
-    background-color: #1a3a5f !important;
-    color: #ffffff !important;
-    font-weight: bold;
-    font-size: 16px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.friend-avatar {
-    background-color: #6fa8dc !important;
-}
-
-.mini-avatar {
-    width: 32px;
-    height: 32px;
-    font-size: 13px;
-}
-
-/* Stany puste i teksty pomocnicze */
-.no-data-text {
-    color: #5a738e !important;
-    font-style: italic;
-}
-
-.empty-state-box {
+.no-data-text, .empty-state-box {
     color: #5a738e !important;
     text-align: center;
     padding: 20px 0;
+    font-style: italic;
 }
 
 .empty-icon {
     color: #6fa8dc !important;
-}
-
-.empty-text {
-    font-style: italic;
 }

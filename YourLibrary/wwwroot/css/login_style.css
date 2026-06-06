@@ -124,3 +124,62 @@
             color: #ffffff !important;
             font-weight: 600;
         }
+
+custom-userbook-header h1 {
+    color: #ffffff !important;
+    font-family: 'Georgia', serif;
+}
+
+.custom-userbook-header h2 {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+}
+
+.login-card-header {
+    background-color: #1a3a5f !important;
+    border-bottom: 1px solid var(--accent-gold, #6fa8dc) !important;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+}
+
+    .login-card-header h1 {
+        color: #ffffff !important;
+        font-family: 'Georgia', serif;
+        margin: 0;
+    }
+
+    .login-card-header h2 {
+        color: rgba(255, 255, 255, 0.75) !important;
+        font-family: 'Georgia', serif;
+        font-style: italic;
+        font-weight: 400;
+    }
+
+.btn-login-submit {
+    background-color: #1a3a5f !important;
+    color: #ffffff !important;
+    border: 1px solid #1a3a5f !important;
+    font-family: 'Georgia', serif;
+    font-size: 1rem !important;
+    font-weight: 500;
+    padding: 12px 24px !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 2px 4px rgba(26, 58, 95, 0.1);
+}
+
+    .btn-login-submit:hover {
+        background-color: #244f80 !important;
+        border-color: #244f80 !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 8px rgba(26, 58, 95, 0.2);
+    }
+
+.form-floating > label {
+    color: #6c757d !important;
+}
+
+.form-floating > .custom-form-control:focus ~ label,
+.form-floating > .custom-form-control:not(:placeholder-shown) ~ label {
+    color: #1a3a5f !important;
+}}
