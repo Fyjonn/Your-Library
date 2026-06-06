@@ -89,8 +89,9 @@
                         </div>
 
                         <div class="d-flex gap-3">
-                            <button type="button" class="btn btn-library-cancel flex-grow-1" onclick="toggleEditMode(false)">Cancel</button>
-                            <button type="submit" class="btn btn-library-green flex-grow-1">Confirm</button>
+                            <button type="button" class="btn btn-library-cancel flex-grow-1" onclick="toggleEditMode(false)"> <i class="bi bi-arrow-left me-2"></i>Cancel</button>
+                            <button type="submit" class="btn btn-library-green flex-grow-1"><i class="bi bi-check-lg me-2"></i>Confirm</button>
+
                         </div>
                     </form>
                 </div>
@@ -106,18 +107,20 @@
                         </div>
                         <div class="section-card-body mt-3">
                             <ul class="list-unstyled mb-0 dashboard-list">
-                                <li class="dashboard-item-row" data-item-url="/UserBook/Details/1">
-                                    <span class="item-title fw-bold">The Brave Days of Old</span>
-                                    <span class="item-sub text-muted d-block small">Mrs. Valentine</span>
-                                </li>
-                                <li class="dashboard-item-row mt-2" data-item-url="/UserBook/Details/2">
-                                    <span class="item-title fw-bold">Władca Pierścieni</span>
-                                    <span class="item-sub text-muted d-block small">J.R.R. Tolkien</span>
-                                </li>
-                                <li class="dashboard-item-row mt-2" data-item-url="/UserBook/Details/3">
-                                    <span class="item-title fw-bold">Wiedźmin: Ostatnie życzenie</span>
-                                    <span class="item-sub text-muted d-block small">Andrzej Sapkowski</span>
-                                </li>
+                                @if (Model.LatestBooks != null && Model.LatestBooks.Any())
+                                {
+                                    @foreach (var book in Model.LatestBooks)
+                                    {
+                                        <li class="dashboard-item-row @(Model.LatestBooks.IndexOf(book) > 0 ? "mt-2" : "")" data-item-url="/UserBook/Details/@book.Id">
+                                            <span class="item-title fw-bold">@book.Title</span>
+                                            <span class="item-sub text-muted d-block small">@book.Author</span>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="text-muted small ps-2">No books added yet.</li>
+                                }
                             </ul>
                         </div>
                     </div>

@@ -38,13 +38,20 @@ namespace YourLibrary.Controllers
             var latestFriends = await _context.Friendships.Include(x => x.Requester).Include(x => x.Receiver).Where(x =>
             x.FriendStatus == EnumFriendStatus.Accepted && (x.RequesterId == user.Id || x.ReceiverId == user.Id)).OrderByDescending(x => x.CreatedAt).Take(3).ToListAsync();
 
+            var latestBooks = await _context.UserBooks.Include(b => b.Book).Where(b => b.ApplicationUserId == user.Id).Where(b => b.ApplicationUserId == user.Id).OrderByDescending(b => b.BookId).Take(3).Select(b => new BookViewModel
+        {
+            Id = b.Book.BookId,
+            Title = b.Book.Title,
+            Author = b.Book.Author
+        }).ToListAsync();
+
             var model = new ProfileViewModel
             {
-                DisplayName = user.DisplayName ?? "Użytkownik",
+                DisplayName = user.DisplayName ?? "User",
                 Email = user.Email ?? "",
                 Avatar = string.IsNullOrEmpty(user.Avatar) ? "🌿" : user.Avatar,
                 AvatarImagePath = user.AvatarImagePath,
-                LatestBooks = new List<BookViewModel>(),
+                LatestBooks = latestBooks,
                 LatestFriends = latestFriends.Select(x =>
                 {
                     var friend = x.RequesterId == user.Id ? x.Receiver : x.Requester;

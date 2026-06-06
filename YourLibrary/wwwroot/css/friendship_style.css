@@ -1,97 +1,85 @@
-/* Kontener i Ogólne czcionki */
 .friendship-page-container {
     font-family: 'Georgia', serif;
 }
 
-    /* Tytuł strony na środku, beżowy, bez ikon */
+    /* Tytuł strony dopasowany do jasnego tła w kwiatuszki */
     .friendship-page-container .page-main-title {
-        color: #f7f2e4 !important;
-        text-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+        color: #1a3a5f !important;
+        text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
         font-size: 2.8rem;
         font-weight: bold;
         margin-bottom: 0;
     }
 
-/* Stylizacja kart bocznych / głównych sekcji */
-.friend-search-card,
-.invitations-section,
-.friends-list-section,
-.borrow-section,
-.rent-section {
-    background-color: #f7f2e4 !important;
-    border: 1px solid #cbdcd4 !important;
+/* Kontenery sekcji - czysta biel z niebieskim akcentem */
+.friend-search-card, .invitations-section, .friends-list-section, .borrow-section, .rent-section {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #cfe2f3 !important;
     border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(26, 58, 95, 0.05);
 }
 
 /* Nagłówki sekcji */
-.search-headline,
-.section-headline,
-.list-headline {
-    color: #1e3630 !important;
+.search-headline, .section-headline, .list-headline {
+    color: #1a3a5f !important;
     font-size: 1.1rem;
     font-weight: bold;
 }
 
-/* Wyszukiwarka wewnątrz listy przyjaciół */
 .list-search-box {
     max-width: 280px;
 }
 
-/* Pola wejściowe / inputy */
+/* Pola tekstowe i ikony wyszukiwania */
 .search-icon-box {
     background-color: #ffffff !important;
-    border-color: #cbdcd4 !important;
-    color: #1e3630 !important;
+    border-color: #cfe2f3 !important;
+    color: #1a3a5f !important;
 }
 
 .search-input {
-    border-color: #cbdcd4 !important;
+    border-color: #cfe2f3 !important;
     background-color: #ffffff !important;
-    color: #1e3630 !important;
+    color: #1a3a5f !important;
 }
 
     .search-input:focus {
-        box-shadow: 0 0 0 0.25rem rgba(30, 54, 48, 0.15) !important;
-        border-color: #1e3630 !important;
+        box-shadow: 0 0 0 0.25rem rgba(111, 168, 220, 0.2) !important;
+        border-color: #6fa8dc !important;
     }
 
 /* Przycisk akcji biblioteki */
 .btn-library-submit {
-    background-color: #1e3630 !important;
-    color: #fcfaf2 !important;
+    background-color: #1a3a5f !important;
+    color: #ffffff !important;
     border: none !important;
     transition: all 0.2s ease-in-out !important;
 }
 
     .btn-library-submit:hover {
-        background-color: #2d4a43 !important;
+        background-color: #11253f !important;
         color: #ffffff !important;
     }
 
-/* Elementy wewnętrzne rzędów / listy */
-.custom-item-row,
-.invitation-card,
-.friend-card {
-    background-color: #f4f8f6 !important;
-    border: 1px solid #d4e2dc !important;
+/* Wiersze listy i kafelki zaproszeń */
+.custom-item-row, .invitation-card, .friend-card {
+    background-color: #f4f8fb !important;
+    border: 1px solid #e3edf7 !important;
     border-radius: 10px;
 }
 
-/* ==== PRZESUWNIK (SUWAK) DLA LISTY PRZYJACIÓŁ ==== */
-/* Średnia wysokość jednego elementu to ok. 76px. 5 elementów = ~380px */
 .friends-scroll-viewport {
     max-height: 382px;
     overflow-y: auto;
     padding-right: 4px;
 }
 
-/* Ograniczony kontener dla zaproszeń obok wyszukiwarki */
 .scroll-content-small {
     max-height: 120px;
     overflow-y: auto;
 }
 
-    /* Stylizacja suwaka (Retro Vintage Scrollbar) */
+    /* Stylizacja suwaka */
     .friends-scroll-viewport::-webkit-scrollbar,
     .scroll-content-small::-webkit-scrollbar {
         width: 7px;
@@ -99,13 +87,13 @@
 
     .friends-scroll-viewport::-webkit-scrollbar-track,
     .scroll-content-small::-webkit-scrollbar-track {
-        background: #eaedf0;
+        background: #f4f8fb;
         border-radius: 10px;
     }
 
     .friends-scroll-viewport::-webkit-scrollbar-thumb,
     .scroll-content-small::-webkit-scrollbar-thumb {
-        background-color: #1e3630;
+        background-color: #6fa8dc;
         border-radius: 10px;
     }
 
@@ -113,8 +101,8 @@
 .user-avatar {
     width: 44px;
     height: 44px;
-    background-color: #1e3630 !important;
-    color: #fcfaf2 !important;
+    background-color: #1a3a5f !important;
+    color: #ffffff !important;
     font-weight: bold;
     font-size: 16px;
     border-radius: 50%;
@@ -124,7 +112,7 @@
 }
 
 .friend-avatar {
-    background-color: #2d4a43 !important;
+    background-color: #6fa8dc !important;
 }
 
 .mini-avatar {
@@ -135,18 +123,18 @@
 
 /* Stany puste i teksty pomocnicze */
 .no-data-text {
-    color: #4f6e65 !important;
+    color: #5a738e !important;
     font-style: italic;
 }
 
 .empty-state-box {
-    color: #4f6e65 !important;
+    color: #5a738e !important;
     text-align: center;
     padding: 20px 0;
 }
 
 .empty-icon {
-    color: #bfa15f !important;
+    color: #6fa8dc !important;
 }
 
 .empty-text {
