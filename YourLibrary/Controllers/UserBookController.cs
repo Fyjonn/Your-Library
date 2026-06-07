@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using YourLibrary.Data;
 using YourLibrary.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace YourLibrary.Controllers
 {
@@ -12,11 +17,13 @@ namespace YourLibrary.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public UserBookController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public UserBookController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _userManager = userManager;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -27,13 +34,31 @@ namespace YourLibrary.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(UserBook userbook)
+        public IActionResult Create(UserBook userbook, string reviewRating, string reviewComment, IFormFile coverFile)
         {
             string currentUserId = _userManager.GetUserId(User);
             userbook.ApplicationUserId = currentUserId;
 
             var formTitle = Request.Form["Book.Title"].ToString();
             var formAuthor = Request.Form["Book.Author"].ToString();
+            var formGenre = Request.Form["Book.Genre"].ToString();
+            var formAgeRating = Request.Form["Book.AgeRating"].ToString();
+            var formDescription = Request.Form["Book.Description"].ToString();
+
+            if (!string.IsNullOrEmpty(formTitle))
+            {
+                bool alreadyExists = _context.UserBooks
+                    .Include(ub => ub.Book)
+                    .Any(ub => ub.ApplicationUserId == currentUserId
+                            && ub.Book.Title.ToLower() == formTitle.ToLower()
+                            && ub.Book.Author.ToLower() == formAuthor.ToLower());
+
+                if (alreadyExists)
+                {
+                    ModelState.AddModelError("Book.Title", "You already have this book on your shelf!");
+                    return View(userbook);
+                }
+            }
 
             if (userbook.Book == null)
             {
@@ -41,7 +66,27 @@ namespace YourLibrary.Controllers
             }
             userbook.Book.Title = formTitle;
             userbook.Book.Author = formAuthor;
-            userbook.Book.ReviewId = null; 
+            userbook.Book.Genre = formGenre;
+            userbook.Book.AgeRating = formAgeRating;
+            userbook.Book.Description = formDescription;
+            userbook.Book.ReviewId = null;
+
+            if (coverFile != null && coverFile.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "covers");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(coverFile.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    coverFile.CopyTo(fileStream);
+                }
+                userbook.Book.ImageURL = "/covers/" + uniqueFileName;
+            }
 
             if (!string.IsNullOrEmpty(userbook.Book.Title))
             {
@@ -53,10 +98,31 @@ namespace YourLibrary.Controllers
                 _context.UserBooks.Add(userbook);
                 _context.SaveChanges();
 
+                decimal parsedRating = 0;
+                if (!string.IsNullOrEmpty(reviewRating) &&
+                    decimal.TryParse(reviewRating, NumberStyles.Any, CultureInfo.InvariantCulture, out parsedRating))
+                {
+                    if (parsedRating > 0)
+                    {
+                        var newReview = new Review
+                        {
+                            Rating = parsedRating,
+                            ReviewComment = reviewComment ?? "",
+                            UserBook = userbook
+                        };
+
+                        _context.Reviews.Add(newReview);
+                        _context.SaveChanges();
+
+                        userbook.ReviewId = newReview.ReviewId;
+                        userbook.Book.ReviewId = newReview.ReviewId;
+                        _context.SaveChanges();
+                    }
+                }
+
                 return RedirectToAction("Index", "Shelf");
             }
-
-            ModelState.AddModelError("Book.Title", "Tytuł książki nie może być pusty.");
+            ModelState.AddModelError("Book.Title", "Title or author cannot be empty!");
             return View(userbook);
         }
 
@@ -67,9 +133,9 @@ namespace YourLibrary.Controllers
 
             var userBook = _context.UserBooks
                 .Include(ub => ub.Book)
+                .Include(ub => ub.Review)
                 .FirstOrDefault(ub => ub.UserBookId == id && ub.ApplicationUserId == currentUserId);
 
-            // Zabezpieczenie przed brakiem rekordu lub usuniętą książką
             if (userBook == null || userBook.Book == null)
             {
                 return NotFound();
@@ -97,48 +163,56 @@ namespace YourLibrary.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(UserBook userbook)
+        public IActionResult Edit(int id, UserBook userbook)
         {
-            string currentUserId = _userManager.GetUserId(User);
-            //userbook.ApplicationUserId = currentUserId;
-
-            ModelState.Remove("ApplicationUserId");
-            ModelState.Remove("ApplicationUser");
-            ModelState.Remove("Book");
-            ModelState.Remove("Review");
-            ModelState.Remove("Borrows");
-
-            if (!ModelState.IsValid)
-            {
-                userbook.Book = _context.Books.FirstOrDefault(b => b.BookId == userbook.BookId);
-                return View(userbook);
-            }
-
-            var dbUserBook = _context.UserBooks.FirstOrDefault(ub => ub.UserBookId == userbook.UserBookId && ub.ApplicationUserId == currentUserId);
-
-            if (dbUserBook == null)
+            if (id != userbook.UserBookId)
             {
                 return NotFound();
             }
-            dbUserBook.ReadStatus = userbook.ReadStatus;
-            dbUserBook.Location = userbook.Location;
-            dbUserBook.Bookmark = userbook.Bookmark;
-            dbUserBook.Notes = userbook.Notes;
 
-            if (dbUserBook.IsBorrowed)
+            string currentUserId = _userManager.GetUserId(User);
+            if (userbook.ApplicationUserId != currentUserId)
             {
-                dbUserBook.IsOwned = false;
+                return Forbid();
+            }
+
+            if (userbook.Media != EnumMedia.Printed)
+            {
+                userbook.Bookmark = false;
+                userbook.IsOwned = false;
+                userbook.IsBorrowed = false;
+                userbook.Location = null;
             }
             else
             {
-                dbUserBook.Media = userbook.Media;
-                dbUserBook.IsOwned = userbook.IsOwned;
+                if (userbook.IsOwned)
+                {
+                    userbook.IsBorrowed = false;
+                }
+                else if (userbook.IsBorrowed)
+                {
+                    userbook.IsOwned = false;
+                }
             }
 
-            //_context.UserBooks.Update(userbook);
-            _context.SaveChanges();
+            try
+            {
+                _context.UserBooks.Update(userbook);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.UserBooks.Any(e => e.UserBookId == userbook.UserBookId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
-            return RedirectToAction("Index", "Shelf"); //powrot do polki
+            return RedirectToAction("Index", "Shelf");
         }
 
         [HttpGet]

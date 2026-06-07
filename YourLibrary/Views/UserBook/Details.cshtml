@@ -7,7 +7,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/userbook_style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/userbook_details.css" asp-append-version="true" />
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -63,6 +63,44 @@
                     <span class="fst-italic">
                         @(string.IsNullOrEmpty(Model.Notes) ? "No additional notes for this book." : Model.Notes)
                     </span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <div class="fw-bold custom-label-muted mb-2">
+                    <i class="bi bi-chat-left-heart me-1"></i>Twoja Recenzja:
+                </div>
+                <div class="p-3 rounded custom-notes-box bg-light border">
+                    @if (Model.Review != null)
+                    {
+                        <div class="mb-2 d-flex align-items-center gap-2">
+                            <div class="fs-6">
+                                @for (int s = 1; s <= 10; s++)
+                                {
+                                    if (Model.Review.Rating >= s)
+                                    {
+                                        <i class="bi bi-star-fill text-warning me-1"></i>
+                                    }
+                                    else if (Model.Review.Rating > (s - 1) && Model.Review.Rating < s)
+                                    {
+                                        <i class="bi bi-star-half text-warning me-1"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star text-muted me-1"></i>
+                                    }
+                                }
+                            </div>
+                            <span class="badge bg-secondary">@Model.Review.Rating / 10</span>
+                        </div>
+                        <p class="mb-0 text-dark fst-italic">
+                            @(string.IsNullOrWhiteSpace(Model.Review.ReviewComment) ? "You only added rating." : Model.Review.ReviewComment)
+                        </p>
+                    }
+                    else
+                    {
+                        <span class="text-muted fst-italic">You haven't reviewed this book yet.'</span>
+                    }
                 </div>
             </div>
 

@@ -1,0 +1,138 @@
+﻿:root {
+    --primary-green: #1a3a5f;
+    --accent-gold: #6fa8dc;
+    --cream-bg: #f7faff;
+    --table-header-bg: #e3edf7;
+    --text-dark: #1a3a5f;
+    --text-muted: #5a738e;
+    --card-bg: #f7faff;
+    --retro-burgund: #8b2635;
+}
+
+.custom-userbook-card {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--accent-gold) !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(26, 58, 95, 0.1);
+}
+
+.custom-userbook-header {
+    background-color: var(--primary-green) !important;
+    border-bottom: 2px solid var(--accent-gold) !important;
+    color: #ffffff !important;
+    font-family: 'Georgia', serif;
+}
+
+/* Pola wejściowe formularza */
+.custom-form-control {
+    background-color: #ffffff !important;
+    border: 1px solid var(--accent-gold) !important;
+    color: var(--text-dark) !important;
+    border-radius: 6px;
+    padding: 10px 12px;
+}
+
+    .custom-form-control:focus {
+        border-color: var(--primary-green) !important;
+        box-shadow: 0 0 0 0.2rem rgba(26, 58, 95, 0.15);
+    }
+
+.custom-label-muted {
+    color: var(--text-dark) !important;
+    font-weight: 600;
+    font-family: 'Georgia', serif;
+    margin-bottom: 0.5rem;
+}
+
+/* Grupy opcji i przełączników */
+.custom-checkbox-group {
+    background-color: #ffffff !important;
+    border: 1px solid var(--accent-gold) !important;
+    box-shadow: 0 2px 8px rgba(26, 58, 95, 0.04);
+}
+
+    .custom-checkbox-group .custom-value-dark {
+        color: #2b3e50 !important;
+        font-size: 0.95rem;
+        cursor: pointer;
+    }
+
+/* Klasa używana do wygaszania niekompatybilnych opcji */
+.disabled-element-group {
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 0.25s ease-in-out;
+}
+
+/* Walidacja i błędy */
+.text-danger {
+    color: var(--retro-burgund) !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.card-body .text-danger .bi-exclamation-triangle-fill {
+    color: var(--retro-burgund) !important;
+}
+
+/* Przyciski operacyjne */
+.btn-custom-save, button[type="submit"] {
+    background-color: var(--primary-green) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--primary-green) !important;
+}
+
+    .btn-custom-save:hover, button[type="submit"]:hover {
+        background-color: #0b1829 !important;
+        border-color: #050b12 !important;
+        box-shadow: 0 4px 12px rgba(11, 24, 41, 0.4) !important;
+    }
+
+.btn-custom-back {
+    background-color: #ffffff !important;
+    color: var(--primary-green) !important;
+    border: 1px solid var(--accent-gold) !important;
+}
+
+    .btn-custom-back:hover {
+        background-color: var(--table-header-bg) !important;
+        border-color: var(--primary-green) !important;
+    }
+
+.btn-custom-back,
+.btn-custom-save {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 44px !important;
+    padding: 10px 20px !important;
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 6px rgba(26, 58, 95, 0.1) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+    .btn-custom-back i,
+    .btn-custom-save i {
+        font-size: 1.1rem !important;
+        margin-right: 6px !important;
+    }
+
+/* Responsywność mobilna formularza */
+@media (max-width: 576px) {
+    .card-body .d-flex.justify-content-between.pt-2 {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+
+    .btn-custom-back,
+    .btn-custom-save {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}

@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Globalization;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using YourLibrary.Data;
 
 namespace YourLibrary.Controllers
 {
@@ -15,11 +17,13 @@ namespace YourLibrary.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ApplicationDbContext _context;
 
-        public BookApiController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public BookApiController(IConfiguration configuration, IHttpClientFactory httpClientFactory, ApplicationDbContext context)
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
+            _context = context;
         }
 
         [HttpGet("search")]
@@ -64,5 +68,6 @@ namespace YourLibrary.Controllers
 
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
+
     }
 }
