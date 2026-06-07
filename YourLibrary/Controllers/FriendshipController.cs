@@ -42,9 +42,9 @@ namespace YourLibrary.Controllers
             model.IncomingBorrowRequests = await _context.Borrows.Include(b => b.ApplicationUser).Include(b => b.UserBook).ThenInclude(ub => ub.Book) 
                  .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Requested).ToListAsync();
 
-            model.MyBorrowedBooks = await _context.Borrows.Include(b => b.UserBook).ThenInclude(ub => ub.Book).Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser).Where(b => b.ApplicationUserId == currentUser.Id && (b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned)).ToListAsync();
+            //model.MyBorrowedBooks = await _context.Borrows.Include(b => b.UserBook).ThenInclude(ub => ub.Book).Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser).Where(b => b.ApplicationUserId == currentUser.Id && (b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned)).ToListAsync();
+            model.MyBorrowedBooks = await _context.Borrows.Include(b => b.UserBook).ThenInclude(ub => ub.Book).Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser).Where(b => b.ApplicationUserId == currentUser.Id && (b.StatusBorrow == EnumStatusBorrow.Borrowed)).ToListAsync();
 
-          
             model.MyRentedBooks = await _context.Borrows.Include(b => b.ApplicationUser) .Include(b => b.UserBook).ThenInclude(ub => ub.Book)
                 .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed).ToListAsync();
 
