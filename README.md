@@ -21,7 +21,7 @@
    * Click `Create`
    * Your API key sould be displayed
 6. Paste your key in the `appsettings.json` file in place of `"YOUR_GOOGLE_BOOKS_API_KEY_HERE"`.
-7. Configure email service (optional)
+7. Configure email service **(optional)**
 
    This functionality covers resetting your password through an email.
    It is optional functionality. Application can run without it.
