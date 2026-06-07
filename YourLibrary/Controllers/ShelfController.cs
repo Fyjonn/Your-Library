@@ -28,7 +28,9 @@ namespace YourLibrary.Controllers
                 .Include(ub => ub.Borrows)
                 .Where(ub => ub.ApplicationUserId == currentUserId ||
                              ub.Borrows.Any(b => b.ApplicationUserId == currentUserId &&
-                                                (b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned)))
+                                                (b.StatusBorrow == EnumStatusBorrow.Borrowed
+                                       || b.StatusBorrow == EnumStatusBorrow.Returned
+                                       || b.StatusBorrow == EnumStatusBorrow.Completed)))
                 .ToListAsync();
 
             return View(myShelfBooks);

@@ -16,6 +16,28 @@
         <h1 class="page-main-title">Your Friends</h1>
     </div>
 
+    <div class="row mb-3">
+        <div class="col-12">
+            @if (TempData["FriendSuccess"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3 d-flex align-items-center gap-2" role="alert">
+                    <i class="bi bi-check-circle-fill fs-5"></i>
+                    <div>@TempData["FriendSuccess"]</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (TempData["FriendError"] != null && !ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-3 d-flex align-items-center gap-2" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                    <div>@TempData["FriendError"]</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+        </div>
+    </div>
+
     @if (Model.IncomingBorrowRequests != null && Model.IncomingBorrowRequests.Any())
     {
         <div class="mb-4">
@@ -42,9 +64,36 @@
             }
         </div>
     }
-
+    @* --- TUTAJ ZACZYNA SIĘ NOWA SEKCJA POTWIERDZEŃ ZWROTÓW --- *@
+    @if (ViewBag.ReturnsToConfirm != null && ((List<YourLibrary.Models.Borrow>)ViewBag.ReturnsToConfirm).Any())
+    {
+        <div class="mb-4">
+            @foreach (var item in (List<YourLibrary.Models.Borrow>)ViewBag.ReturnsToConfirm)
+            {
+                <div class="alert alert-info border border-info shadow-sm d-flex justify-content-between align-items-center py-3 px-4 rounded-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-arrow-counterclockwise text-info fs-5"></i>
+                        <span class="text-dark">
+                            <strong>@item.ApplicationUser?.UserName</strong> returned your book: <strong>@item.UserBook.Book?.Title</strong>. Please confirm receipt.
+                        </span>
+                    </div>
+                    <div>
+                        <form asp-action="ConfirmReturn" method="post" class="m-0">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="borrowId" value="@item.BorrowId" />
+                            <button type="submit" class="btn btn-sm btn-info text-white px-3 rounded-pill fw-bold">
+                                <i class="bi bi-check2-all me-1"></i>Confirm Return
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    @* --- KONIEC NOWEJ SEKCJI --- *@
+    @* Zmiana z col-md-6 na col-lg-6 dla szybszego układania w pionie *@
     <div class="row g-4 mb-4">
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="friend-search-card p-4 shadow h-100 d-flex flex-column justify-content-center">
                 <h6 class="fw-bold search-headline mb-3">Add new friend</h6>
 
@@ -65,7 +114,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="invitations-section p-4 shadow h-100">
                 <h6 class="fw-bold section-headline mb-3">Waiting Invitations</h6>
                 <div class="scroll-content-small">
@@ -179,7 +228,7 @@
     </div>
 
     <div class="row g-4">
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="borrow-section p-4 shadow h-100">
                 <h6 class="fw-bold section-headline mb-3"><i class="bi bi-box-arrow-in-right me-2"></i>Books u Borrowed</h6>
                 <div class="borrow-list-container">
@@ -196,7 +245,7 @@
                                     <span class="fw-bold d-block text-dark">@b.UserBook.Book?.Title</span>
                                     <small class="text-muted"><i class="bi bi-person-arrow-left me-1"></i>From: @b.UserBook.ApplicationUser?.UserName</small>
                                 </div>
-                                <span class="badge bg-success rounded-pill px-3"><i class="bi bi-journal-arrow-down me-1"></i>Borrowed</span>
+                                <span class="badge custom-badge-borrowed rounded-pill px-3"><i class="bi bi-journal-arrow-down me-1"></i>Borrowed</span>
                             </div>
                         }
                     }
@@ -204,7 +253,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-lg-6">
             <div class="rent-section p-4 shadow h-100">
                 <h6 class="fw-bold section-headline mb-3"><i class="bi bi-box-arrow-up-left me-2"></i>Books You Rented</h6>
                 <div class="borrow-list-container">
@@ -221,7 +270,58 @@
                                     <span class="fw-bold d-block text-dark">@r.UserBook.Book?.Title</span>
                                     <small class="text-muted"><i class="bi bi-person-arrow-right me-1"></i>To: @r.ApplicationUser?.UserName</small>
                                 </div>
-                                <span class="badge bg-primary text-white rounded-pill px-3"><i class="bi bi-journal-arrow-up me-1"></i>Rented</span>
+                                <span class="badge custom-badge-rented rounded-pill px-3"><i class="bi bi-journal-arrow-up me-1"></i>Rented</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4 mt-2">
+        <div class="col-lg-6">
+            <div class="history-borrow-section p-4 shadow h-100">
+                <h6 class="fw-bold section-headline mb-3"><i class="bi bi-clock-history me-2"></i>Borrowed History</h6>
+                <div class="borrow-list-container">
+                    @if (Model.MyBorrowedHistory == null || !Model.MyBorrowedHistory.Any())
+                    {
+                        <p class="text-muted fs-7 italic text-center py-3">No borrow history.</p>
+                    }
+                    else
+                    {
+                        @foreach (var b in Model.MyBorrowedHistory)
+                        {
+                            <div class="p-3 mb-2 rounded border border-secondary custom-item-row d-flex justify-content-between align-items-center" style="background-color: rgba(108, 117, 125, 0.05);">
+                                <div>
+                                    <span class="fw-bold d-block text-dark">@b.UserBook.Book?.Title</span>
+                                    <small class="text-muted"><i class="bi bi-person-check me-1"></i>Borrowed from: @b.UserBook.ApplicationUser?.UserName</small>
+                                </div>
+                                <span class="badge custom-badge-returned rounded-pill px-3"><i class="bi bi-arrow-counterclockwise me-1"></i>Returned</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="history-rent-section p-4 shadow h-100">
+                <h6 class="fw-bold section-headline mb-3"><i class="bi bi-clock-history me-2"></i>Rented History</h6>
+                <div class="borrow-list-container">
+                    @if (Model.MyRentedHistory == null || !Model.MyRentedHistory.Any())
+                    {
+                        <p class="text-muted fs-7 italic text-center py-3">No rent history.</p>
+                    }
+                    else
+                    {
+                        @foreach (var r in Model.MyRentedHistory)
+                        {
+                            <div class="p-3 mb-2 rounded border border-secondary custom-item-row d-flex justify-content-between align-items-center" style="background-color: rgba(108, 117, 125, 0.05);">
+                                <div>
+                                    <span class="fw-bold d-block text-dark">@r.UserBook.Book?.Title</span>
+                                    <small class="text-muted"><i class="bi bi-person-check me-1"></i>Returned by: @r.ApplicationUser?.UserName</small>
+                                </div>
+                                <span class="badge custom-badge-returned rounded-pill px-3"><i class="bi bi-check-lg me-1"></i>Got Back</span>
                             </div>
                         }
                     }
@@ -261,7 +361,7 @@
             items.forEach(function(item) {
                 let username = item.getAttribute('data-username');
                 if (username.includes(input)) {
-                    item.style.setProperty('display', 'block', 'important');
+                    item.style.setProperty('display', 'flex', 'important');
                 } else {
                     item.style.setProperty('display', 'none', 'important');
                 }

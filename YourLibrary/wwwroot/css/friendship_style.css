@@ -213,3 +213,64 @@
 .empty-icon {
     color: #6fa8dc !important;
 }
+
+/* Własne style dla przewijania list wypożyczeń (maksymalnie ok. 3 pozycje) */
+.borrow-list-container {
+    max-height: 235px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+    /* Dostosowanie paska przewijania dla list wypożyczeń */
+    .borrow-list-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .borrow-list-container::-webkit-scrollbar-track {
+        background: #f4f8fb;
+        border-radius: 10px;
+    }
+
+    .borrow-list-container::-webkit-scrollbar-thumb {
+        background-color: #6fa8dc;
+        border-radius: 10px;
+    }
+
+/* Przygaszone odznaki (Subtle Badges) */
+.custom-badge-rented {
+    background-color: #d1ecf1 !important;
+    color: #0c5460 !important;
+    border: 1px solid #bee5eb;
+    font-weight: 500;
+}
+
+.custom-badge-borrowed {
+    background-color: #d1e7dd !important;
+    color: #155724 !important;
+    border: 1px solid #c3e6cb;
+    font-weight: 500;
+}
+
+/* Wspólny styl dla wszystkich kontenerów przewijanych na wypadek drobnych różnic */
+.scroll-content-small,
+.friends-scroll-viewport,
+.borrow-list-container {
+    scrollbar-width: thin;
+    scrollbar-color: #6fa8dc #f4f8fb;
+}
+
+/* Nowe sekcje historii */
+.history-borrow-section, .history-rent-section {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid #cfe2f3 !important;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(26, 58, 95, 0.05);
+}
+
+/* Przygaszony, szary badge dla historii zwrotów */
+.custom-badge-returned {
+    background-color: #e2e3e5 !important;
+    color: #383d41 !important;
+    border: 1px solid #d6d8db;
+    font-weight: 500;
+}

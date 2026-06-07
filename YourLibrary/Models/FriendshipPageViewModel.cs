@@ -13,7 +13,7 @@
         public List<Borrow> MyRentedBooks { get; set; }
         public List<Borrow> IncomingReturnNotifications { get; set; } = new List<Borrow>();
 
-
-
+        public List<Borrow> MyBorrowedHistory { get; set; } = new();
+        public List<Borrow> MyRentedHistory { get; set; } = new();
     }
 }

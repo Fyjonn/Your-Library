@@ -1,6 +1,6 @@
 ﻿namespace YourLibrary.Models
 {
-    public enum EnumStatusBorrow { NotBorrowed, Requested, Borrowed, Returned}
+    public enum EnumStatusBorrow { NotBorrowed, Requested, Borrowed, Returned, Completed }
     public class Borrow
     {
         public int BorrowId { get; set; }
@@ -15,6 +15,8 @@
 
         // z user
         public string ApplicationUserId { get; set; }
+        public EnumReadStatus OriginalOwnerReadStatus { get; set; }
+        public EnumReadStatus? BorrowerFinalReadStatus { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }
