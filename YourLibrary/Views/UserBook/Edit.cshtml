@@ -1,7 +1,10 @@
 @model YourLibrary.Models.UserBook
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Edit Book";
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var isOwner = Model.ApplicationUserId == currentUserId;
 }
 
 @section Styles {
@@ -30,7 +33,9 @@
                                 <i class="bi bi-exclamation-triangle-fill text-warning fs-4 me-3"></i>
                                 <div>
                                     <span class="fw-bold text-dark">Borrowed Position</span>
-                                    <p class="small text-muted mb-0">This book is marked as borrowed. Some ownership fields might be locked.</p>
+                                    <p class="small text-muted mb-0">
+                                        @(isOwner ? "This book is currently lent to a friend. Settings are locked until it returns." : "You are borrowing this book. You can manage its shelf status, storage location and your personal notes.")
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -45,49 +50,70 @@
 
                         <input type="hidden" id="bookTitleHidden" value="@Model.Book?.Title" />
 
+                        @* 1. Format Media - tylko w³aœciciel zmienia, dla po¿yczaj¹cego jest zablokowany *@
                         <div class="mb-3">
                             <label asp-for="Media" class="form-label fw-bold custom-label-muted">Media Format</label>
-                            <select asp-for="Media" class="form-select custom-form-control" id="mediaSelect" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()">
-                            </select>
+                            @if (isOwner)
+                            {
+                                <select asp-for="Media" class="form-select custom-form-control" id="mediaSelect" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()"></select>
+                            }
+                            else
+                            {
+                                <select asp-for="Media" class="form-select custom-form-control" id="mediaSelect" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()" disabled></select>
+                                <input type="hidden" asp-for="Media" /> @* Przekazujemy wartoœæ ukryt¹, ¿eby model bazy siê nie wywali³ *@
+                            }
                             <span asp-validation-for="Media" class="text-danger"></span>
                         </div>
 
-                        <div id="optionsCheckboxGroup" class="mb-3 d-none">
-                            <label class="form-label fw-bold custom-label-muted mb-2">Options</label>
-                            <div class="p-3 border rounded bg-white">
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" asp-for="Bookmark" id="Bookmark" />
-                                    <label class="form-check-label text-dark" for="Bookmark">
-                                        <i class="bi bi-bookmark-fill text-secondary me-1"></i> Use Bookmark
-                                    </label>
-                                </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" asp-for="IsOwned" id="IsOwned" />
-                                    <label class="form-check-label text-dark" for="IsOwned">
-                                        <i class="bi bi-house-check text-success me-1"></i> Is Owned (I own this book)
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" asp-for="IsBorrowed" id="IsBorrowed" />
-                                    <label class="form-check-label text-dark" for="IsBorrowed">
-                                        <i class="bi bi-people text-primary me-1"></i> Is Borrowed (from a friend)
-                                    </label>
+                        @* 2. Checkboxy opcji ukrywamy ca³kowicie przed po¿yczaj¹cym *@
+                        @if (isOwner)
+                        {
+                            <div id="optionsCheckboxGroup" class="mb-3 d-none">
+                                <label class="form-label fw-bold custom-label-muted mb-2">Options</label>
+                                <div class="p-3 border rounded bg-white">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" asp-for="Bookmark" id="Bookmark" />
+                                        <label class="form-check-label text-dark" for="Bookmark">
+                                            <i class="bi bi-bookmark-fill text-secondary me-1"></i> Use Bookmark
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsOwned" id="IsOwned" />
+                                        <label class="form-check-label text-dark" for="IsOwned">
+                                            <i class="bi bi-house-check text-success me-1"></i> Is Owned (I own this book)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsBorrowed" id="IsBorrowed" />
+                                        <label class="form-check-label text-dark" for="IsBorrowed">
+                                            <i class="bi bi-people text-primary me-1"></i> Is Borrowed (from a friend)
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="Bookmark" />
+                            <input type="hidden" asp-for="IsOwned" />
+                            <input type="hidden" asp-for="IsBorrowed" />
+                        }
 
+                        @* 3. Read Status - DOSTÊPNE DLA KA¯DEGO *@
                         <div class="mb-3">
                             <label asp-for="ReadStatus" class="form-label fw-bold custom-label-muted">Read Status</label>
                             <select asp-for="ReadStatus" class="form-select custom-form-control" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumReadStatus>()"></select>
                             <span asp-validation-for="ReadStatus" class="text-danger"></span>
                         </div>
 
+                        @* 4. Storage Location - DOSTÊPNE DLA KA¯DEGO (Pokazuje siê, jeœli format to drukowany) *@
                         <div class="mb-3 d-none" id="locationGroup">
                             <label asp-for="Location" class="form-label fw-bold custom-label-muted">Storage Location</label>
                             <input asp-for="Location" class="form-control custom-form-control" placeholder="e.g., Living room shelf A" id="bookLocation" />
                             <span asp-validation-for="Location" class="text-danger"></span>
                         </div>
 
+                        @* 5. Notes - DOSTÊPNE DLA KA¯DEGO *@
                         <div class="mb-4">
                             <label asp-for="Notes" class="form-label fw-bold custom-label-muted">Your Notes & Thoughts</label>
                             <textarea asp-for="Notes" class="form-control custom-form-control" rows="4" placeholder="Write your private impressions, notes or quotes..."></textarea>
@@ -104,13 +130,15 @@
                         </div>
                     </form>
 
-                    @if (Model.IsBorrowed)
+                    @* Sekcja zwrotu: Widoczna dla po¿yczaj¹cego *@
+                    @if (Model.IsBorrowed && !isOwner)
                     {
                         <div class="border-top pt-4 mt-4">
                             <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background-color: rgba(217, 83, 79, 0.05); border: 1px dashed #8b2635;">
                                 <div>
                                     <h6 class="mb-1 fw-bold text-danger">Return Book</h6>
-                                    <p class="small text-muted mb-0">Are you done reading? Give the book back to its owner.</p>
+                                    <p class="small text-muted mb-0">Are you done reading?</p>
+                                    <p class="small text-muted mb-0">Give the book back to its owner.</p>
                                 </div>
                                 <form asp-action="ReturnBorrowedBookDirectly" asp-controller="Friendship" method="post" class="mb-0">
                                     <input type="hidden" name="userBookId" value="@Model.UserBookId" />
@@ -137,8 +165,7 @@
                             <i class="bi bi-chat-dots fs-1 d-block mb-2"></i>
                             <span>Loading community thoughts for this book...</span>
                         </div>
-                        <ul id="reviewsList" class="list-unstyled d-none">
-                            </ul>
+                        <ul id="reviewsList" class="list-unstyled d-none"></ul>
                         <div id="toggleReviewsBtn" class="btn-toggle-reviews text-center mt-3 d-none">
                             Show all reviews
                         </div>
@@ -159,58 +186,49 @@
         const mediaSelect = document.getElementById('mediaSelect');
         const optionsGroup = document.getElementById('optionsCheckboxGroup');
         const locationGroup = document.getElementById('locationGroup');
-
         const checkboxOwned = document.getElementById('IsOwned');
         const checkboxBorrowed = document.getElementById('IsBorrowed');
 
         function toggleOptionsVisibility() {
             const selectedText = mediaSelect.options[mediaSelect.selectedIndex].text.toLowerCase();
-
             if (selectedText.includes('printed') || selectedText.includes('print')) {
-                optionsGroup.classList.remove('d-none');
-                locationGroup.classList.remove('d-none');
+                if(optionsGroup) optionsGroup.classList.remove('d-none');
+                if(locationGroup) locationGroup.classList.remove('d-none');
             } else {
-                optionsGroup.classList.add('d-none');
-                locationGroup.classList.add('d-none');
+                if(optionsGroup) optionsGroup.classList.add('d-none');
+                if(locationGroup) locationGroup.classList.add('d-none');
 
-                document.getElementById('Bookmark').checked = false;
-                checkboxOwned.checked = false;
-                checkboxBorrowed.checked = false;
+                if(document.getElementById('Bookmark')) document.getElementById('Bookmark').checked = false;
+                if(checkboxOwned) checkboxOwned.checked = false;
+                if(checkboxBorrowed) checkboxBorrowed.checked = false;
 
                 const locationInput = document.getElementById('bookLocation');
-                if (locationInput) {
-                    locationInput.value = '';
-                }
+                if (locationInput) { locationInput.value = ''; }
             }
         }
 
         function handleOwnedVsBorrowedLogic() {
-            checkboxOwned.addEventListener('change', function() {
-                if (this.checked) checkboxBorrowed.checked = false;
-            });
-
-            checkboxBorrowed.addEventListener('change', function() {
-                if (this.checked) checkboxOwned.checked = false;
-            });
+            if(checkboxOwned && checkboxBorrowed) {
+                checkboxOwned.addEventListener('change', function() {
+                    if (this.checked) checkboxBorrowed.checked = false;
+                });
+                checkboxBorrowed.addEventListener('change', function() {
+                    if (this.checked) checkboxOwned.checked = false;
+                });
+            }
         }
 
         mediaSelect.addEventListener('change', toggleOptionsVisibility);
-
-        if (mediaSelect.value) {
-            toggleOptionsVisibility();
-        }
+        if (mediaSelect.value) { toggleOptionsVisibility(); }
         handleOwnedVsBorrowedLogic();
 
         document.addEventListener("DOMContentLoaded", function () {
             const title = document.getElementById('bookTitleHidden').value;
-            if (title) {
-                loadBookReviews(title);
-            }
+            if (title) { loadBookReviews(title); }
         });
 
         function loadBookReviews(title) {
             const url = `/api/reviews?title=${encodeURIComponent(title)}`;
-            
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -240,7 +258,6 @@
                             `;
                             reviewsList.appendChild(listItem);
                         });
-
                         const reviewCount = data.length;
                         toggleReviewsBtn.classList.remove('d-none');
                         toggleReviewsBtn.innerHTML = `Show all ${reviewCount} review${reviewCount > 1 ? 's' : ''}`;
@@ -248,15 +265,12 @@
                         placeholderText.classList.remove('d-none');
                     }
                 })
-                .catch(error => {
-                    console.error('Error loading reviews:', error);
-                });
+                .catch(error => console.error('Error loading reviews:', error));
         }
 
         document.getElementById('toggleReviewsBtn')?.addEventListener('click', function() {
             const reviewsList = document.getElementById('reviewsList');
             const isExpanded = reviewsList.classList.toggle('expanded');
-
             this.innerHTML = isExpanded ? 'Show fewer reviews' : 'Show all reviews';
         });
     </script>

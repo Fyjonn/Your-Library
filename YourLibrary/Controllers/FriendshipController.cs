@@ -42,15 +42,13 @@ namespace YourLibrary.Controllers
             model.IncomingBorrowRequests = await _context.Borrows.Include(b => b.ApplicationUser).Include(b => b.UserBook).ThenInclude(ub => ub.Book) 
                  .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Requested).ToListAsync();
 
-            model.MyBorrowedBooks = await _context.Borrows.Include(b => b.UserBook).ThenInclude(ub => ub.Book).Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser).Where(b => b.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed).ToListAsync();
+            model.MyBorrowedBooks = await _context.Borrows.Include(b => b.UserBook).ThenInclude(ub => ub.Book).Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser).Where(b => b.ApplicationUserId == currentUser.Id && (b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned)).ToListAsync();
 
           
-            model.MyRentedBooks = await _context.Borrows
-                .Include(b => b.ApplicationUser) 
-                .Include(b => b.UserBook).ThenInclude(ub => ub.Book)
-                .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed)
-                .ToListAsync();
+            model.MyRentedBooks = await _context.Borrows.Include(b => b.ApplicationUser) .Include(b => b.UserBook).ThenInclude(ub => ub.Book)
+                .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed).ToListAsync();
 
+          
 
 
             return View(model);
@@ -109,6 +107,7 @@ namespace YourLibrary.Controllers
             {
                 borrow.StatusBorrow = EnumStatusBorrow.Borrowed;
                 borrow.BorrowDate = DateTime.Now;
+                
 
                 
                 borrow.UserBook.IsBorrowed = true;
@@ -332,6 +331,61 @@ namespace YourLibrary.Controllers
 
             return View(viewModel);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReturnBorrowedBookDirectly(int userBookId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return RedirectToAction("Index", "Home");
+
+            var borrowRecord = await _context.Borrows
+                .Include(b => b.UserBook)
+                .FirstOrDefaultAsync(b => b.UserBookId == userBookId
+                                       && b.ApplicationUserId == currentUser.Id
+                                       && b.StatusBorrow == EnumStatusBorrow.Borrowed);
+
+            if (borrowRecord == null)
+            {
+                TempData["FriendError"] = "Borrow record not found.";
+                return RedirectToAction("Index", "Shelf");
+            }
+            borrowRecord.StatusBorrow = EnumStatusBorrow.Returned;
+            borrowRecord.ReturnDate = DateTime.Now;
+            borrowRecord.UserBook.IsBorrowed = false;
+            borrowRecord.UserBook.Location = null;
+            borrowRecord.UserBook.Notes = null;
+            borrowRecord.UserBook.ReadStatus = EnumReadStatus.ToRead;
+
+            _context.Entry(borrowRecord).State = EntityState.Modified;
+            _context.Entry(borrowRecord.UserBook).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            TempData["FriendSuccess"] = "Book returned successfully!";
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmReturn(int borrowId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return RedirectToAction(nameof(Index));
+
+            var borrow = await _context.Borrows
+                .Include(b => b.UserBook)
+                .FirstOrDefaultAsync(b => b.BorrowId == borrowId && b.UserBook.ApplicationUserId == currentUser.Id);
+
+            if (borrow != null && borrow.StatusBorrow == EnumStatusBorrow.Returned)
+            {
+                _context.Borrows.Remove(borrow);
+                await _context.SaveChangesAsync();
+                TempData["FriendSuccess"] = "Return confirmed.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
 
     }
 }

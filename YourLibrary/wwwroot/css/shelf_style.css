@@ -334,12 +334,43 @@ button.btn-search-submit {
             background-color: rgba(255, 255, 255, 0.1) !important;
             border-color: #ffffff !important;
         }
+
     .borrowed-row {
-        border-start: 4px solid #2ecc71 !important; 
-        background-color: rgba(46, 204, 113, 0.08) !important; 
+        border-start: 4px solid #2ecc71 !important;
+        background-color: rgba(46, 204, 113, 0.08) !important;
         transition: background-color 0.2s ease-in-out;
     }
 
         .borrowed-row:hover {
-            background-color: rgba(46, 204, 113, 0.15) !important; 
+            background-color: rgba(46, 204, 113, 0.15) !important;
+        }
+
+    .custom-library-table tbody tr.borrowed-row {
+        background-color: rgba(46, 204, 113, 0.08) !important;
+        border-left: 4px solid #2ecc71 !important;
+    }
+
+        .custom-library-table tbody tr.borrowed-row:hover {
+            background-color: rgba(46, 204, 113, 0.15) !important;
+        }
+
+
+
+    .custom-library-table tbody tr.history-returned-row {
+        background-color: #eef4fa !important;
+        border-left: 4px solid #b0c4de !important;
+        transition: opacity 0.2s ease, background-color 0.2s ease;
+    }
+
+        .custom-library-table tbody tr.history-returned-row td,
+        .custom-library-table tbody tr.history-returned-row .custom-book-title-cell,
+        .custom-library-table tbody tr.history-returned-row .custom-book-title-cell span,
+        .custom-library-table tbody tr.history-returned-row .custom-author-text {
+            color: #7a91a8 !important;
+            font-weight: 500 !important;
+        }
+
+        .custom-library-table tbody tr.history-returned-row:hover {
+            opacity: 0.9;
+            background-color: #e3edf7  !important;
         }

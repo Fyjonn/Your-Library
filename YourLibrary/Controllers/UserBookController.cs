@@ -133,8 +133,14 @@ namespace YourLibrary.Controllers
 
             var userBook = _context.UserBooks
                 .Include(ub => ub.Book)
-                .Include(ub => ub.Review)
-                .FirstOrDefault(ub => ub.UserBookId == id && ub.ApplicationUserId == currentUserId);
+                .Include(ub => ub.Review).Include(ub => ub.Borrows)
+                .FirstOrDefault(ub =>
+            ub.UserBookId == id &&
+            (
+                ub.ApplicationUserId == currentUserId
+                ||
+                ub.Borrows.Any(b => b.ApplicationUserId == currentUserId && b.StatusBorrow == EnumStatusBorrow.Borrowed)
+            ));
 
             if (userBook == null || userBook.Book == null)
             {
@@ -150,8 +156,11 @@ namespace YourLibrary.Controllers
             string currentUserId = _userManager.GetUserId(User);
 
             var userBook = _context.UserBooks
-                .Include(ub => ub.Book)
-                .FirstOrDefault(ub => ub.UserBookId == id && ub.ApplicationUserId == currentUserId);
+                .Include(ub => ub.Book).Include(ub => ub.Borrows)
+                .FirstOrDefault(ub => ub.UserBookId == id &&
+                    (ub.ApplicationUserId == currentUserId ||
+                     ub.Borrows.Any(b => b.ApplicationUserId == currentUserId && b.StatusBorrow == EnumStatusBorrow.Borrowed))
+                );
 
             if (userBook == null || userBook.Book == null)
             {
@@ -171,33 +180,56 @@ namespace YourLibrary.Controllers
             }
 
             string currentUserId = _userManager.GetUserId(User);
-            if (userbook.ApplicationUserId != currentUserId)
+
+            var dbUserBook = _context.UserBooks
+        .Include(ub => ub.Borrows)
+        .FirstOrDefault(ub => ub.UserBookId == id);
+
+            if (dbUserBook == null)
+            {
+                return NotFound();
+            }
+
+            bool isOwner = dbUserBook.ApplicationUserId == currentUserId;
+            bool isBorrower = dbUserBook.Borrows.Any(b => b.ApplicationUserId == currentUserId && b.StatusBorrow == EnumStatusBorrow.Borrowed);
+
+            if (!isOwner && !isBorrower)
             {
                 return Forbid();
             }
 
-            if (userbook.Media != EnumMedia.Printed)
+            if (isOwner)
             {
-                userbook.Bookmark = false;
-                userbook.IsOwned = false;
-                userbook.IsBorrowed = false;
-                userbook.Location = null;
+                // --- LOGIKA DLA WŁAŚCICIELA (Oryginalna) ---
+                dbUserBook.Media = userbook.Media;
+                dbUserBook.ReadStatus = userbook.ReadStatus;
+                dbUserBook.Location = userbook.Location;
+                dbUserBook.Notes = userbook.Notes;
+
+                if (userbook.Media != EnumMedia.Printed)
+                {
+                    dbUserBook.Bookmark = false;
+                    dbUserBook.IsOwned = false;
+                    dbUserBook.IsBorrowed = false;
+                    dbUserBook.Location = null;
+                }
+                else
+                {
+                    if (userbook.IsOwned) { dbUserBook.IsBorrowed = false; dbUserBook.IsOwned = true; }
+                    else if (userbook.IsBorrowed) { dbUserBook.IsOwned = false; dbUserBook.IsBorrowed = true; }
+                }
             }
-            else
+            else if (isBorrower)
             {
-                if (userbook.IsOwned)
-                {
-                    userbook.IsBorrowed = false;
-                }
-                else if (userbook.IsBorrowed)
-                {
-                    userbook.IsOwned = false;
-                }
+                dbUserBook.ReadStatus = userbook.ReadStatus;
+                dbUserBook.Location = userbook.Location;
+                dbUserBook.Notes = userbook.Notes;
+
             }
 
             try
             {
-                _context.UserBooks.Update(userbook);
+                _context.UserBooks.Update(dbUserBook);
                 _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
@@ -214,6 +246,7 @@ namespace YourLibrary.Controllers
 
             return RedirectToAction("Index", "Shelf");
         }
+        
 
         [HttpGet]
         public IActionResult Delete(int id)

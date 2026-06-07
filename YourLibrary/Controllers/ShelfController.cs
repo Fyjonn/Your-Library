@@ -19,16 +19,19 @@ namespace YourLibrary.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             string currentUserId = _userManager.GetUserId(User);
 
-            var myBooks = _context.UserBooks
+            var myShelfBooks = await _context.UserBooks
                 .Include(ub => ub.Book)
-                .Where(ub => ub.ApplicationUserId == currentUserId)
-                .ToList();
+                .Include(ub => ub.Borrows)
+                .Where(ub => ub.ApplicationUserId == currentUserId ||
+                             ub.Borrows.Any(b => b.ApplicationUserId == currentUserId &&
+                                                (b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned)))
+                .ToListAsync();
 
-            return View(myBooks);
+            return View(myShelfBooks);
         }
     }
 }
