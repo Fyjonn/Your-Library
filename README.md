@@ -27,12 +27,13 @@
    It is optional functionality. Application can run without it.
    Though if you want to use this option configure it followingly:
 
-   *Log into your Google account
-   *Enable 2-Step Verification
-   *Go to Google Account -> Security -> App Passwords
-   *Create a new App Password
-   *Copy the generated password
-   *Fill the `EmailSettings` section in `appsettings.json`, by writing down  your email and pasting password
+   * Log into your Google account
+   * Enable 2-Step Verification
+   * Go to Google Account -> Security -> App Passwords
+   * Create a new App Password
+   * Copy the generated password
+   * Fill the `EmailSettings` section in `appsettings.json`, by writing down  your email and pasting password
+     
 9. Migrate the database in the Package Manager Console:
 
 ```text
