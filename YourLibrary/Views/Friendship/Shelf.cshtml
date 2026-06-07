@@ -28,6 +28,12 @@
         </div>
     }
 
+    <div class="text-center mb-3">
+        <h2 class="fw-bold text-secondary">
+           <span id="shelf-indicator" class="text-dark">Reading</span>
+        </h2>
+    </div>
+
     <div class="d-flex justify-content-center mb-4">
         <div class="dropdown shadow-sm">
             <button class="btn btn-custom-dropdown btn-lg dropdown-toggle px-4" type="button" id="shelfDropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
@@ -113,7 +119,6 @@
 
                                 <tr class="book-card-item @(userBook.IsBorrowed ? "table-success" : "")" style="@(userBook.IsBorrowed ? "background-color: rgba(46, 204, 113, 0.08);" : "")">
 
-                                    @* Brak zdarzeń kliknięcia, brak pointera – zwykły tekst dla wyszukiwarki *@
                                     <td class="fw-bold custom-book-title-cell text-dark"
                                         data-title="@userBook.Book?.Title?.ToLower()"
                                         data-author="@userBook.Book?.Author?.ToLower()">
@@ -170,7 +175,6 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Obsługa zmiany półek w dropdownie
             document.querySelectorAll('.dropdown-item').forEach(item => {
                 item.addEventListener('click', function () {
                     const shelfName = this.textContent.trim();
@@ -203,7 +207,6 @@
                 });
             });
 
-            // Obsługa wyszukiwarki
             const searchInput = document.getElementById('shelfSearchInput');
             const radioTitle = document.getElementById('searchByTitle');
 

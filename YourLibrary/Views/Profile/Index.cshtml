@@ -14,15 +14,15 @@
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-8">
+        <div class="col-12 col-lg-11 col-xl-10">
 
             <div class="profile-card p-4 text-center mb-4">
 
                 <div id="profile-view-mode">
-                    <div class="avatar-container mb-3 mx-auto" style="width: 110px !important; height: 110px !important; overflow: hidden !important; border-radius: 50% !important; display: flex !important; align-items: center; justify-content: center; position: relative;">
+                    <div class="avatar-container">
                         @if (Model != null && !string.IsNullOrEmpty(Model.AvatarImagePath))
                         {
-                            <img src="@Model.AvatarImagePath" class="profile-avatar-image" alt="Avatar" style="width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; border-radius: 50% !important;" />
+                            <img src="@Model.AvatarImagePath" class="profile-avatar-image" alt="Avatar" />
                         }
                         else
                         {
@@ -40,7 +40,7 @@
                 </div>
 
                 <div id="profile-edit-mode" style="display: none;">
-                    <h4 class="mb-4 text-start" style="color: #1e3d33; font-weight: 600;"><i class="bi bi-pencil-square me-2"></i>Edit Profile</h4>
+                    <h4 class="mb-4 text-start"><i class="bi bi-pencil-square me-2"></i>Edit Profile</h4>
 
                     <form method="post" enctype="multipart/form-data">
                         <input type="hidden" asp-for="AvatarImagePath" />
@@ -107,7 +107,6 @@
                     <div class="dashboard-section-card shadow-sm h-100" data-section-url="/Shelf">
                         <div class="section-card-header">
                             <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2"></i>Latest books u added</h5>
-                            <span class="view-all-link">View Shelf <i class="bi bi-chevron-right"></i></span>
                         </div>
                         <div class="section-card-body mt-3">
                             <ul class="list-unstyled mb-0 dashboard-list">
@@ -127,6 +126,9 @@
                                 }
                             </ul>
                         </div>
+                        <hr class="line-after"/>
+                        <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
+
                     </div>
                 </div>
 
@@ -134,7 +136,6 @@
                     <div class="dashboard-section-card shadow-sm h-100" data-section-url="/Friendship">
                         <div class="section-card-header">
                             <h5 class="mb-0 fw-bold"><i class="bi bi-people me-2"></i>Latest friends u added</h5>
-                            <span class="view-all-link">View Friends <i class="bi bi-chevron-right"></i></span>
                         </div>
                         <div class="section-card-body mt-3">
                             <ul class="list-unstyled mb-0 dashboard-list">
@@ -168,6 +169,9 @@
                                 }
                             </ul>
                         </div>
+                        <hr class="line-after"/>
+                        <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
+
                     </div>
                 </div>
 
@@ -175,7 +179,6 @@
                     <div class="dashboard-section-card shadow-sm h-100" data-section-url="/Friendship">
                         <div class="section-card-header">
                             <h5 class="mb-0 fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Latest books u borrowed</h5>
-                            <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
                         </div>
                         <div class="section-card-body mt-3">
                             <ul class="list-unstyled mb-0 dashboard-list">
@@ -194,7 +197,11 @@
                                     <li class="text-muted small ps-2">No borrowed books.</li>
                                 }
                             </ul>
+
                         </div>
+                        <hr class="line-after"/>
+                        <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
+
                     </div>
                 </div>
 
@@ -202,7 +209,7 @@
                     <div class="dashboard-section-card shadow-sm h-100" data-section-url="/Friendship">
                         <div class="section-card-header">
                             <h5 class="mb-0 fw-bold"><i class="bi bi-box-arrow-up-left me-2"></i>Books you rented lately</h5>
-                            <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
+                           
                         </div>
                         <div class="section-card-body mt-3">
                             <ul class="list-unstyled mb-0 dashboard-list">
@@ -222,6 +229,9 @@
                                 }
                             </ul>
                         </div>
+                        <hr class="line-after"/>
+                        <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
+
                     </div>
                 </div>
 

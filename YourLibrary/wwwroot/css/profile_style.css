@@ -1,5 +1,11 @@
-﻿#profile-view-mode, #profile-edit-mode {
-    color: #f4f8fb !important;
+﻿.library-profile-container {
+    width: 100% !important;
+    max-width: 1200px;
+    margin: 0 auto !important;
+    padding: 0 15px !important;
+}
+
+#profile-view-mode, #profile-edit-mode {
     width: 100% !important;
 }
 
@@ -8,15 +14,13 @@
     text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
 }
 
-.library-profile-container {
-    width: 100% !important;
-    max-width: 1200px;
-    margin: 0 auto !important;
-    padding: 0 15px !important;
+.profile-card h4 {
+    color: #1a3a5f !important;
+    font-weight: 600;
 }
 
 .profile-card, .dashboard-section-card {
-    background-color: rgba(255, 255, 255, 0.90) !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
     border: 1px solid #cfe2f3 !important;
     border-radius: 12px !important;
     backdrop-filter: blur(10px);
@@ -26,8 +30,34 @@
     box-shadow: 0 8px 32px rgba(40, 60, 80, 0.08) !important;
 }
 
+.avatar-container {
+    width: 110px !important;
+    height: 110px !important;
+    background-color: #e3edf7;
+    border: 3px solid #1a3a5f !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    overflow: hidden !important;
+    margin: 0 auto 15px auto !important;
+}
+
+.profile-avatar-image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    border-radius: 50% !important;
+}
+
+.profile-avatar-emoji {
+    font-size: 3.3rem !important;
+}
+
 .dashboard-section-card {
-    cursor: pointer !important; 
+    cursor: pointer !important;
     margin-bottom: 24px !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -55,10 +85,14 @@
         margin-right: 8px;
     }
 
+.line-after{
+    color:lightgray;
+}
 .view-all-link, .view-all-link i {
     color: #6fa8dc !important;
     font-weight: 600 !important;
     text-decoration: none !important;
+    margin-top: 10px;
 }
 
 .dashboard-section-card:hover .view-all-link {
@@ -80,16 +114,11 @@
     margin-bottom: 10px !important;
     display: flex;
     flex-direction: column;
-    cursor: default !important; 
+    cursor: default !important;
+}
 
     .dashboard-item-row:last-child {
         margin-bottom: 0 !important;
-    }
-
-    .dashboard-item-row:hover {
-        background-color: #f4f8fb !important;
-        transform: none !important;
-        box-shadow: none !important;
     }
 
 .item-title {
@@ -110,7 +139,7 @@
 
 .library-input {
     background-color: #ffffff !important;
-    border: 1px solid #cfe2f3 !important;
+    border: 1px solid #a1c4e6 !important; 
     color: #1a3a5f !important;
     border-radius: 6px !important;
     padding: 10px 12px !important;
@@ -131,7 +160,7 @@
 .avatar-picker-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
-    gap: 10px;
+    gap: 12px;
     margin-top: 10px;
 }
 
@@ -146,34 +175,24 @@
     line-height: 43px;
     text-align: center;
     font-size: 1.4rem;
-    background: rgba(111, 168, 220, 0.1);
-    border: 1px solid #cfe2f3;
+    background: #ffffff;
+    border: 2px solid #cfe2f3; 
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
+    .avatar-option span:hover {
+        border-color: #6fa8dc;
+        background-color: #f4f8fb;
+    }
 
 .avatar-option input[type="radio"]:checked + span {
     background: #1a3a5f !important;
     border-color: #1a3a5f !important;
     color: #ffffff !important;
     transform: scale(1.1);
-}
-
-.avatar-container {
-    width: 90px;
-    height: 90px;
-    background-color: #e3edf7;
-    border: 2px solid #1a3a5f;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-}
-
-.profile-avatar-emoji {
-    font-size: 2.5rem !important;
+    box-shadow: 0 4px 10px rgba(26, 58, 95, 0.3);
 }
 
 .btn-library-gold, .btn-library-green {
@@ -194,7 +213,6 @@
     background-color: transparent !important;
     color: #1a3a5f !important;
     border: 1px solid #1a3a5f !important;
-    font-family: 'Georgia', serif;
     transition: all 0.2s ease;
 }
 
