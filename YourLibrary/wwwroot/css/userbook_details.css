@@ -32,15 +32,15 @@
 
 .custom-label-muted {
     color: var(--text-muted) !important;
-    font-weight: 600;
     font-family: 'Georgia', serif;
 }
 
 .custom-value-title {
-    color: var(--text-dark) !important;
+    color: var(--text-dark);
+    font-family: 'Georgia', serif;
 }
 
-/* Odznaka statusu czytania */
+/* Odznaka głównego statusu czytania w nagłówku */
 .custom-badge-status {
     background-color: var(--primary-green) !important;
     color: #ffffff !important;
@@ -51,58 +51,83 @@
     box-shadow: 0 2px 5px rgba(26, 58, 95, 0.2);
 }
 
-/* Pudełka notatek oraz nowo dodanej recenzji */
-.custom-notes-box {
-    background-color: #e3edf7 !important;
-    border-left: 4px solid var(--accent-gold) !important;
-    color: var(--text-dark) !important;
+/* Kafelki statusu posiadania i zakładki */
+.custom-status-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(26, 58, 95, 0.08);
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    white-space: nowrap;
 }
 
-.custom-userbook-card .card-body .bg-light,
-.custom-userbook-card div.border.rounded.p-3 {
-    background-color: #ffffff !important;
-    border: 1px solid var(--primary-green) !important;
-}
-
-/* Przyciski standardowe (Edycja / Powrót) */
-.btn-custom-save {
+/* Stan aktywny (Ciemny motyw retro, biała czcionka) */
+.custom-status-tile.tile-active {
     background-color: var(--primary-green) !important;
     color: #ffffff !important;
-    border: 1px solid var(--primary-green) !important;
+    border-color: var(--accent-gold) !important;
 }
 
-    .btn-custom-save:hover {
-        background-color: #0b1829 !important;
-        border-color: #050b12 !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 12px rgba(11, 24, 41, 0.4) !important;
-    }
+/* Stan nieaktywny (Stonowane jasne tło) */
+.custom-status-tile.tile-inactive {
+    background-color: #f1f3f5 !important;
+    color: var(--text-muted) !important;
+    border-color: #dee2e6 !important;
+}
 
+
+/* Sekcja recenzji użytkownika */
+.custom-review-section {
+    background-color: #ffffff;
+    border: 1px solid #e3edf7;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+}
+
+}
+
+.italic-comment {
+    font-style: italic;
+    font-family: 'Georgia', serif;
+}
+
+/* Stylizacja przycisków w pliku Details */
 .btn-custom-back {
     background-color: #ffffff !important;
-    color: var(--primary-green) !important;
+    color: var(--text-dark) !important;
     border: 1px solid var(--accent-gold) !important;
 }
 
-    .btn-custom-back:hover {
-        background-color: var(--table-header-bg) !important;
-        color: var(--primary-green) !important;
-        border-color: var(--primary-green) !important;
-    }
+.btn-custom-back:hover {
+    background-color: #e3edf7 !important;
+}
 
-/* Przycisk usuwania pozycji na widoku Details */
+.btn-custom-save {
+    background-color: var(--primary-green) !important;
+    color: #ffffff !important;
+    border: 1px solid #112740 !important;
+}
+
+.btn-custom-save:hover {
+    background-color: #112740 !important;
+}
+
 .btn-custom-delete {
     background-color: var(--retro-burgund) !important;
     color: #ffffff !important;
     border: 1px solid #6b1d29 !important;
 }
 
-    .btn-custom-delete:hover {
-        background-color: #4a141c !important;
-        border-color: #2d0c11 !important;
-    }
+.btn-custom-delete:hover {
+    background-color: #4a141c !important;
+    border-color: #2d0c11 !important;
+}
 
-/* Podstawa stylizacji przycisków ikonowych */
+/* Podstawa przycisków dolnych */
 .btn-custom-back,
 .btn-custom-save,
 .btn-custom-delete {
@@ -121,26 +146,41 @@
     transition: all 0.2s ease-in-out !important;
 }
 
-    .btn-custom-back i,
-    .btn-custom-save i,
-    .btn-custom-delete i {
-        font-size: 1.1rem !important;
-        line-height: 1 !important;
-        margin-right: 6px !important;
+.btn-custom-back i,
+.btn-custom-save i,
+.btn-custom-delete i {
+    font-size: 1.1rem !important;
+    line-height: 1 !important;
+}
+
+@media (max-width: 576px) {
+    .w-100-mobile {
+        width: 100% !important;
     }
 
-/* Responsywność dla urządzeń mobilnych */
-@media (max-width: 576px) {
-    .card-body .d-flex.justify-content-between.align-items-center.pt-3 {
+    .custom-status-tile {
+        display: flex !important;
+        width: 100% !important;
+        justify-content: center !important;
+        margin-right: 0 !important;
+        font-size: 0.9rem;
+        padding: 10px 14px;
+    }
+
+    .card-body .d-flex.justify-content-between {
         flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 10px !important;
+        gap: 10px;
+    }
+
+    .w-100-mobile-buttons {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 10px;
     }
 
     .btn-custom-back,
     .btn-custom-save,
     .btn-custom-delete {
         width: 100% !important;
-        margin: 0 !important;
     }
 }

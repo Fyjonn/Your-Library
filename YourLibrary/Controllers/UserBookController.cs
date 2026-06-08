@@ -200,7 +200,6 @@ namespace YourLibrary.Controllers
 
             if (isOwner)
             {
-                // --- LOGIKA DLA WŁAŚCICIELA (Oryginalna) ---
                 dbUserBook.Media = userbook.Media;
                 dbUserBook.ReadStatus = userbook.ReadStatus;
                 dbUserBook.Location = userbook.Location;
@@ -210,13 +209,7 @@ namespace YourLibrary.Controllers
                 {
                     dbUserBook.Bookmark = false;
                     dbUserBook.IsOwned = false;
-                    dbUserBook.IsBorrowed = false;
                     dbUserBook.Location = null;
-                }
-                else
-                {
-                    if (userbook.IsOwned) { dbUserBook.IsBorrowed = false; dbUserBook.IsOwned = true; }
-                    else if (userbook.IsBorrowed) { dbUserBook.IsOwned = false; dbUserBook.IsBorrowed = true; }
                 }
             }
             else if (isBorrower)

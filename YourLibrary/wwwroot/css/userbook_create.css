@@ -98,11 +98,11 @@ li[class*="result-item"]:hover,
     box-shadow: 0 2px 8px rgba(26, 58, 95, 0.04);
 }
 
-    .custom-checkbox-group .custom-value-dark {
-        color: #2b3e50 !important;
-        font-size: 0.95rem;
-        cursor: pointer;
-    }
+.custom-checkbox-group .custom-value-dark {
+    color: #2b3e50 !important;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
 
 
 .btn-primary,
@@ -121,16 +121,16 @@ form button {
     transition: background-color 0.15s ease-in-out, transform 0.15s ease-in-out !important;
 }
 
-    .btn-primary:hover,
-    .btn-custom-save:hover,
-    button[type="submit"]:hover,
-    .btn-success:hover,
-    form button:hover {
-        background-color: #0b1829 !important;
-        border-color: #050b12 !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 12px rgba(11, 24, 41, 0.4) !important;
-    }
+.btn-primary:hover,
+.btn-custom-save:hover,
+button[type="submit"]:hover,
+.btn-success:hover,
+form button:hover {
+    background-color: #0b1829 !important;
+    border-color: #050b12 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(11, 24, 41, 0.4) !important;
+}
 
 .btn-secondary,
 .btn-custom-back,
@@ -148,14 +148,14 @@ a[href*="Index"],
     transition: all 0.2s ease-in-out !important;
 }
 
-    .btn-outline-secondary:hover,
-    .btn-secondary:hover,
-    .btn-custom-back:hover,
-    .btn-light:hover {
-        background-color: var(--table-header-bg) !important;
-        color: var(--primary-green) !important;
-        border-color: var(--primary-green) !important;
-    }
+.btn-outline-secondary:hover,
+.btn-secondary:hover,
+.btn-custom-back:hover,
+.btn-light:hover {
+    background-color: var(--table-header-bg) !important;
+    color: var(--primary-green) !important;
+    border-color: var(--primary-green) !important;
+}
 
 .btn-custom-back,
 .btn-custom-save,

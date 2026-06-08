@@ -83,12 +83,6 @@
                                             <i class="bi bi-house-check text-success me-1"></i> Is Owned (I own this book)
                                         </label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" asp-for="IsBorrowed" id="IsBorrowed" />
-                                        <label class="form-check-label text-dark" for="IsBorrowed">
-                                            <i class="bi bi-people text-primary me-1"></i> Is Borrowed (from a friend)
-                                        </label>
-                                    </div>
                                 </div>
                             </div>
                         }
@@ -96,7 +90,6 @@
                         {
                             <input type="hidden" asp-for="Bookmark" />
                             <input type="hidden" asp-for="IsOwned" />
-                            <input type="hidden" asp-for="IsBorrowed" />
                         }
 
                         @* 3. Read Status - DOSTÊPNE DLA KA¯DEGO *@
@@ -187,7 +180,6 @@
         const optionsGroup = document.getElementById('optionsCheckboxGroup');
         const locationGroup = document.getElementById('locationGroup');
         const checkboxOwned = document.getElementById('IsOwned');
-        const checkboxBorrowed = document.getElementById('IsBorrowed');
 
         function toggleOptionsVisibility() {
             const selectedText = mediaSelect.options[mediaSelect.selectedIndex].text.toLowerCase();
@@ -199,28 +191,12 @@
                 if(locationGroup) locationGroup.classList.add('d-none');
 
                 if(document.getElementById('Bookmark')) document.getElementById('Bookmark').checked = false;
-                if(checkboxOwned) checkboxOwned.checked = false;
-                if(checkboxBorrowed) checkboxBorrowed.checked = false;
 
                 const locationInput = document.getElementById('bookLocation');
                 if (locationInput) { locationInput.value = ''; }
             }
         }
 
-        function handleOwnedVsBorrowedLogic() {
-            if(checkboxOwned && checkboxBorrowed) {
-                checkboxOwned.addEventListener('change', function() {
-                    if (this.checked) checkboxBorrowed.checked = false;
-                });
-                checkboxBorrowed.addEventListener('change', function() {
-                    if (this.checked) checkboxOwned.checked = false;
-                });
-            }
-        }
-
-        mediaSelect.addEventListener('change', toggleOptionsVisibility);
-        if (mediaSelect.value) { toggleOptionsVisibility(); }
-        handleOwnedVsBorrowedLogic();
 
         document.addEventListener("DOMContentLoaded", function () {
             const title = document.getElementById('bookTitleHidden').value;

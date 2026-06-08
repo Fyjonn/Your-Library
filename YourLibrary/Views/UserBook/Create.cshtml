@@ -50,29 +50,29 @@
                             <label class="form-label custom-label-muted"><i class="bi bi-image me-1"></i> Upload book cover image</label>
                             <input type="file" name="coverFile" id="manualCoverFile" class="form-control custom-form-control" accept="image/*" />
                         </div>
-
+                        <!--title-->
                         <div class="form-group mb-3">
                             <label asp-for="Book.Title" class="form-label custom-label-muted">Title</label>
                             <input asp-for="Book.Title" id="bookTitle" class="form-control custom-form-control" required readonly />
                         </div>
-
+                        <!--author-->
                         <div class="form-group mb-3">
                             <label asp-for="Book.Author" class="form-label custom-label-muted">Author</label>
                             <input asp-for="Book.Author" id="bookAuthor" class="form-control custom-form-control" required readonly />
                         </div>
-
+                        <!--genre-->
                         <div class="form-group mb-3">
                             <label class="control-label custom-label-muted">Genre</label>
                             <input asp-for="Book.Genre" id="bookGenre" class="form-control custom-form-control" readonly />
                             <span asp-validation-for="Book.Genre" class="text-danger"></span>
                         </div>
-
+                        <!--ageRating-->
                         <div class="form-group mb-3">
                             <label class="control-label custom-label-muted">Age Rating</label>
                             <input asp-for="Book.AgeRating" id="bookAgeRating" class="form-control custom-form-control" readonly />
                             <span asp-validation-for="Book.AgeRating" class="text-danger"></span>
                         </div>
-
+                        <!--description-->
                         <div class="form-group mb-3">
                             <label class="control-label custom-label-muted">Description</label>
                             <textarea asp-for="Book.Description" id="bookDescription" class="form-control custom-form-control" rows="4" readonly></textarea>
@@ -80,7 +80,7 @@
                         </div>
 
                         <h5 class="custom-label-muted border-bottom pb-2 mt-4 mb-3"><i class="bi bi-layers me-2"></i>My shelf</h5>
-
+                        <!--mediaType-->
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Media" class="form-label custom-label-muted">Media format</label>
@@ -89,7 +89,7 @@
                                 </select>
                                 <span asp-validation-for="Media" class="text-danger small"></span>
                             </div>
-
+                            <!--readStatus-->
                             <div class="col-md-6 mb-3">
                                 <label asp-for="ReadStatus" class="form-label custom-label-muted">Read status</label>
                                 <select asp-for="ReadStatus" id="readStatusSelect" class="form-select custom-form-control" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumReadStatus>()">
@@ -98,7 +98,7 @@
                                 <span asp-validation-for="ReadStatus" class="text-danger small"></span>
                             </div>
                         </div>
-
+                        <!--bookmark i isOwned-->
                         <div class="mb-3 p-3 rounded custom-checkbox-group d-none" id="optionsCheckboxGroup">
                             <label class="form-label d-block custom-label-muted mb-2"><i class="bi bi-sliders me-1"></i> Options</label>
 
@@ -112,22 +112,18 @@
                                 <label class="form-check-label custom-value-dark" for="IsOwned">Do you own this book?</label>
                             </div>
 
-                            <div class="form-check" id="borrowedWrapper">
-                                <input class="form-check-input" type="checkbox" id="IsBorrowed" name="IsBorrowed" value="true" @(Model?.IsBorrowed == true ? "checked" : "")>
-                                <label class="form-check-label custom-value-dark" for="IsBorrowed">Is this book borrowed?</label>
-                            </div>
                         </div>
-
+                        <!--location-->
                         <div class="mb-3 d-none" id="locationGroup">
                             <label asp-for="Location" class="form-label custom-label-muted">Where do you keep your book?</label>
                             <input asp-for="Location" id="bookLocation" class="form-control custom-form-control" placeholder="e.g. Bedroom, desk, main shelf..." />
                         </div>
-
+                        <!--notes-->
                         <div class="mb-4">
                             <label asp-for="Notes" class="form-label custom-label-muted">Your notes</label>
                             <textarea asp-for="Notes" class="form-control custom-form-control" rows="3" placeholder="Add your personal thoughts..."></textarea>
                         </div>
-
+                        <!--review-->
                         <div class="mb-4 d-none" id="reviewInputGroup">
                             <h5 class="custom-label-muted border-bottom pb-2 mt-4 mb-3">
                                 <i class="bi bi-chat-left-heart me-2"></i>Add your review
@@ -179,7 +175,7 @@
                 </div>
             </div>
         </div>
-
+        <!--review comments-->
         <div class="col-lg-5">
             <div class="card shadow-sm border-0 reviews-sidebar-card">
                 <div class="card-header py-3 custom-userbook-header">
@@ -350,12 +346,8 @@
 
                 document.getElementById('Bookmark').checked = false;
                 document.getElementById('IsOwned').checked = false;
-                document.getElementById('IsBorrowed').checked = false;
                 if (document.getElementById('bookLocation')) document.getElementById('bookLocation').value = '';
 
-                // Zresetuj blokady wzajemne checkoboxów przy ukrywaniu
-                document.getElementById('ownedWrapper').classList.remove('disabled-element-group');
-                document.getElementById('borrowedWrapper').classList.remove('disabled-element-group');
             } else {
                 optionsGroup.classList.remove('d-none');
                 locationGroup.classList.remove('d-none');
@@ -363,29 +355,6 @@
         }
         mediaSelect.addEventListener('change', toggleOptionsVisibility);
 
-        //LOGIKA BLOKOWANIA: OWNED VS BORROWED
-        const checkboxOwned = document.getElementById('IsOwned');
-        const checkboxBorrowed = document.getElementById('IsBorrowed');
-        const ownedWrapper = document.getElementById('ownedWrapper');
-        const borrowedWrapper = document.getElementById('borrowedWrapper');
-
-        function handleOwnedVsBorrowedLogic() {
-            if (checkboxOwned.checked) {
-                checkboxBorrowed.checked = false;
-                borrowedWrapper.classList.add('disabled-element-group');
-            } else {
-                borrowedWrapper.classList.remove('disabled-element-group');
-            }
-
-            if (checkboxBorrowed.checked) {
-                checkboxOwned.checked = false;
-                ownedWrapper.classList.add('disabled-element-group');
-            } else {
-                ownedWrapper.classList.remove('disabled-element-group');
-            }
-        }
-        checkboxOwned.addEventListener('change', handleOwnedVsBorrowedLogic);
-        checkboxBorrowed.addEventListener('change', handleOwnedVsBorrowedLogic);
 
         //LOGIKA AKTYWACJI I WALIDACJI OPINII
         const readStatusSelect = document.getElementById('readStatusSelect');
@@ -525,7 +494,6 @@
 
         // Inicjalizacja formularza na start
         if (mediaSelect.value) toggleOptionsVisibility();
-        if (checkboxOwned.checked || checkboxBorrowed.checked) handleOwnedVsBorrowedLogic();
         if (readStatusSelect.value) {
             toggleReviewFormVisibility();
             updateVisualStars(parseFloat(reviewRatingSelect.value || 0));

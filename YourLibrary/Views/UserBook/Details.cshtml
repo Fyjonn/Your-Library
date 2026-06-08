@@ -43,18 +43,19 @@
                 </div>
             </div>
 
-            <div class="row mb-3 custom-border-bottom pb-2">
-                <div class="col-sm-4 fw-bold custom-label-muted">Ownership Status:</div>
-                <div class="col-sm-8 d-flex flex-wrap gap-1">
-                    <span class="badge @(Model.IsOwned ? "custom-badge-active" : "custom-badge-inactive")">
-                        @(Model.IsOwned ? "I own this book." : "I don't own this book.")
-                    </span>
-                    <span class="badge @(Model.IsBorrowed ? "custom-badge-active" : "custom-badge-inactive")">
-                        @(Model.IsBorrowed ? "Borrowed." : "Not borrowed.")
-                    </span>
-                    <span class="badge @(Model.Bookmark ? "custom-badge-active" : "custom-badge-inactive")">
-                        @(Model.Bookmark ? "It has a bookmark." : "No bookmark.")
-                    </span>
+            <div class="row mb-3 custom-border-bottom pb-3 align-items-start align-items-sm-center">
+                <div class="col-sm-4 fw-bold custom-label-muted mb-2 mb-sm-0">Ownership Status:</div>
+                <div class="col-sm-8 d-flex flex-column flex-sm-row flex-wrap gap-2 w-100-mobile">
+                    <div class="custom-status-tile @(Model.IsOwned ? "tile-active" : "tile-inactive") mb-1 mb-sm-0">
+                        <span>@(Model.IsOwned ? "I own this book" : "I don't own this book")</span>
+                    </div>
+
+                    @if (Model.Media == YourLibrary.Models.EnumMedia.Printed)
+                    {
+                        <div class="custom-status-tile @(Model.Bookmark ? "tile-active" : "tile-inactive")">
+                            <span>@(Model.Bookmark ? "Has a bookmark" : "No bookmark")</span>
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -67,43 +68,27 @@
                 </div>
             </div>
 
-            <div class="mb-4">
-                <div class="fw-bold custom-label-muted mb-2">
-                    <i class="bi bi-chat-left-heart me-1"></i>Twoja Recenzja:
-                </div>
-                <div class="p-3 rounded custom-notes-box bg-light border">
-                    @if (Model.Review != null)
+            @if (Model.Review != null)
+            {
+                <div class="mt-4 p-3 rounded custom-review-section">
+                    <h5 class="fw-bold custom-label-muted mb-2">
+                        <i class="bi bi-chat-left-heart-fill me-2"></i>Your Review & Thoughts
+                    </h5>
+
+                    <div class="review-stars-display mb-2 fs-5">
+                        <span class="ms-2 small text-muted">(@Model.Review.Rating / 10)</span>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Review.ReviewComment))
                     {
-                        <div class="mb-2 d-flex align-items-center gap-2">
-                            <div class="fs-6">
-                                @for (int s = 1; s <= 10; s++)
-                                {
-                                    if (Model.Review.Rating >= s)
-                                    {
-                                        <i class="bi bi-star-fill text-warning me-1"></i>
-                                    }
-                                    else if (Model.Review.Rating > (s - 1) && Model.Review.Rating < s)
-                                    {
-                                        <i class="bi bi-star-half text-warning me-1"></i>
-                                    }
-                                    else
-                                    {
-                                        <i class="bi bi-star text-muted me-1"></i>
-                                    }
-                                }
-                            </div>
-                            <span class="badge bg-secondary">@Model.Review.Rating / 10</span>
-                        </div>
-                        <p class="mb-0 text-dark fst-italic">
-                            @(string.IsNullOrWhiteSpace(Model.Review.ReviewComment) ? "You only added rating." : Model.Review.ReviewComment)
-                        </p>
+                        <p class="mb-0 italic-comment text-secondary">"@Model.Review.ReviewComment"</p>
                     }
                     else
                     {
-                        <span class="text-muted fst-italic">You haven't reviewed this book yet.</span>
+                        <p class="mb-0 text-muted small"><em>You rated this book without leaving a written comment.</em></p>
                     }
                 </div>
-            </div>
+            }
 
             <div class="mt-4 text-center">
                 @if (!isOwner && Model.IsOwned)

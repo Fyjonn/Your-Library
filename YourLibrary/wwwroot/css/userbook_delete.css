@@ -61,12 +61,12 @@ svg path {
     border: 1px solid #6b1d29 !important;
 }
 
-    .btn-danger:hover,
-    .btn-custom-delete:hover {
-        background-color: #4a141c !important;
-        border-color: #2d0c11 !important;
-        box-shadow: 0 4px 12px rgba(74, 20, 28, 0.4) !important;
-    }
+.btn-danger:hover,
+.btn-custom-delete:hover {
+    background-color: #4a141c !important;
+    border-color: #2d0c11 !important;
+    box-shadow: 0 4px 12px rgba(74, 20, 28, 0.4) !important;
+}
 
 /* Przycisk powrotu/rezygnacji */
 .btn-custom-back {
@@ -75,10 +75,10 @@ svg path {
     border: 1px solid var(--accent-gold) !important;
 }
 
-    .btn-custom-back:hover {
-        background-color: var(--table-header-bg) !important;
-        border-color: var(--primary-green) !important;
-    }
+.btn-custom-back:hover {
+    background-color: var(--table-header-bg) !important;
+    border-color: var(--primary-green) !important;
+}
 
 .btn-custom-back,
 .btn-custom-delete,
@@ -96,12 +96,12 @@ svg path {
     transition: all 0.2s ease-in-out !important;
 }
 
-    .btn-custom-back i,
-    .btn-custom-delete i,
-    .btn-danger i {
-        font-size: 1.1rem !important;
-        margin-right: 6px !important;
-    }
+.btn-custom-back i,
+.btn-custom-delete i,
+.btn-danger i {
+    font-size: 1.1rem !important;
+    margin-right: 6px !important;
+}
 
 /* Mobilne dopasowanie układu decyzji */
 @media (max-width: 576px) {
