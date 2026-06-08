@@ -338,7 +338,7 @@ namespace YourLibrary.Controllers
                 .ToListAsync();
 
             var currentlyBorrowedIds = await _context.Borrows
-                .Where(b => b.StatusBorrow == EnumStatusBorrow.Borrowed)
+                .Where(b => b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned)
                 .Select(b => b.UserBookId)
                 .ToListAsync();
 
@@ -375,13 +375,13 @@ namespace YourLibrary.Controllers
             borrowRecord.BorrowerFinalReadStatus = borrowRecord.UserBook.ReadStatus;
             borrowRecord.StatusBorrow = EnumStatusBorrow.Returned;
             borrowRecord.ReturnDate = DateTime.Now;
-            borrowRecord.UserBook.IsBorrowed = false;
-            borrowRecord.UserBook.Location = null;
-            borrowRecord.UserBook.Notes = null;
-            borrowRecord.UserBook.ReadStatus = borrowRecord.OriginalOwnerReadStatus;
+            //borrowRecord.UserBook.IsBorrowed = false;
+            //borrowRecord.UserBook.Location = null;
+            //borrowRecord.UserBook.Notes = null;
+            //borrowRecord.UserBook.ReadStatus = borrowRecord.OriginalOwnerReadStatus;
 
             _context.Entry(borrowRecord).State = EntityState.Modified;
-            _context.Entry(borrowRecord.UserBook).State = EntityState.Modified;
+            //_context.Entry(borrowRecord.UserBook).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
 
@@ -402,8 +402,13 @@ namespace YourLibrary.Controllers
             if (borrow != null && borrow.StatusBorrow == EnumStatusBorrow.Returned)
             {
                 borrow.StatusBorrow = EnumStatusBorrow.Completed;
+                borrow.UserBook.IsBorrowed = false;
+                borrow.UserBook.Location = null;
+                borrow.UserBook.Notes = null;
+                borrow.UserBook.ReadStatus = borrow.OriginalOwnerReadStatus;
 
                 _context.Entry(borrow).State = EntityState.Modified;
+                _context.Entry(borrow.UserBook).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
                 TempData["FriendSuccess"] = "Return confirmed and moved to history.";

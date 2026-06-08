@@ -7,7 +7,7 @@ using YourLibrary.Models;
 
 namespace YourLibrary.Controllers
 {
-    [Authorize] 
+    [Authorize]
     public class ShelfController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -28,10 +28,16 @@ namespace YourLibrary.Controllers
                 .Include(ub => ub.Borrows)
                 .Where(ub => ub.ApplicationUserId == currentUserId ||
                              ub.Borrows.Any(b => b.ApplicationUserId == currentUserId &&
-                                                (b.StatusBorrow == EnumStatusBorrow.Borrowed
-                                       || b.StatusBorrow == EnumStatusBorrow.Returned
-                                       || b.StatusBorrow == EnumStatusBorrow.Completed)))
+                               (b.StatusBorrow == EnumStatusBorrow.Borrowed ||
+                                b.StatusBorrow == EnumStatusBorrow.Returned ||
+                                b.StatusBorrow == EnumStatusBorrow.Completed)))
                 .ToListAsync();
+
+
+        //    var uniqueBooks = myShelfBooks
+        //.GroupBy(ub => ub.UserBookId)
+        //.Select(g => g.First())
+        //.ToList();
 
             return View(myShelfBooks);
         }

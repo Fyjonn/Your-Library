@@ -66,23 +66,76 @@
     </div>
 
     <div class="tab-content" id="shelfTabsContent">
+        @{
+            // PANCERNE GLOBALNE GRUPOWANIE: Spaja powtarzające się BookId w jeden logiczny rekord na tym widoku
+            var uniqueUserBooks = Model
+                .GroupBy(b => b.BookId)
+                .Select(g =>
+                {
+                    // 1. Szukamy rekordu, który ma AKTUALNE aktywne wypożyczenie (zielona książka)
+                    var activeBorrowRow = g.FirstOrDefault(b => b.ApplicationUserId != currentUserId &&
+                                                               b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) == true);
+
+                    if (activeBorrowRow != null) return activeBorrowRow;
+
+                    // 2. Szukamy rekordu, który oczekuje na potwierdzenie zwrotu (ma pierwszeństwo przed zakończonymi duchami)
+                    var returnedBorrowRow = g.FirstOrDefault(b => b.ApplicationUserId != currentUserId &&
+                                                                b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Returned) == true);
+
+                    if (returnedBorrowRow != null) return returnedBorrowRow;
+
+                    // 3. Sprawdzamy, czy ta książka ma NOWE aktywne wypożyczenie na innej półce.
+                    // Jeśli tak, nie chcemy pokazywać starego ducha na półce DNF!
+                    var hasAnyActiveLending = g.Any(b => b.Borrows?.Any(br => br.ApplicationUserId == currentUserId &&
+                                                         (br.StatusBorrow == EnumStatusBorrow.Borrowed || br.StatusBorrow == EnumStatusBorrow.Returned)) == true);
+
+                    // 4. Jeśli nie ma żadnego aktywnego wypożyczenia ani zwrotu, bierzemy ten rekord, który ma NAJNOWSZĄ historię
+                    var newestRow = g.OrderByDescending(b => b.Borrows?.Where(br => br.ApplicationUserId == currentUserId)
+                                                             .Max(br => (DateTime?)br.BorrowDate) ?? DateTime.MinValue)
+                                    .First();
+
+                    // ZABEZPIECZENIE: Jeśli książka jest aktualnie wypożyczona ponownie, to stary wpis jako duch "Completed"
+                    // zostaje wyczyszczony, aby nie pokazywał się na starych półkach (np. DNF).
+                    if (hasAnyActiveLending && newestRow.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Completed) == true)
+                    {
+                        return null;
+                    }
+
+                    return newestRow;
+                })
+                .Where(b => b != null) // Usuwamy odrzucone stare duchy
+                .ToList();
+        }
+
 
         @* --- PÓŁKA: READING --- *@
         <div class="shelf-pane d-block" id="reading">
             <div class="container-books">
                 @{
-                    var readingBooks = Model.Where(b =>
-                            // 1. Właściciel
-                            (b.ApplicationUserId == currentUserId && b.ReadStatus == EnumReadStatus.Reading && !(b.Borrows?.Any(br => br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false))
-                            ||
-                            // 2. Wypożyczający (aktualne aktywne wypożyczenie)
-                            (b.ApplicationUserId != currentUserId && b.ReadStatus == EnumReadStatus.Reading && b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) == true)
-                            ||
-                            // 3. Wypożyczający (DUCH) - pokazuj tylko jeśli NIE MASZ aktualnie aktywnego wypożyczenia tej książki!
-                            (b.ApplicationUserId != currentUserId &&
-                             b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && (br.StatusBorrow == EnumStatusBorrow.Completed || br.StatusBorrow == EnumStatusBorrow.Returned) && br.BorrowerFinalReadStatus == EnumReadStatus.Reading) == true &&
-                             !(b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false))
-                        );
+                    var readingBooks = uniqueUserBooks.Where(b =>
+                    {
+                        bool isOwner = b.ApplicationUserId == currentUserId;
+                        var myBorrow = b.Borrows?.Where(br => br.ApplicationUserId == currentUserId)
+                                                .OrderByDescending(br => br.BorrowDate).FirstOrDefault();
+
+                        // 1. Właściciel: książka jest oznaczona jako Reading i nie jest aktualnie nikomu pożyczona
+                        if (isOwner && b.ReadStatus == EnumReadStatus.Reading && !(b.Borrows?.Any(br => br.StatusBorrow == EnumStatusBorrow.Borrowed || br.StatusBorrow == EnumStatusBorrow.Returned) ?? false))
+                            return true;
+
+                        // 2. Wypożyczający (Aktywne wypożyczenie): Najnowsze wypożyczenie ma status Borrowed, a status czytania to Reading
+                        if (!isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Borrowed && b.ReadStatus == EnumReadStatus.Reading)
+                            return true;
+
+                        // 3. Wypożyczający (Duch): Brak aktywnych wypożyczeń, stary zwrot, a końcowy status to Reading
+                        if (!isOwner && myBorrow != null && (myBorrow.StatusBorrow == EnumStatusBorrow.Completed || myBorrow.StatusBorrow == EnumStatusBorrow.Returned) && myBorrow.BorrowerFinalReadStatus == EnumReadStatus.Reading)
+                        {
+                            // Zabezpieczenie: jeśli ta sama książka ma też jakieś inne aktywne wypożyczenie, nie pokazuj ducha
+                            bool hasActive = b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false;
+                            return !hasActive;
+                        }
+
+                        return false;
+                    }).ToList();
                 }
 
                 @if (!readingBooks.Any())
@@ -103,14 +156,15 @@
                                 @foreach (var userBook in readingBooks)
                                 {
                                     bool isOwner = userBook.ApplicationUserId == currentUserId;
-                                    var myBorrow = userBook.Borrows?.Where(b => b.ApplicationUserId == currentUserId).OrderByDescending(b => b.StatusBorrow == EnumStatusBorrow.Borrowed).ThenByDescending(b => b.BorrowDate).FirstOrDefault();
+                                    var myBorrow = userBook.Borrows?.Where(b => b.ApplicationUserId == currentUserId).OrderByDescending(b => b.BorrowDate).FirstOrDefault();
 
                                     bool iAmBorrowingNow = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Borrowed;
-                                    bool iReturnedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Completed;
-                                    bool ownerWaitingForConfirmation = isOwner && (userBook.Borrows?.Any(b => b.StatusBorrow == EnumStatusBorrow.Returned) ?? false); // Jeśli "Returned" to teraz status, gdzie właściciel dopiero akceptuje zwrot, zostaw to tak. Jeśli od razu leci w Completed, zmień i tu na Completed.
+                                    bool iReturnedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Returned;
+                                    bool iCompletedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Completed;
+
                                     string rowClass = "";
                                     if (iAmBorrowingNow) rowClass = "table-success borrowed-row";
-                                    else if (iReturnedThisBook) rowClass = "history-returned-row";
+                                    else if (iReturnedThisBook || iCompletedThisBook) rowClass = "history-returned-row";
 
                                     <tr class="book-clickable-row book-card-item @rowClass"
                                         data-url="/UserBook/Details/@userBook.UserBookId"
@@ -121,11 +175,10 @@
                                             {
                                                 <i class="bi bi-box-arrow-in-down text-success me-2"></i><span class="text-success">@userBook.Book?.Title (Borrowed from Friend)</span>
                                             }
-                                            else if (iReturnedThisBook)
+                                            else if (iReturnedThisBook || iCompletedThisBook)
                                             {
                                                 <i class="bi bi-bookmark-check text-secondary me-2"></i><span>@userBook.Book?.Title (Returned to Friend)</span>
                                             }
-                                        
                                             else
                                             {
                                                 <i class="bi bi-book me-2"></i>
@@ -146,18 +199,26 @@
         <div class="shelf-pane d-none" id="toread">
             <div class="container-books">
                 @{
-                    var toReadBooks = Model.Where(b =>
-                        // 1. Właściciel
-                        (b.ApplicationUserId == currentUserId && b.ReadStatus == EnumReadStatus.ToRead && !(b.Borrows?.Any(br => br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false))
-                        ||
-                        // 2. Wypożyczający (aktualne aktywne wypożyczenie)
-                        (b.ApplicationUserId != currentUserId && b.ReadStatus == EnumReadStatus.ToRead && b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) == true)
-                        ||
-                        // 3. Wypożyczający (DUCH) - pokazuj tylko jeśli NIE MASZ aktualnie aktywnego wypożyczenia tej książki!
-                        (b.ApplicationUserId != currentUserId &&
-                         b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && (br.StatusBorrow == EnumStatusBorrow.Completed || br.StatusBorrow == EnumStatusBorrow.Returned) && br.BorrowerFinalReadStatus == EnumReadStatus.ToRead) == true &&
-                         !(b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false))
-                    );
+                    var toReadBooks = uniqueUserBooks.Where(b =>
+                    {
+                        bool isOwner = b.ApplicationUserId == currentUserId;
+                        var myBorrow = b.Borrows?.Where(br => br.ApplicationUserId == currentUserId)
+                                                .OrderByDescending(br => br.BorrowDate).FirstOrDefault();
+
+                        if (isOwner && b.ReadStatus == EnumReadStatus.ToRead && !(b.Borrows?.Any(br => br.StatusBorrow == EnumStatusBorrow.Borrowed || br.StatusBorrow == EnumStatusBorrow.Returned) ?? false))
+                            return true;
+
+                        if (!isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Borrowed && b.ReadStatus == EnumReadStatus.ToRead)
+                            return true;
+
+                        if (!isOwner && myBorrow != null && (myBorrow.StatusBorrow == EnumStatusBorrow.Completed || myBorrow.StatusBorrow == EnumStatusBorrow.Returned) && myBorrow.BorrowerFinalReadStatus == EnumReadStatus.ToRead)
+                        {
+                            bool hasActive = b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false;
+                            return !hasActive;
+                        }
+
+                        return false;
+                    }).ToList();
                 }
 
                 @if (!toReadBooks.Any())
@@ -178,15 +239,15 @@
                                 @foreach (var userBook in toReadBooks)
                                 {
                                     bool isOwner = userBook.ApplicationUserId == currentUserId;
-                                    var myBorrow = userBook.Borrows?.Where(b => b.ApplicationUserId == currentUserId).OrderByDescending(b => b.StatusBorrow == EnumStatusBorrow.Borrowed).ThenByDescending(b => b.BorrowDate).FirstOrDefault();
+                                    var myBorrow = userBook.Borrows?.Where(b => b.ApplicationUserId == currentUserId).OrderByDescending(b => b.BorrowDate).FirstOrDefault();
 
                                     bool iAmBorrowingNow = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Borrowed;
-                                    bool iReturnedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Completed;
-                                    bool ownerWaitingForConfirmation = isOwner && (userBook.Borrows?.Any(b => b.StatusBorrow == EnumStatusBorrow.Returned) ?? false); // Jeśli "Returned" to teraz status, gdzie właściciel dopiero akceptuje zwrot, zostaw to tak. Jeśli od razu leci w Completed, zmień i tu na Completed.
+                                    bool iReturnedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Returned;
+                                    bool iCompletedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Completed;
 
                                     string rowClass = "";
                                     if (iAmBorrowingNow) rowClass = "table-success borrowed-row";
-                                    else if (iReturnedThisBook) rowClass = "history-returned-row";
+                                    else if (iReturnedThisBook || iCompletedThisBook) rowClass = "history-returned-row";
 
                                     <tr class="book-clickable-row book-card-item @rowClass"
                                         data-url="/UserBook/Details/@userBook.UserBookId"
@@ -197,11 +258,10 @@
                                             {
                                                 <i class="bi bi-box-arrow-in-down text-success me-2"></i><span class="text-success">@userBook.Book?.Title (Borrowed from Friend)</span>
                                             }
-                                            else if (iReturnedThisBook)
+                                            else if (iReturnedThisBook || iCompletedThisBook)
                                             {
                                                 <i class="bi bi-bookmark-check text-secondary me-2"></i><span>@userBook.Book?.Title (Returned to Friend)</span>
                                             }
-                                         
                                             else
                                             {
                                                 <i class="bi bi-book me-2"></i>
@@ -222,18 +282,26 @@
         <div class="shelf-pane d-none" id="dnf">
             <div class="container-books">
                 @{
-                    var dnfBooks = Model.Where(b =>
-                        // 1. Właściciel
-                        (b.ApplicationUserId == currentUserId && b.ReadStatus == EnumReadStatus.DNF && !(b.Borrows?.Any(br => br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false))
-                        ||
-                        // 2. Wypożyczający (aktualne aktywne wypożyczenie)
-                        (b.ApplicationUserId != currentUserId && b.ReadStatus == EnumReadStatus.DNF && b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) == true)
-                        ||
-                        // 3. Wypożyczający (DUCH) - pokazuj tylko jeśli NIE MASZ aktualnie aktywnego wypożyczenia tej książki!
-                        (b.ApplicationUserId != currentUserId &&
-                         b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && (br.StatusBorrow == EnumStatusBorrow.Completed || br.StatusBorrow == EnumStatusBorrow.Returned) && br.BorrowerFinalReadStatus == EnumReadStatus.DNF) == true &&
-                         !(b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false))
-                    );
+                    var dnfBooks = uniqueUserBooks.Where(b =>
+                    {
+                        bool isOwner = b.ApplicationUserId == currentUserId;
+                        var myBorrow = b.Borrows?.Where(br => br.ApplicationUserId == currentUserId)
+                                                .OrderByDescending(br => br.BorrowDate).FirstOrDefault();
+
+                        if (isOwner && b.ReadStatus == EnumReadStatus.DNF && !(b.Borrows?.Any(br => br.StatusBorrow == EnumStatusBorrow.Borrowed || br.StatusBorrow == EnumStatusBorrow.Returned) ?? false))
+                            return true;
+
+                        if (!isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Borrowed && b.ReadStatus == EnumReadStatus.DNF)
+                            return true;
+
+                        if (!isOwner && myBorrow != null && (myBorrow.StatusBorrow == EnumStatusBorrow.Completed || myBorrow.StatusBorrow == EnumStatusBorrow.Returned) && myBorrow.BorrowerFinalReadStatus == EnumReadStatus.DNF)
+                        {
+                            bool hasActive = b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false;
+                            return !hasActive;
+                        }
+
+                        return false;
+                    }).ToList();
                 }
 
                 @if (!dnfBooks.Any())
@@ -254,15 +322,15 @@
                                 @foreach (var userBook in dnfBooks)
                                 {
                                     bool isOwner = userBook.ApplicationUserId == currentUserId;
-                                    var myBorrow = userBook.Borrows?.Where(b => b.ApplicationUserId == currentUserId).OrderByDescending(b => b.StatusBorrow == EnumStatusBorrow.Borrowed).ThenByDescending(b => b.BorrowDate).FirstOrDefault();
+                                    var myBorrow = userBook.Borrows?.Where(b => b.ApplicationUserId == currentUserId).OrderByDescending(b => b.BorrowDate).FirstOrDefault();
 
                                     bool iAmBorrowingNow = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Borrowed;
-                                    bool iReturnedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Completed;
-                                    bool ownerWaitingForConfirmation = isOwner && (userBook.Borrows?.Any(b => b.StatusBorrow == EnumStatusBorrow.Returned) ?? false);
+                                    bool iReturnedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Returned;
+                                    bool iCompletedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Completed;
 
                                     string rowClass = "";
                                     if (iAmBorrowingNow) rowClass = "table-success borrowed-row";
-                                    else if (iReturnedThisBook) rowClass = "history-returned-row";
+                                    else if (iReturnedThisBook || iCompletedThisBook) rowClass = "history-returned-row";
 
                                     <tr class="book-clickable-row book-card-item @rowClass"
                                         data-url="/UserBook/Details/@userBook.UserBookId"
@@ -273,11 +341,10 @@
                                             {
                                                 <i class="bi bi-box-arrow-in-down text-success me-2"></i><span class="text-success">@userBook.Book?.Title (Borrowed from Friend)</span>
                                             }
-                                            else if (iReturnedThisBook)
+                                            else if (iReturnedThisBook || iCompletedThisBook)
                                             {
                                                 <i class="bi bi-bookmark-check text-secondary me-2"></i><span>@userBook.Book?.Title (Returned to Friend)</span>
                                             }
-                                           
                                             else
                                             {
                                                 <i class="bi bi-book me-2"></i>
@@ -298,18 +365,26 @@
         <div class="shelf-pane d-none" id="read">
             <div class="container-books">
                 @{
-                    var readBooks = Model.Where(b =>
-                            // 1. Właściciel
-                            (b.ApplicationUserId == currentUserId && b.ReadStatus == EnumReadStatus.Read && !(b.Borrows?.Any(br => br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false))
-                            ||
-                            // 2. Wypożyczający (aktualne aktywne wypożyczenie)
-                            (b.ApplicationUserId != currentUserId && b.ReadStatus == EnumReadStatus.Read && b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) == true)
-                            ||
-                            // 3. Wypożyczający (DUCH) - pokazuj tylko jeśli NIE MASZ aktualnie aktywnego wypożyczenia tej książki!
-                            (b.ApplicationUserId != currentUserId &&
-                             b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && (br.StatusBorrow == EnumStatusBorrow.Completed || br.StatusBorrow == EnumStatusBorrow.Returned) && br.BorrowerFinalReadStatus == EnumReadStatus.Read) == true &&
-                             !(b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false))
-                        );
+                    var readBooks = uniqueUserBooks.Where(b =>
+                    {
+                        bool isOwner = b.ApplicationUserId == currentUserId;
+                        var myBorrow = b.Borrows?.Where(br => br.ApplicationUserId == currentUserId)
+                                                .OrderByDescending(br => br.BorrowDate).FirstOrDefault();
+
+                        if (isOwner && b.ReadStatus == EnumReadStatus.Read && !(b.Borrows?.Any(br => br.StatusBorrow == EnumStatusBorrow.Borrowed || br.StatusBorrow == EnumStatusBorrow.Returned) ?? false))
+                            return true;
+
+                        if (!isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Borrowed && b.ReadStatus == EnumReadStatus.Read)
+                            return true;
+
+                        if (!isOwner && myBorrow != null && (myBorrow.StatusBorrow == EnumStatusBorrow.Completed || myBorrow.StatusBorrow == EnumStatusBorrow.Returned) && myBorrow.BorrowerFinalReadStatus == EnumReadStatus.Read)
+                        {
+                            bool hasActive = b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false;
+                            return !hasActive;
+                        }
+
+                        return false;
+                    }).ToList();
                 }
 
                 @if (!readBooks.Any())
@@ -323,22 +398,22 @@
                             <thead>
                                 <tr>
                                     <th>Title</th>
-                                    <th>Autor</th>
+                                    <th>Author</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var userBook in readBooks)
                                 {
                                     bool isOwner = userBook.ApplicationUserId == currentUserId;
-                                    var myBorrow = userBook.Borrows?.Where(b => b.ApplicationUserId == currentUserId).OrderByDescending(b => b.StatusBorrow == EnumStatusBorrow.Borrowed).ThenByDescending(b => b.BorrowDate).FirstOrDefault();
+                                    var myBorrow = userBook.Borrows?.Where(b => b.ApplicationUserId == currentUserId).OrderByDescending(b => b.BorrowDate).FirstOrDefault();
 
                                     bool iAmBorrowingNow = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Borrowed;
-                                    bool iReturnedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Completed;
-                                    bool ownerWaitingForConfirmation = isOwner && (userBook.Borrows?.Any(b => b.StatusBorrow == EnumStatusBorrow.Returned) ?? false);
+                                    bool iReturnedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Returned;
+                                    bool iCompletedThisBook = !isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Completed;
 
                                     string rowClass = "";
                                     if (iAmBorrowingNow) rowClass = "table-success borrowed-row";
-                                    else if (iReturnedThisBook) rowClass = "history-returned-row";
+                                    else if (iReturnedThisBook || iCompletedThisBook) rowClass = "history-returned-row";
 
                                     <tr class="book-clickable-row book-card-item @rowClass"
                                         data-url="/UserBook/Details/@userBook.UserBookId"
@@ -349,11 +424,10 @@
                                             {
                                                 <i class="bi bi-box-arrow-in-down text-success me-2"></i><span class="text-success">@userBook.Book?.Title (Borrowed from Friend)</span>
                                             }
-                                            else if (iReturnedThisBook)
+                                            else if (iReturnedThisBook || iCompletedThisBook)
                                             {
                                                 <i class="bi bi-bookmark-check text-secondary me-2"></i><span>@userBook.Book?.Title (Returned to Friend)</span>
                                             }
-                                           
                                             else
                                             {
                                                 <i class="bi bi-book me-2"></i>
@@ -368,6 +442,7 @@
                     </div>
                 }
             </div>
+        </div>
         </div>
 
     </div>
