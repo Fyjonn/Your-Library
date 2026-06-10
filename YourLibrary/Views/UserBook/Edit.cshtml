@@ -1,231 +1,253 @@
 @model YourLibrary.Models.UserBook
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Edit Book";
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var isOwner = Model.ApplicationUserId == currentUserId;
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/userbook_edit.css" asp-append-version="true" />
+    <link class="custom-style-tag" rel="stylesheet" href="~/css/userbook_edit.css" asp-append-version="true" />
+    <link class="custom-style-tag" rel="stylesheet" href="~/css/userbook_create.css" asp-append-version="true" />
 }
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<div class="container mt-5 mb-5" style="max-width: 750px;">
-    <div class="card shadow-sm border-0 custom-userbook-card">
+<div class="container mt-4 mb-5 create-book-container">
+    <div class="row g-4">
 
-        <div class="card-header d-flex justify-content-between align-items-center py-3 custom-userbook-header">
-            <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Book Settings</h4>
-            <span class="badge custom-badge-status fs-6">@Model.Book?.Title</span>
-        </div>
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 custom-userbook-card">
 
-        <div class="card-body p-4">
-            <form asp-action="Edit" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="UserBookId" />
-
-                <h5 class="custom-section-title mb-3"><i class="bi bi-globe me-2"></i>General Book Information</h5>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold custom-label-muted">Book Title</label>
-                    <input type="text" name="Book.Title" value="@Model.Book?.Title" class="form-control custom-form-control" required />
+                <div class="card-header d-flex justify-content-between align-items-center py-3 custom-userbook-header">
+                    <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Book Settings</h4>
+                    <span class="badge custom-badge-status fs-6">@Model.Book?.Title</span>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold custom-label-muted">Author</label>
-                    <input type="text" name="Book.Author" value="@Model.Book?.Author" class="form-control custom-form-control" required />
-                </div>
+                <div class="card-body p-4">
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold custom-label-muted">Genre / Category</label>
-                        <input type="text" name="Book.Genre" value="@Model.Book?.Genre" class="form-control custom-form-control" placeholder="e.g. Fantasy, Sci-Fi" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold custom-label-muted">Age Rating</label>
-                        <input type="text" name="Book.AgeRating" value="@Model.Book?.AgeRating" class="form-control custom-form-control" placeholder="e.g. 16+, General" />
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label fw-bold custom-label-muted">Book Description</label>
-                    <textarea name="Book.Description" class="form-control custom-form-control" rows="3" placeholder="Brief summary of the book...">@Model.Book?.Description</textarea>
-                </div>
-
-
-                <h5 class="custom-section-title mb-3 pt-2 border-top"><i class="bi bi-person-gear me-2"></i>Your Personal Copy Settings</h5>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Media" class="form-label fw-bold custom-label-muted">Media Format</label>
-                        <select asp-for="Media" class="form-select custom-form-control" id="mediaFormatSelect" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()"></select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="ReadStatus" class="form-label fw-bold custom-label-muted">Reading Status</label>
-                        <select asp-for="ReadStatus" class="form-select custom-form-control" id="readStatusSelect" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumReadStatus>()"></select>
-                    </div>
-                </div>
-
-                <div id="physicalOptionsSection">
-                    <div class="row mb-3 align-items-center bg-white p-3 rounded border mx-0 custom-checkbox-box">
-                        <div class="col-6 col-sm-5 border-end">
-                            <div class="form-check form-switch mb-0">
-                                <input class="form-check-input custom-switch-input" type="checkbox" asp-for="IsOwned" id="checkboxOwned">
-                                <label class="form-check-label fw-bold custom-label-muted ms-2" for="checkboxOwned">I own this book</label>
+                    @if (Model.IsBorrowed)
+                    {
+                        <div class="alert alert-warning border p-3 mb-4 d-flex justify-content-between align-items-center" style="background-color: rgba(46, 204, 113, 0.05); border-color: rgba(46, 204, 113, 0.3) !important;">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-triangle-fill text-warning fs-4 me-3"></i>
+                                <div>
+                                    <span class="fw-bold text-dark">Borrowed Position</span>
+                                    <p class="small text-muted mb-0">
+                                        @(isOwner ? "This book is currently lent to a friend. Settings are locked until it returns." : "You are borrowing this book. You can manage its shelf status, storage location and your personal notes.")
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-6 col-sm-7 ps-3">
-                            <div class="form-check form-switch mb-0">
-                                <input class="form-check-input custom-switch-input" type="checkbox" asp-for="Bookmark" id="checkboxBookmark">
-                                <label class="form-check-label fw-bold custom-label-muted ms-2" for="checkboxBookmark">Has a bookmark</label>
+                    }
+
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="UserBookId" />
+                        <input type="hidden" asp-for="BookId" />
+                        <input type="hidden" asp-for="ApplicationUserId" />
+                        <input type="hidden" asp-for="ReviewId" />
+
+                        <input type="hidden" id="bookTitleHidden" value="@Model.Book?.Title" />
+
+                        @* 1. Format Media - tylko w³aœciciel zmienia, dla po¿yczaj¹cego jest zablokowany *@
+                        <div class="mb-3">
+                            <label asp-for="Media" class="form-label fw-bold custom-label-muted">Media Format</label>
+                            @if (isOwner)
+                            {
+                                <select asp-for="Media" class="form-select custom-form-control" id="mediaSelect" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()"></select>
+                            }
+                            else
+                            {
+                                <select asp-for="Media" class="form-select custom-form-control" id="mediaSelect" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()" disabled></select>
+                                <input type="hidden" asp-for="Media" /> @* Przekazujemy wartoœæ ukryt¹, ¿eby model bazy siê nie wywali³ *@
+                            }
+                            <span asp-validation-for="Media" class="text-danger"></span>
+                        </div>
+
+                        @* 2. Checkboxy opcji ukrywamy ca³kowicie przed po¿yczaj¹cym *@
+                        @if (isOwner)
+                        {
+                            <div id="optionsCheckboxGroup" class="mb-3 d-none">
+                                <label class="form-label fw-bold custom-label-muted mb-2">Options</label>
+                                <div class="p-3 border rounded bg-white">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" asp-for="Bookmark" id="Bookmark" />
+                                        <label class="form-check-label text-dark" for="Bookmark">
+                                            <i class="bi bi-bookmark-fill text-secondary me-1"></i> Use Bookmark
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsOwned" id="IsOwned" />
+                                        <label class="form-check-label text-dark" for="IsOwned">
+                                            <i class="bi bi-house-check text-success me-1"></i> Is Owned (I own this book)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="Bookmark" />
+                            <input type="hidden" asp-for="IsOwned" />
+                        }
+
+                        @* 3. Read Status - DOSTÊPNE DLA KA¯DEGO *@
+                        <div class="mb-3">
+                            <label asp-for="ReadStatus" class="form-label fw-bold custom-label-muted">Read Status</label>
+                            <select asp-for="ReadStatus" class="form-select custom-form-control" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumReadStatus>()"></select>
+                            <span asp-validation-for="ReadStatus" class="text-danger"></span>
+                        </div>
+
+                        @* 4. Storage Location - DOSTÊPNE DLA KA¯DEGO (Pokazuje siê, jeœli format to drukowany) *@
+                        <div class="mb-3 d-none" id="locationGroup">
+                            <label asp-for="Location" class="form-label fw-bold custom-label-muted">Storage Location</label>
+                            <input asp-for="Location" class="form-control custom-form-control" placeholder="e.g., Living room shelf A" id="bookLocation" />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+
+                        @* 5. Notes - DOSTÊPNE DLA KA¯DEGO *@
+                        <div class="mb-4">
+                            <label asp-for="Notes" class="form-label fw-bold custom-label-muted">Your Notes & Thoughts</label>
+                            <textarea asp-for="Notes" class="form-control custom-form-control" rows="4" placeholder="Write your private impressions, notes or quotes..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a href="/Shelf/Index" class="btn btn-custom-back px-4">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-custom-save px-4 shadow-sm">
+                                <i class="bi bi-check-lg me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+
+                    @* Sekcja zwrotu: Widoczna dla po¿yczaj¹cego *@
+                    @if (Model.IsBorrowed && !isOwner)
+                    {
+                        <div class="border-top pt-4 mt-4">
+                            <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background-color: rgba(217, 83, 79, 0.05); border: 1px dashed #8b2635;">
+                                <div>
+                                    <h6 class="mb-1 fw-bold text-danger">Return Book</h6>
+                                    <p class="small text-muted mb-0">Are you done reading?</p>
+                                    <p class="small text-muted mb-0">Give the book back to its owner.</p>
+                                </div>
+                                <form asp-action="ReturnBorrowedBookDirectly" asp-controller="Friendship" method="post" class="mb-0">
+                                    <input type="hidden" name="userBookId" value="@Model.UserBookId" />
+                                    <button type="submit" class="btn btn-danger btn-sm px-3">
+                                        <i class="bi bi-box-arrow-up me-1"></i>Return Book
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                    </div>
+                    }
 
-                    <div class="mb-3" id="shelfLocationGroup">
-                        <label asp-for="Location" class="form-label fw-bold custom-label-muted">Shelf Location</label>
-                        <div class="input-group">
-                            <span class="input-group-text custom-input-group-icon"><i class="bi bi-geo-alt-fill"></i></span>
-                            <input asp-for="Location" class="form-control custom-form-control" placeholder="e.g. Living room, Top shelf" />
-                        </div>
-                    </div>
                 </div>
-
-                <div class="mb-4">
-                    <label asp-for="Notes" class="form-label fw-bold custom-label-muted">Personal Notes</label>
-                    <textarea asp-for="Notes" class="form-control custom-form-control" rows="3" placeholder="Write your thoughts, memorable quotes, or private annotations here..."></textarea>
-                </div>
-
-
-                <div id="reviewSection" class="p-3 mb-4 rounded border custom-review-box shadow-sm" style="display:none;">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-chat-left-heart-fill me-2 text-primary"></i>Your Review & Rating</h5>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold custom-label-muted">Your Rating (Scale 1-10)</label>
-
-                        <select id="reviewRatingSelect" name="reviewRating" class="form-select custom-form-control mb-2">
-                            <option value="0">Select score...</option>
-                            @for (decimal val = 1.00m; val <= 10.00m; val += 0.25m)
-                            {
-                                string strVal = val.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
-                                if (Model.Review?.Rating == val)
-                                {
-                                    <option value="@strVal" selected>@val.ToString("0.##") / 10</option>
-                                }
-                                else
-                                {
-                                    <option value="@strVal">@val.ToString("0.##") / 10</option>
-                                }
-                            }
-                        </select>
-
-                        <div class="star-rating-wrapper fs-4 mb-1">
-                            @for (int i = 1; i <= 10; i++)
-                            {
-                                <i class="bi bi-star visual-star me-1" data-value="@i"></i>
-                            }
-                        </div>
-                    </div>
-
-                    <div class="mb-2">
-                        <label class="form-label fw-bold custom-label-muted">Review Comment</label>
-                        <textarea name="reviewComment" class="form-control custom-form-control" rows="3" placeholder="Share your thoughts...">@Model.Review?.ReviewComment</textarea>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center pt-3 border-top custom-actions-container">
-                    <a asp-action="Details" asp-route-id="@Model.UserBookId" class="btn btn-custom-back px-4">
-                        <i class="bi bi-x-circle me-2"></i>Cancel
-                    </a>
-                    <button type="submit" class="btn btn-custom-save px-4 shadow-sm">
-                        <i class="bi bi-check-lg me-2"></i>Save Changes
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 custom-userbook-card h-100">
+                <div class="card-header py-3 custom-userbook-header bg-secondary">
+                    <h5 class="mb-0 text-white"><i class="bi bi-chat-square-heart me-2"></i>Community Reviews</h5>
+                </div>
+                <div class="card-body p-4 bg-white" style="max-height: 600px; overflow-y: auto;">
+                    <div id="reviewsContainer">
+                        <div id="placeholderText" class="text-center text-muted py-5">
+                            <i class="bi bi-chat-dots fs-1 d-block mb-2"></i>
+                            <span>Loading community thoughts for this book...</span>
+                        </div>
+                        <ul id="reviewsList" class="list-unstyled d-none"></ul>
+                        <div id="toggleReviewsBtn" class="btn-toggle-reviews text-center mt-3 d-none">
+                            Show all reviews
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
     <script>
-        const mediaSelect = document.getElementById('mediaFormatSelect');
-        const readStatusSelect = document.getElementById('readStatusSelect');
-        const physicalOptions = document.getElementById('physicalOptionsSection');
-        const reviewSection = document.getElementById('reviewSection');
-        const reviewRatingInput = document.getElementById('reviewRatingInput');
-        const ratingDisplayLabel = document.getElementById('ratingDisplayLabel');
-        const stars = document.querySelectorAll('.star-select');
+        const mediaSelect = document.getElementById('mediaSelect');
+        const optionsGroup = document.getElementById('optionsCheckboxGroup');
+        const locationGroup = document.getElementById('locationGroup');
+        const checkboxOwned = document.getElementById('IsOwned');
 
-        // Logika ukrywania opcji fizycznych na podstawie Media formatu
         function toggleOptionsVisibility() {
-            // Zabezpieczenie tekstowe lub numeryczne
             const selectedText = mediaSelect.options[mediaSelect.selectedIndex].text.toLowerCase();
-
-            if (selectedText === 'ebook' || selectedText === 'audiobook') {
-                physicalOptions.style.display = 'none';
-                document.getElementById('checkboxOwned').checked = false;
-                document.getElementById('checkboxBookmark').checked = false;
-                if(document.getElementById('Location')) document.getElementById('Location').value = '';
+            if (selectedText.includes('printed') || selectedText.includes('print')) {
+                if(optionsGroup) optionsGroup.classList.remove('d-none');
+                if(locationGroup) locationGroup.classList.remove('d-none');
             } else {
-                physicalOptions.style.display = 'block';
+                if(optionsGroup) optionsGroup.classList.add('d-none');
+                if(locationGroup) locationGroup.classList.add('d-none');
+
+                if(document.getElementById('Bookmark')) document.getElementById('Bookmark').checked = false;
+
+                const locationInput = document.getElementById('bookLocation');
+                if (locationInput) { locationInput.value = ''; }
             }
         }
 
-        // 2. Logika wyœwietlania sekcji recenzji na podstawie Statusu Czytania
-        function toggleReviewVisibility() {
-            const statusText = readStatusSelect.options[readStatusSelect.selectedIndex].text.toLowerCase();
 
-            // Pokazuj tylko dla "read" lub "dnf"
-            if (statusText === 'read' || statusText === 'dnf') {
-                reviewSection.style.display = 'block';
-            } else {
-                reviewSection.style.display = 'none';
-                // Resetowanie wartoœci recenzji w formularzu w przypadku zmiany statusu na ToRead/Reading
-                reviewRatingInput.value = '0';
-                highlightStars(0);
-            }
-        }
-
-        // Obs³uga systemu gwiazdek
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                const ratingValue = this.getAttribute('data-value');
-                reviewRatingInput.value = ratingValue;
-                highlightStars(ratingValue);
-            });
+        document.addEventListener("DOMContentLoaded", function () {
+            const title = document.getElementById('bookTitleHidden').value;
+            if (title) { loadBookReviews(title); }
         });
 
-        function updateVisualStars(rating) {
-            visualStars.forEach(star => {
-                const starValue = parseInt(star.getAttribute('data-value'));
+        function loadBookReviews(title) {
+            const url = `/api/reviews?title=${encodeURIComponent(title)}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const reviewsList = document.getElementById('reviewsList');
+                    const placeholderText = document.getElementById('placeholderText');
+                    const toggleReviewsBtn = document.getElementById('toggleReviewsBtn');
 
-                // Pe³na gwiazdka
-                if (rating >= starValue) {
-                    star.className = 'bi bi-star-fill visual-star text-warning me-1';
-                }
-                // Po³ówka lub æwiartka
-                else if (rating > (starValue - 1) && rating < starValue) {
-                    star.className = 'bi bi-star-half visual-star text-warning me-1';
-                }
-                // Pusta gwiazdka
-                else {
-                    star.className = 'bi bi-star visual-star text-muted me-1';
-                }
-            });
-                }
+                    reviewsList.innerHTML = '';
+                    placeholderText.classList.add('d-none');
+                    toggleReviewsBtn.classList.add('d-none');
 
-        // Listenery zmian pól select
-        mediaSelect.addEventListener('change', toggleOptionsVisibility);
-        readStatusSelect.addEventListener('change', toggleReviewVisibility);
+                    if (data && data.length > 0) {
+                        data.forEach(review => {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'mb-3';
+                            listItem.innerHTML = `
+                                <div class="card p-3 shadow-sm border-0 rounded">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <strong>${review.userName}</strong>
+                                            <span class="badge rounded-pill text-bg-primary ms-2">${review.rating} <i class="bi bi-star-fill"></i></span>
+                                        </div>
+                                        <small class="text-muted">${new Date(review.createdAt).toLocaleString()}</small>
+                                    </div>
+                                    <p class="mb-0">${review.comment}</p>
+                                </div>
+                            `;
+                            reviewsList.appendChild(listItem);
+                        });
+                        const reviewCount = data.length;
+                        toggleReviewsBtn.classList.remove('d-none');
+                        toggleReviewsBtn.innerHTML = `Show all ${reviewCount} review${reviewCount > 1 ? 's' : ''}`;
+                    } else {
+                        placeholderText.classList.remove('d-none');
+                    }
+                })
+                .catch(error => console.error('Error loading reviews:', error));
+        }
 
-        // Wywo³anie przy za³adowaniu widoku w celu poprawnego ustawienia interfejsu
-        document.addEventListener("DOMContentLoaded", function() {
-            toggleOptionsVisibility();
-            toggleReviewVisibility();
-
-            // Inicjalizacja zaznaczonych gwiazdek na starcie pobranych z bazy
-            const initialRating = parseInt(reviewRatingInput.value) || 0;
-            if(initialRating > 0) {
-                highlightStars(initialRating);
-            }
+        document.getElementById('toggleReviewsBtn')?.addEventListener('click', function() {
+            const reviewsList = document.getElementById('reviewsList');
+            const isExpanded = reviewsList.classList.toggle('expanded');
+            this.innerHTML = isExpanded ? 'Show fewer reviews' : 'Show all reviews';
         });
     </script>
 }

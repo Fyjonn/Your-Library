@@ -157,7 +157,6 @@ namespace YourLibrary.Controllers
 
             var userBook = _context.UserBooks
                 .Include(ub => ub.Book).Include(ub => ub.Borrows)
-                .Include(ub => ub.Review)
                 .FirstOrDefault(ub => ub.UserBookId == id &&
                     (ub.ApplicationUserId == currentUserId ||
                      ub.Borrows.Any(b => b.ApplicationUserId == currentUserId && b.StatusBorrow == EnumStatusBorrow.Borrowed))
@@ -173,7 +172,7 @@ namespace YourLibrary.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, UserBook userbook, decimal? reviewRating, string reviewComment)
+        public IActionResult Edit(int id, UserBook userbook)
         {
             if (id != userbook.UserBookId)
             {
@@ -183,10 +182,8 @@ namespace YourLibrary.Controllers
             string currentUserId = _userManager.GetUserId(User);
 
             var dbUserBook = _context.UserBooks
-            .Include(ub => ub.Book)
-            .Include(ub => ub.Borrows)
-            .Include(ub => ub.Review)
-            .FirstOrDefault(ub => ub.UserBookId == id);
+        .Include(ub => ub.Borrows)
+        .FirstOrDefault(ub => ub.UserBookId == id);
 
             if (dbUserBook == null)
             {
@@ -214,94 +211,12 @@ namespace YourLibrary.Controllers
                     dbUserBook.IsOwned = false;
                     dbUserBook.Location = null;
                 }
-
-                if (dbUserBook.Book != null)
-                {
-                    dbUserBook.Book.Title = Request.Form["Book.Title"].ToString();
-                    dbUserBook.Book.Author = Request.Form["Book.Author"].ToString();
-                    dbUserBook.Book.Genre = Request.Form["Book.Genre"].ToString();
-                    dbUserBook.Book.AgeRating = Request.Form["Book.AgeRating"].ToString();
-                    dbUserBook.Book.Description = Request.Form["Book.Description"].ToString();
-                }
-
-                if (userbook.ReadStatus == EnumReadStatus.Read || userbook.ReadStatus == EnumReadStatus.DNF)
-                {
-                    if (reviewRating.HasValue && reviewRating.Value > 0 && reviewRating.Value <= 10)
-                    {
-                        if (dbUserBook.Review == null)
-                        {
-                            var newReview = new Review
-                            {
-                                Rating = reviewRating.Value,
-                                ReviewComment = reviewComment ?? string.Empty,
-                                UserBook = dbUserBook
-                            };
-                            _context.Reviews.Add(newReview);
-                            _context.SaveChanges();
-
-                            dbUserBook.ReviewId = newReview.ReviewId;
-                        }
-                        else
-                        {
-                            dbUserBook.Review.Rating = reviewRating.Value;
-                            dbUserBook.Review.ReviewComment = reviewComment ?? string.Empty;
-                            _context.Reviews.Update(dbUserBook.Review);
-                        }
-                    }
-                }
-                else
-                {
-                    if (dbUserBook.Review != null)
-                    {
-                        var reviewToRemove = dbUserBook.Review;
-                        dbUserBook.ReviewId = null;
-                        dbUserBook.Review = null;
-                        _context.Reviews.Remove(reviewToRemove);
-                    }
-                }
             }
             else if (isBorrower)
             {
                 dbUserBook.ReadStatus = userbook.ReadStatus;
                 dbUserBook.Location = userbook.Location;
                 dbUserBook.Notes = userbook.Notes;
-                dbUserBook.Bookmark = userbook.Bookmark;
-
-                if (userbook.ReadStatus == EnumReadStatus.Read || userbook.ReadStatus == EnumReadStatus.DNF)
-                {
-                    if (reviewRating.HasValue && reviewRating.Value > 0 && reviewRating.Value <= 10)
-                    {
-                        if (dbUserBook.Review == null)
-                        {
-                            var newReview = new Review
-                            {
-                                Rating = reviewRating.Value,
-                                ReviewComment = reviewComment ?? string.Empty,
-                                UserBook = dbUserBook
-                            };
-                            _context.Reviews.Add(newReview);
-                            _context.SaveChanges();
-
-                            dbUserBook.ReviewId = newReview.ReviewId;
-                        }
-                        else
-                        {
-                            dbUserBook.Review.Rating = reviewRating.Value;
-                            dbUserBook.Review.ReviewComment = reviewComment ?? string.Empty;
-                            _context.Reviews.Update(dbUserBook.Review);
-                        }
-                    }
-                }
-                else
-                {
-                    if (dbUserBook.Review != null)
-                    {
-                        var reviewToRemove = dbUserBook.Review;
-                        dbUserBook.ReviewId = null;
-                        dbUserBook.Review = null;
-                        _context.Reviews.Remove(reviewToRemove);
-                    }
-                }
 
             }
 

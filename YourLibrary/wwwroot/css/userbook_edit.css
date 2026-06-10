@@ -24,88 +24,81 @@
     font-family: 'Georgia', serif;
 }
 
-.custom-section-title {
-    color: var(--primary-green);
-    font-weight: 600;
-    font-family: 'Georgia', serif;
-}
-
-.custom-label-muted {
-    color: var(--text-muted) !important;
-    font-size: 0.9rem;
-}
-
+/* Pola wejściowe formularza */
 .custom-form-control {
     background-color: #ffffff !important;
     border: 1px solid var(--accent-gold) !important;
     color: var(--text-dark) !important;
     border-radius: 6px;
-    transition: all 0.2s ease;
+    padding: 10px 12px;
 }
 
 .custom-form-control:focus {
     border-color: var(--primary-green) !important;
-    box-shadow: 0 0 0 0.2rem rgba(26, 58, 95, 0.15) !important;
+    box-shadow: 0 0 0 0.2rem rgba(26, 58, 95, 0.15);
 }
 
-.custom-checkbox-box {
-    border-color: #e3edf7 !important;
+.custom-label-muted {
+    color: var(--text-dark) !important;
+    font-weight: 600;
+    font-family: 'Georgia', serif;
+    margin-bottom: 0.5rem;
 }
 
-.custom-switch-input:checked {
-    background-color: var(--primary-green) !important;
-    border-color: var(--primary-green) !important;
-}
-
-.custom-input-group-icon {
-    background-color: #e3edf7 !important;
+/* Grupy opcji i przełączników */
+.custom-checkbox-group {
+    background-color: #ffffff !important;
     border: 1px solid var(--accent-gold) !important;
-    color: var(--text-muted);
+    box-shadow: 0 2px 8px rgba(26, 58, 95, 0.04);
 }
 
-/* Panel recenzji i interaktywne gwiazdki */
-.custom-review-box {
-    background-color: #ffffff;
-    border-color: var(--accent-gold) !important;
+.custom-checkbox-group .custom-value-dark {
+    color: #2b3e50 !important;
+    font-size: 0.95rem;
+    cursor: pointer;
 }
 
-.star-rating-wrapper i {
-    transition: transform 0.15s ease, color 0.1s ease;
+/* Klasa używana do wygaszania niekompatybilnych opcji */
+.disabled-element-group {
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 0.25s ease-in-out;
 }
 
-.star-rating-wrapper i:hover {
-    transform: scale(1.25);
-    color: #f1c40f !important;
+/* Walidacja i błędy */
+.text-danger {
+    color: var(--retro-burgund) !important;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
-/* Klasa odznaki nagłówka */
-.custom-badge-status {
+.card-body .text-danger .bi-exclamation-triangle-fill {
+    color: var(--retro-burgund) !important;
+}
+
+/* Przyciski operacyjne */
+.btn-custom-save, button[type="submit"] {
     background-color: var(--primary-green) !important;
     color: #ffffff !important;
-    border: 1px solid var(--accent-gold) !important;
-    padding: 6px 14px !important;
-    border-radius: 20px !important;
+    border: 1px solid var(--primary-green) !important;
 }
 
-/* Przycisk powrotu i akcji zapisu */
+.btn-custom-save:hover, button[type="submit"]:hover {
+    background-color: #0b1829 !important;
+    border-color: #050b12 !important;
+    box-shadow: 0 4px 12px rgba(11, 24, 41, 0.4) !important;
+}
+
 .btn-custom-back {
     background-color: #ffffff !important;
-    color: var(--text-dark) !important;
+    color: var(--primary-green) !important;
     border: 1px solid var(--accent-gold) !important;
 }
 
 .btn-custom-back:hover {
-    background-color: #e3edf7 !important;
-}
-
-.btn-custom-save {
-    background-color: var(--primary-green) !important;
-    color: #ffffff !important;
-    border: 1px solid #112740 !important;
-}
-
-.btn-custom-save:hover {
-    background-color: #112740 !important;
+    background-color: var(--table-header-bg) !important;
+    border-color: var(--primary-green) !important;
 }
 
 .btn-custom-back,
@@ -119,19 +112,27 @@
     font-size: 0.95rem !important;
     font-weight: 500 !important;
     border-radius: 6px !important;
-    box-shadow: 0 3px 8px rgba(26, 58, 95, 0.1) !important;
+    box-shadow: 0 2px 6px rgba(26, 58, 95, 0.1) !important;
     transition: all 0.2s ease-in-out !important;
 }
 
-/* Responsywność dla urządzeń mobilnych */
+.btn-custom-back i,
+.btn-custom-save i {
+    font-size: 1.1rem !important;
+    margin-right: 6px !important;
+}
+
+/* Responsywność mobilna formularza */
 @media (max-width: 576px) {
-    .custom-actions-container {
+    .card-body .d-flex.justify-content-between.pt-2 {
         flex-direction: column !important;
-        gap: 12px;
+        align-items: stretch !important;
+        gap: 10px !important;
     }
 
     .btn-custom-back,
     .btn-custom-save {
         width: 100% !important;
+        margin: 0 !important;
     }
 }
