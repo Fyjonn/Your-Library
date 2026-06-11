@@ -64,7 +64,7 @@
             }
         </div>
     }
-    @* --- TUTAJ ZACZYNA SIĘ NOWA SEKCJA POTWIERDZEŃ ZWROTÓW --- *@
+
     @if (ViewBag.ReturnsToConfirm != null && ((List<YourLibrary.Models.Borrow>)ViewBag.ReturnsToConfirm).Any())
     {
         <div class="mb-4">
@@ -90,8 +90,7 @@
             }
         </div>
     }
-    @* --- KONIEC NOWEJ SEKCJI --- *@
-    @* Zmiana z col-md-6 na col-lg-6 dla szybszego układania w pionie *@
+
     <div class="row g-4 mb-4">
         <div class="col-lg-6">
             <div class="friend-search-card p-4 shadow h-100 d-flex flex-column justify-content-center">
@@ -278,6 +277,7 @@
             </div>
         </div>
     </div>
+
     <div class="row g-4 mt-2">
         <div class="col-lg-6">
             <div class="history-borrow-section p-4 shadow h-100">
@@ -354,18 +354,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        function filterFriendsList() {
-            let input = document.getElementById('inlineFriendSearch').value.toLowerCase();
-            let items = document.querySelectorAll('.friend-list-item-row');
-            items.forEach(function(item) {
-                let username = item.getAttribute('data-username');
-                if (username.includes(input)) {
-                    item.style.setProperty('display', 'flex', 'important');
-                } else {
-                    item.style.setProperty('display', 'none', 'important');
-                }
-            });
-        }
-    </script>
+    <script src="~/js/friendship.js" asp-append-version="true"></script>
 }

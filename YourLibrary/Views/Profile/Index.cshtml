@@ -7,7 +7,9 @@
 <link rel="stylesheet" href="~/css/profile_style.css" asp-append-version="true" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<div class="container mt-5 pb-5 library-profile-container">
+<div class="container mt-5 pb-5 library-profile-container"
+     data-stay-in-edit="@Model.StayInEditMode"
+     data-has-error="@Model.HasProfileError">
 
     <div class="profile-header text-center mb-4">
         <h2 class="display-5 fw-bold">My Profile</h2>
@@ -65,20 +67,21 @@
 
                         <div class="mb-4 text-start">
                             <label for="avatarUpload" class="form-label fw-bold custom-label-muted">Or add your own photo:</label>
-                            <!--<input asp-for="AvatarImage" class="form-control library-input" type="file" id="avatarUpload" accept=".jpg,.jpeg,.png">-->
-                            <input asp-for="AvatarImage"
-                                   type="file"
-                                   id="avatarUpload"
-                                   accept=".jpg,.jpeg,.png"
-                                   style="display:none;">
+                            <p>
+                                <input asp-for="AvatarImage"
+                                       type="file"
+                                       id="avatarUpload"
+                                       accept=".jpg,.jpeg,.png"
+                                       style="display:none;">
 
-                            <label for="avatarUpload" class="btn btn-outline-primary">
-                                Choose Image
-                            </label>
+                                <label for="avatarUpload" class="btn btn-outline-primary">
+                                    Choose Image
+                                </label>
 
-                            <span id="selectedFileName" class="ms-2 text-muted">
-                                No file selected
-                            </span>
+                                <span id="selectedFileName" class="ms-2 text-muted">
+                                    No file selected
+                                </span>
+                            </p>
                         </div>
 
                         <hr class="library-divider" />
@@ -139,7 +142,7 @@
                                 }
                             </ul>
                         </div>
-                        <hr class="line-after"/>
+                        <hr class="line-after" />
                         <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
 
                     </div>
@@ -182,7 +185,7 @@
                                 }
                             </ul>
                         </div>
-                        <hr class="line-after"/>
+                        <hr class="line-after" />
                         <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
 
                     </div>
@@ -212,7 +215,7 @@
                             </ul>
 
                         </div>
-                        <hr class="line-after"/>
+                        <hr class="line-after" />
                         <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
 
                     </div>
@@ -222,7 +225,7 @@
                     <div class="dashboard-section-card shadow-sm h-100" data-section-url="/Friendship">
                         <div class="section-card-header">
                             <h5 class="mb-0 fw-bold"><i class="bi bi-box-arrow-up-left me-2"></i>Latest books u rented</h5>
-                           
+
                         </div>
                         <div class="section-card-body mt-3">
                             <ul class="list-unstyled mb-0 dashboard-list">
@@ -242,7 +245,7 @@
                                 }
                             </ul>
                         </div>
-                        <hr class="line-after"/>
+                        <hr class="line-after" />
                         <span class="view-all-link">View All <i class="bi bi-chevron-right"></i></span>
 
                     </div>
@@ -253,144 +256,6 @@
     </div>
 </div>
 
-<script>
-    function toggleEditMode(isEdit) {
-        var viewMode = document.getElementById("profile-view-mode");
-        var editMode = document.getElementById("profile-edit-mode");
-        var widgetsRow = document.getElementById("dashboard-widgets-row");
-
-        if (isEdit) {
-            viewMode.style.display = "none";
-            editMode.style.display = "block";
-            if (widgetsRow) {
-                widgetsRow.style.setProperty("display", "none", "important");
-            }
-        } else {
-            viewMode.style.display = "block";
-            editMode.style.display = "none";
-            if (widgetsRow) {
-                widgetsRow.style.display = "flex";
-            }
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('.dashboard-section-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const sectionUrl = this.getAttribute('data-section-url');
-                if (sectionUrl) {
-                    window.location.href = sectionUrl;
-                }
-            });
-        });
-
-        const stayInEditMode = '@Model.StayInEditMode'.toLowerCase();
-        if(stayInEditMode === 'true'){
-            toggleEditMode(true);
-        }
-
-        const hasProfileError = '@Model.HasProfileError'.toLowerCase() === 'true';
-        if(hasProfileError){
-            const cancelButton = document.getElementById("cancelEditButton");
-            if(cancelButton){
-                cancelButton.disabled = true;
-            }
-        }
-
-        const avatarInput = document.getElementById("avatarUpload");
-        if (avatarInput) {
-            avatarInput.addEventListener("change", function() {
-                const file = this.files[0];
-                if (!file) return;
-
-                const allowedTypes = ["image/jpeg", "image/png"];
-                const maxSize = 5 * 1024 * 1024;
-
-                if (!allowedTypes.includes(file.type)) {
-                    alert("Only JPG and PNG images are allowed");
-                    this.value = "";
-                    return;
-                }
-
-                if (file.size > maxSize) {
-                    alert("File size cannot exceed 5MB");
-                    this.value = "";
-                    return;
-                }
-            });
-        }
-
-        const loginInput = document.getElementById("loginInput");
-        const emailInput = document.getElementById("emailInput");
-        const loginMessage = document.getElementById("loginExistsMessage");
-        const emailMessage = document.getElementById("emailExistsMessage");
-        const confirmButton = document.getElementById("confirmProfileButton");
-
-        let loginTaken = false;
-        let emailTaken = false;
-
-        function updateConfirmButton(){
-            if(!confirmButton) return;
-            confirmButton.disabled = loginTaken || emailTaken;
-        }
-
-        if(emailInput) {
-            emailInput.addEventListener("focus", function(){
-                emailMessage.style.display = "none";
-                emailTaken = false;
-                updateConfirmButton();
-            });
-
-            emailInput.addEventListener("blur", async function(){
-                const email = this.value;
-                if(!email) return;
-
-                const response = await fetch(`/Validation/CheckProfileEmail?email=${encodeURIComponent(email)}`);
-                const exists = await response.json();
-
-                emailTaken = exists;
-                if(exists){
-                    emailMessage.style.display = "block";
-                }
-                updateConfirmButton();
-            });
-        }
-
-        if(loginInput) {
-            loginInput.addEventListener("focus", function(){
-                loginMessage.style.display = "none";
-                loginTaken = false;
-                updateConfirmButton();
-            });
-
-            loginInput.addEventListener("blur", async function(){
-                const login = this.value;
-                if(!login) return;
-
-                const response = await fetch(`/Validation/CheckProfileLogin?login=${encodeURIComponent(login)}`);
-                const exists = await response.json();
-
-                loginTaken = exists;
-                if(exists){
-                    loginMessage.style.display = "block";
-                }
-                updateConfirmButton();
-            });
-        }
-
-    //NEW adding own photo 
-     const fileInput = document.getElementById("avatarUpload");
-     const fileNameLabel = document.getElementById("selectedFileName");
-
-    if(fileInput){
-        fileInput.addEventListener("change", function(){
-            if(this.files.length > 0){
-                fileNameLabel.textContent = this.files[0].name;
-            }
-            else{
-                fileNameLabel.textContent = "No file selected";
-            }
-        });
-    }
-    });
-</script>
+@section Scripts {
+    <script src="~/js/profile.js" asp-append-version="true"></script>
+}

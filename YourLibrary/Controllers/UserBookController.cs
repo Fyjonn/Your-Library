@@ -139,7 +139,10 @@ namespace YourLibrary.Controllers
             (
                 ub.ApplicationUserId == currentUserId
                 ||
-                ub.Borrows.Any(b => b.ApplicationUserId == currentUserId && b.StatusBorrow == EnumStatusBorrow.Borrowed)
+                ub.Borrows.Any(b => b.ApplicationUserId == currentUserId &&
+                    (b.StatusBorrow == EnumStatusBorrow.Borrowed ||
+                     b.StatusBorrow == EnumStatusBorrow.Returned ||
+                     b.StatusBorrow == EnumStatusBorrow.Completed))
             ));
 
             if (userBook == null || userBook.Book == null)
@@ -159,8 +162,9 @@ namespace YourLibrary.Controllers
                 .Include(ub => ub.Book).Include(ub => ub.Borrows)
                 .FirstOrDefault(ub => ub.UserBookId == id &&
                     (ub.ApplicationUserId == currentUserId ||
-                     ub.Borrows.Any(b => b.ApplicationUserId == currentUserId && b.StatusBorrow == EnumStatusBorrow.Borrowed))
-                );
+                    ub.Borrows.Any(b => b.ApplicationUserId == currentUserId &&
+    (b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned || b.StatusBorrow == EnumStatusBorrow.Completed))
+                ));
 
             if (userBook == null || userBook.Book == null)
             {
@@ -191,9 +195,11 @@ namespace YourLibrary.Controllers
             }
 
             bool isOwner = dbUserBook.ApplicationUserId == currentUserId;
-            bool isBorrower = dbUserBook.Borrows.Any(b => b.ApplicationUserId == currentUserId && b.StatusBorrow == EnumStatusBorrow.Borrowed);
+            bool isCurrentBorrower = dbUserBook.Borrows.Any(b => b.ApplicationUserId == currentUserId && b.StatusBorrow == EnumStatusBorrow.Borrowed);
+            bool isPastBorrower = dbUserBook.Borrows.Any(b => b.ApplicationUserId == currentUserId &&
+        (b.StatusBorrow == EnumStatusBorrow.Returned || b.StatusBorrow == EnumStatusBorrow.Completed));
 
-            if (!isOwner && !isBorrower)
+            if (!isOwner && !isCurrentBorrower && !isPastBorrower)
             {
                 return Forbid();
             }
@@ -212,10 +218,15 @@ namespace YourLibrary.Controllers
                     dbUserBook.Location = null;
                 }
             }
-            else if (isBorrower)
+            else if (isCurrentBorrower)
             {
                 dbUserBook.ReadStatus = userbook.ReadStatus;
                 dbUserBook.Location = userbook.Location;
+                dbUserBook.Notes = userbook.Notes;
+
+            }
+            else if (isPastBorrower)
+            {
                 dbUserBook.Notes = userbook.Notes;
 
             }
@@ -266,11 +277,9 @@ namespace YourLibrary.Controllers
 
             var userbook = _context.UserBooks
                 .FirstOrDefault(x => x.UserBookId == id && x.ApplicationUserId == currentUserId);
-
-            if (userbook != null)
+            if (userbook == null)
             {
-                _context.UserBooks.Remove(userbook);
-                _context.SaveChanges();
+                return NotFound();
             }
 
             if (userbook.IsBorrowed)
@@ -278,7 +287,9 @@ namespace YourLibrary.Controllers
                 TempData["FriendError"] = "You cannot delete a book that is currently borrowed!";
                 return RedirectToAction("Index", "Shelf");
             }
-           
+
+            _context.UserBooks.Remove(userbook);
+            _context.SaveChanges();
 
             return RedirectToAction("Index", "Shelf");
         }
