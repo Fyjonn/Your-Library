@@ -117,7 +117,7 @@ namespace YourLibrary.Controllers
 
                 if (existingLogin != null)
                 {
-                    ModelState.AddModelError("", "Login already taken");
+                    //ModelState.AddModelError("", "Login already taken");
 
                     //model.DisplayName = user.DisplayName;
                     //model.Email = user.Email;
