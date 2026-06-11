@@ -239,8 +239,32 @@ namespace YourLibrary.Controllers
             {
                 if (model.NewPassword == model.ConfirmedPassword)
                 {
+                    //var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    //await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+
                     var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                    await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+
+                    var passwordResult = await _userManager.ResetPasswordAsync(
+                        user,
+                        token,
+                        model.NewPassword);
+
+                    if (!passwordResult.Succeeded)
+                    {
+                        foreach (var error in passwordResult.Errors)
+                        {
+                            ModelState.AddModelError("NewPassword", error.Description);
+                        }
+
+                        model.LatestBooks = new List<BookViewModel>();
+                        model.LatestFriends = new List<FriendViewModel>();
+
+                        model.StayInEditMode = true;
+                        model.HasProfileError = true;
+
+                        return View(model);
+                    }
+
                 }
                 else
                 {
