@@ -1,0 +1,132 @@
+﻿@model IEnumerable<YourLibrary.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin_style.css" asp-append-version="true" />
+}
+
+<div class="container library-container">
+
+    <div class="admin-header-container">
+        <h2 class="admin-dashboard-title">Admin Dashboard</h2>
+        <div class="card total-users-badge text-white d-inline-block px-4 py-2 rounded-pill shadow-sm">
+            <span class="total-users-text">Total Users: @ViewBag.TotalUsers</span>
+        </div>
+    </div>
+
+    @if (TempData["AdminSuccess"] != null)
+    {
+        <div class="alert alert-success shadow-sm rounded-3 max-width-1000 mx-auto mb-3">@TempData["AdminSuccess"]</div>
+    }
+    @if (TempData["AdminError"] != null)
+    {
+        <div class="alert alert-danger shadow-sm rounded-3 max-width-1000 mx-auto mb-3">@TempData["AdminError"]</div>
+    }
+
+    <div class="admin-search-wrapper position-relative">
+        <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted">
+            <i class="bi bi-search"></i>
+        </span>
+        <input type="text" id="adminSearchInput" class="form-control admin-search-input"
+               placeholder="Find user by email or login..." autocomplete="off" />
+        <span id="clearSearch" class="position-absolute top-50 end-0 translate-middle-y me-3 d-none">
+            <i class="bi bi-x-circle-fill fs-5"></i>
+        </span>
+    </div>
+
+    <div class="card admin-table-card">
+        <div class="table-responsive">
+            <table class="table admin-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Username / Email</th>
+                        <th>User ID</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody">
+                    @foreach (var user in Model)
+                    {
+                        <tr class="user-row" data-id="@user.Id" data-searchable="@user.UserName.ToLower() @user.Email.ToLower()" onclick="toggleReviews(this, '@user.Id')">
+                            <td class="ps-4">
+                                <div class="fw-bold text-dark fs-5">@user.UserName</div>
+                                <div class="small text-muted font-serif">@user.Email</div>
+                            </td>
+                            <td class="small font-monospace text-secondary">@user.Id</td>
+                            <td class="text-end pe-4">
+                                <button type="button" class="btn btn-outline-danger btn-admin-delete btn-sm rounded-pill px-3"
+                                        onclick="event.stopPropagation(); openDeleteModal('@user.Id', '@user.UserName')">
+                                    <i class="bi bi-trash3 me-1"></i>Delete
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr id="reviews-row-@user.Id" class="reviews-row d-none">
+                            <td colspan="3" class="p-0 border-0">
+                                <div id="reviews-wrapper-@user.Id" class="reviews-wrapper">
+                                    <div class="reviews-inner">
+                                        <div class="reviews-box-card">
+                                            <h6 class="reviews-section-title font-serif">
+                                                <i class="bi bi-chat-square-text-fill me-2"></i>User Reviews
+                                            </h6>
+                                            <div id="reviews-content-@user.Id" class="reviews-list-container">
+                                                <div class="d-flex align-items-center gap-2 py-2 text-muted font-serif">
+                                                    <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                                                    <span>Loading data...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    <tr id="noResultsRow" class="d-none">
+                        <td colspan="3" class="text-center py-5 text-muted font-serif">
+                            <i class="bi bi-person-x me-2 fs-4"></i>No users found matching your search.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg custom-delete-modal">
+            <div class="modal-header bg-maroon text-white py-2 px-3">
+                <h5 class="modal-title fw-bold font-serif" id="deleteModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4 px-4">
+                <div class="text-maroon mb-3">
+                    <i class="bi bi-exclamation-triangle-fill display-4"></i>
+                </div>
+                <h4 class="fw-bold font-serif text-dark mb-2">Remove User?</h4>
+                <p class="fs-5 text-secondary font-serif m-0">Are you sure you want to completely remove user</p>
+                <p id="modalUserName" class="fs-4 fw-bold text-maroon font-serif my-2"></p>
+                <p class="small text-muted font-serif m-0">This action is permanent and cannot be undone.</p>
+            </div>
+            <div class="modal-footer d-flex justify-content-center border-0 pb-4 gap-3">
+                <button type="button" class="btn btn-outline-secondary px-4 font-serif rounded-3" data-bs-dismiss="modal">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </button>
+                <form id="modalDeleteForm" method="post" action="">
+                    <button type="submit" class="btn btn-maroon px-4 font-serif fw-bold rounded-3">
+                        <i class="bi bi-trash3 me-1"></i> Delete Forever
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <div id="adminConfig" data-delete-url="@Url.Action("DeleteUser", "Admin")" class="d-none"></div>
+
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+}

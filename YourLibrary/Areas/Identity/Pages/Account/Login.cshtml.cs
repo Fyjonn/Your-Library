@@ -113,9 +113,6 @@ namespace YourLibrary.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-
                 ApplicationUser user = null;
                 if (Input.Login.Contains("@"))
                 {
@@ -125,6 +122,7 @@ namespace YourLibrary.Areas.Identity.Pages.Account
                 {
                     user = await _userManager.FindByNameAsync(Input.Login);
                 }
+
                 if (user != null)
                 {
                     var result = await _signInManager.PasswordSignInAsync(
@@ -136,6 +134,13 @@ namespace YourLibrary.Areas.Identity.Pages.Account
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User logged in.");
+
+                       
+                        if (await _userManager.IsInRoleAsync(user, "Admin"))
+                        {
+                            return RedirectToAction("Index", "Admin", new { area = "" });
+                        }
+
                         return LocalRedirect(returnUrl);
                     }
                     if (result.RequiresTwoFactor)
@@ -150,9 +155,8 @@ namespace YourLibrary.Areas.Identity.Pages.Account
                 }
             }
 
-             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-             return Page();
-                // If we got this far, something failed, redisplay form
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return Page();
         }
     }
 }

@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using YourLibrary.Data;
 using YourLibrary.Models;
 using YourLibrary.Services;
+using System.Threading.Tasks;
 
 namespace YourLibrary
 {
     public class Program
     {
-        
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -23,15 +23,38 @@ namespace YourLibrary
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => 
+                {
+                    options.SignIn.RequireConfirmedAccount = false;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders()
+                .AddDefaultUI(); 
+
             builder.Services.AddControllersWithViews();
 
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-
             builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    await SeedData.InitializeAsync(services);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "Wystąpił błąd podczas inicjalizacji bazy danych (Seeding).");
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -41,7 +64,6 @@ namespace YourLibrary
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -50,6 +72,7 @@ namespace YourLibrary
 
             app.UseRouting();
 
+            app.UseAuthentication(); 
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -1,0 +1,233 @@
+﻿
+.admin-header-container {
+    text-align: center;
+    margin-top: -1rem;
+    margin-bottom: 2rem;
+}
+
+.admin-dashboard-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #1a3a5f !important;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.total-users-badge {
+    background-color: #1a3a5f !important;
+    box-shadow: 0 4px 15px rgba(26, 58, 95, 0.2);
+    border: none !important;
+    padding: 0.4rem 1.8rem !important;
+}
+
+.total-users-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.admin-search-wrapper {
+    max-width: 600px;
+    margin: 0 auto 2.5rem auto;
+}
+
+.admin-search-input {
+    border: 1px solid #cfe2f3 !important;
+    border-radius: 30px !important;
+    padding: 0.75rem 1.5rem 0.75rem 3rem !important;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: #2b3e50 !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(40, 60, 80, 0.05) !important;
+}
+
+    .admin-search-input:focus {
+        border-color: #6fa8dc !important;
+        box-shadow: 0 0 0 0.25rem rgba(111, 168, 220, 0.2) !important;
+    }
+
+.admin-table-card {
+    border-radius: 15px !important;
+    border: 1px solid #cfe2f3 !important;
+    background: #ffffff !important;
+    box-shadow: 0 10px 30px rgba(40, 60, 80, 0.08) !important;
+    padding: 0.5rem 1rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.admin-table {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    border-collapse: separate !important;
+}
+
+    .admin-table th {
+        background-color: #ffffff !important;
+        color: #1a3a5f !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem;
+        border-bottom: 2px solid #cfe2f3 !important;
+        padding: 1.2rem 1rem !important;
+    }
+
+    .admin-table td {
+        color: #2b3e50;
+        padding: 1.2rem 1rem !important;
+        border-bottom: 1px solid #edf2f7 !important;
+    }
+
+.user-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .user-row:hover {
+        background-color: #fcfdfe !important;
+    }
+
+    .user-row.row-active {
+        background-color: #f4f8fc !important;
+    }
+
+.btn-admin-delete {
+    color: #7a1c22 !important;
+    border: 1px solid #f5c2c7 !important;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+    .btn-admin-delete:hover {
+        color: #ffffff !important;
+        background-color: #7a1c22 !important;
+        border-color: #7a1c22 !important;
+        transform: translateY(-1px);
+    }
+
+#clearSearch {
+    cursor: pointer;
+    color: #a0aec0;
+    transition: color 0.2s;
+}
+
+    #clearSearch:hover {
+        color: #7a1c22;
+    }
+
+.custom-delete-modal {
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25) !important;
+}
+
+.bg-maroon {
+    background-color: #7a1c22 !important;
+}
+
+.text-maroon {
+    color: #7a1c22 !important;
+}
+
+.btn-maroon {
+    background-color: #7a1c22 !important;
+    border-color: #7a1c22 !important;
+    color: #ffffff !important;
+    transition: all 0.2s ease-in-out;
+}
+
+    .btn-maroon:hover {
+        background-color: #5c1418 !important;
+        border-color: #5c1418 !important;
+        transform: scale(1.03);
+        box-shadow: 0 4px 12px rgba(122, 28, 34, 0.3);
+    }
+
+
+.reviews-row {
+    background-color: transparent !important;
+}
+
+.reviews-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease-out;
+}
+
+    .reviews-wrapper.open {
+        grid-template-rows: 1fr;
+    }
+
+.reviews-inner {
+    overflow: hidden;
+}
+
+.reviews-box-card {
+    margin: 0.5rem 1.5rem 1.5rem 1.5rem;
+    padding: 1.5rem 2rem;
+    background-color: #f7fbc0 !important; 
+    background: #f5f9fd !important;
+    border: 1px solid #dce9f5;
+    border-radius: 10px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.02), 0 4px 12px rgba(26,58,95,0.04);
+}
+
+.reviews-section-title {
+    color: #1a3a5f !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #dce9f5;
+    padding-bottom: 0.5rem;
+}
+
+    .reviews-section-title i {
+        color: #6fa8dc;
+    }
+
+.reviews-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.custom-review-item {
+    background: #ffffff;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    border: 1px solid #eef4fa;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.01);
+}
+
+.book-title-text {
+    font-size: 1.1rem !important;
+    color: #1a3a5f !important;
+}
+
+.rating-badge-custom {
+    background-color: #fff9e6 !important;
+    color: #8a6d1c !important;
+    border: 1px solid #ffeeba;
+    font-size: 0.9rem !important;
+    padding: 0.4rem 0.75rem !important;
+    border-radius: 6px !important;
+    font-weight: 700;
+}
+
+.review-comment-text {
+    margin-top: 0.6rem;
+    color: #3a4f66 !important;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    padding-left: 0.2rem;
+}
+
+.no-reviews-placeholder {
+    padding: 1rem;
+    color: #7f91a6 !important;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+}

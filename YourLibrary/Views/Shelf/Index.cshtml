@@ -67,35 +67,28 @@
 
     <div class="tab-content" id="shelfTabsContent">
         @{
-            // PANCERNE GLOBALNE GRUPOWANIE: Spaja powtarzające się BookId w jeden logiczny rekord na tym widoku
             var uniqueUserBooks = Model
                 .GroupBy(b => b.BookId)
                 .Select(g =>
                 {
-                    // 1. Szukamy rekordu, który ma AKTUALNE aktywne wypożyczenie (zielona książka)
                     var activeBorrowRow = g.FirstOrDefault(b => b.ApplicationUserId != currentUserId &&
                                                                b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) == true);
 
                     if (activeBorrowRow != null) return activeBorrowRow;
 
-                    // 2. Szukamy rekordu, który oczekuje na potwierdzenie zwrotu (ma pierwszeństwo przed zakończonymi duchami)
                     var returnedBorrowRow = g.FirstOrDefault(b => b.ApplicationUserId != currentUserId &&
                                                                 b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Returned) == true);
 
                     if (returnedBorrowRow != null) return returnedBorrowRow;
 
-                    // 3. Sprawdzamy, czy ta książka ma NOWE aktywne wypożyczenie na innej półce.
-                    // Jeśli tak, nie chcemy pokazywać starego ducha na półce DNF!
+                   
                     var hasAnyActiveLending = g.Any(b => b.Borrows?.Any(br => br.ApplicationUserId == currentUserId &&
                                                          (br.StatusBorrow == EnumStatusBorrow.Borrowed || br.StatusBorrow == EnumStatusBorrow.Returned)) == true);
 
-                    // 4. Jeśli nie ma żadnego aktywnego wypożyczenia ani zwrotu, bierzemy ten rekord, który ma NAJNOWSZĄ historię
                     var newestRow = g.OrderByDescending(b => b.Borrows?.Where(br => br.ApplicationUserId == currentUserId)
                                                              .Max(br => (DateTime?)br.BorrowDate) ?? DateTime.MinValue)
                                     .First();
 
-                    // ZABEZPIECZENIE: Jeśli książka jest aktualnie wypożyczona ponownie, to stary wpis jako duch "Completed"
-                    // zostaje wyczyszczony, aby nie pokazywał się na starych półkach (np. DNF).
                     if (hasAnyActiveLending && newestRow.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Completed) == true)
                     {
                         return null;
@@ -103,7 +96,7 @@
 
                     return newestRow;
                 })
-                .Where(b => b != null) // Usuwamy odrzucone stare duchy
+                .Where(b => b != null) 
                 .ToList();
         }
 
@@ -118,18 +111,14 @@
                         var myBorrow = b.Borrows?.Where(br => br.ApplicationUserId == currentUserId)
                                                 .OrderByDescending(br => br.BorrowDate).FirstOrDefault();
 
-                        // 1. Właściciel: książka jest oznaczona jako Reading i nie jest aktualnie nikomu pożyczona
                         if (isOwner && b.ReadStatus == EnumReadStatus.Reading && !(b.Borrows?.Any(br => br.StatusBorrow == EnumStatusBorrow.Borrowed || br.StatusBorrow == EnumStatusBorrow.Returned) ?? false))
                             return true;
 
-                        // 2. Wypożyczający (Aktywne wypożyczenie): Najnowsze wypożyczenie ma status Borrowed, a status czytania to Reading
                         if (!isOwner && myBorrow != null && myBorrow.StatusBorrow == EnumStatusBorrow.Borrowed && b.ReadStatus == EnumReadStatus.Reading)
                             return true;
 
-                        // 3. Wypożyczający (Duch): Brak aktywnych wypożyczeń, stary zwrot, a końcowy status to Reading
                         if (!isOwner && myBorrow != null && (myBorrow.StatusBorrow == EnumStatusBorrow.Completed || myBorrow.StatusBorrow == EnumStatusBorrow.Returned) && myBorrow.BorrowerFinalReadStatus == EnumReadStatus.Reading)
                         {
-                            // Zabezpieczenie: jeśli ta sama książka ma też jakieś inne aktywne wypożyczenie, nie pokazuj ducha
                             bool hasActive = b.Borrows?.Any(br => br.ApplicationUserId == currentUserId && br.StatusBorrow == EnumStatusBorrow.Borrowed) ?? false;
                             return !hasActive;
                         }

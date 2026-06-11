@@ -333,26 +333,41 @@
 
 <div class="modal fade" id="deleteFriendModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <form asp-action="DeleteFriend" method="post">
+        <div class="modal-content border-0 shadow custom-delete-modal">
+            <form asp-action="DeleteFriend" method="post" class="m-0">
                 <input type="hidden" id="friendshipIdInput" name="friendshipId" />
-                <div class="modal-header bg-danger text-white py-2">
-                    <h6 class="modal-title fw-bold">Confirmation</h6>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+
+                <div class="modal-header text-white py-2 px-3" style="background-color: #b02a37;">
+                    <h5 class="modal-title fw-bold" style="font-family: 'Georgia', serif; font-size: 1.1rem;">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmation
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body text-center py-4">
-                    <p class="mb-1 text-dark">Are you sure you want to end this friendship with</p>
-                    <h5 class="fw-bold text-danger" id="modal-friend-name">Użytkownik</h5>
+
+                <div class="modal-body text-center py-4 px-4">
+                    <p class="mb-1 text-secondary" style="font-family: 'Georgia', serif; font-size: 1.05rem;">
+                        Are you sure you want to end this friendship with
+                    </p>
+                    <h4 class="fw-bold my-2" id="modal-friend-name" style="font-family: 'Georgia', serif; color: #b02a37;">
+                        Użytkownik
+                    </h4>
+                    <p class="small text-muted m-0" style="font-family: 'Georgia', serif;">
+                        This action will remove them from your list of friends.
+                    </p>
                 </div>
-                <div class="modal-footer justify-content-center border-0 pt-0 pb-3">
-                    <button type="submit" class="btn btn-danger btn-sm px-4 me-2">Yes</button>
-                    <button type="button" class="btn btn-light btn-sm px-4 border" data-bs-dismiss="modal">No</button>
+
+                <div class="modal-footer justify-content-center border-0 pt-0 pb-4 gap-2">
+                    <button type="submit" class="btn text-white px-4 fw-bold rounded-3" style="background-color: #b02a37; font-family: 'Georgia', serif;">
+                        Yes, Remove
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary px-4 rounded-3" data-bs-dismiss="modal" style="font-family: 'Georgia', serif;">
+                        No, Keep
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script src="~/js/friendship.js" asp-append-version="true"></script>
 }
