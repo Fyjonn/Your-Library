@@ -6,207 +6,156 @@
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     var isOwner = Model.ApplicationUserId == currentUserId;
 
-    // Sprawdzamy, czy bie¿¹cy u¿ytkownik zakoñczy³ ju¿ proces wypo¿yczenia (jest by³ym po¿yczkobiorc¹)
-    var isPastBorrower = !isOwner && Model.Borrows != null && Model.Borrows.Any(b => 
-        b.ApplicationUserId == currentUserId && 
+    var isCurrentBorrower = !isOwner && Model.Borrows != null && Model.Borrows.Any(b =>
+        b.ApplicationUserId == currentUserId && b.StatusBorrow == YourLibrary.Models.EnumStatusBorrow.Borrowed);
+
+    var isPastBorrower = !isOwner && Model.Borrows != null && Model.Borrows.Any(b =>
+        b.ApplicationUserId == currentUserId &&
         (b.StatusBorrow == YourLibrary.Models.EnumStatusBorrow.Returned || b.StatusBorrow == YourLibrary.Models.EnumStatusBorrow.Completed));
 }
 
 @section Styles {
-    <link class="custom-style-tag" rel="stylesheet" href="~/css/userbook_edit.css" asp-append-version="true" />
-    <link class="custom-style-tag" rel="stylesheet" href="~/css/userbook_create.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/userbook_edit.css" asp-append-version="true" />
 }
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <div class="container mt-4 mb-5 create-book-container">
-    <div class="row g-4">
-
-        <div class="col-lg-7">
-            <div class="card shadow-sm border-0 custom-userbook-card">
-
-                <div class="card-header d-flex justify-content-between align-items-center py-3 custom-userbook-header">
-                    <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Book Settings</h4>
-                    <span class="badge custom-badge-status fs-6">@Model.Book?.Title</span>
-                </div>
-
-                <div class="card-body p-4">
-
-                    @if (Model.IsBorrowed || isPastBorrower)
-                    {
-                        <div class="alert alert-warning border p-3 mb-4 d-flex justify-content-between align-items-center" style="background-color: rgba(46, 204, 113, 0.05); border-color: rgba(46, 204, 113, 0.3) !important;">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-exclamation-triangle-fill text-warning fs-4 me-3"></i>
-                                <div>
-                                    <span class="fw-bold text-dark">@(isPastBorrower ? "Archived Borrowed Position" : "Borrowed Position")</span>                                    <p class="small text-muted mb-0">
-                                        @if (isOwner)
-                                        {
-                                            <text>This book is currently lent to a friend. Settings are locked until it returns.</text>
-                                        }
-                                        else if (isPastBorrower)
-                                        {
-                                            <text>You have returned this book to its owner. You can now only manage your private personal notes.</text>
-                                        }
-                                        else
-                                        {
-                                            <text>You are borrowing this book. You can manage its shelf status, storage location and your personal notes.</text>
-                                        }
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                    <form asp-action="Edit" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                        <input type="hidden" asp-for="UserBookId" />
-                        <input type="hidden" asp-for="BookId" />
-                        <input type="hidden" asp-for="ApplicationUserId" />
-                        <input type="hidden" asp-for="ReviewId" />
-
-                        <input type="hidden" id="bookTitleHidden" value="@Model.Book?.Title" />
-
-                        @* 1. Format Media - Zablokowane dla po¿yczaj¹cego i by³ego po¿yczaj¹cego *@
-                        <div class="mb-3">
-                            <label asp-for="Media" class="form-label fw-bold custom-label-muted">Media Format</label>
-                            @if (isOwner)
-                            {
-                                <select asp-for="Media" class="form-select custom-form-control" id="mediaSelect" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()"></select>
-                            }
-                            else
-                            {
-                                <select asp-for="Media" class="form-select custom-form-control" id="mediaSelect" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()" disabled></select>
-                                <input type="hidden" asp-for="Media" />
-                            }
-                            <span asp-validation-for="Media" class="text-danger"></span>
-                        </div>
-
-                        @* 2. Checkboxy opcji ukrywamy ca³kowicie przed po¿yczaj¹cymi *@
-                        @if (isOwner)
-                        {
-                            <div id="optionsCheckboxGroup" class="mb-3 d-none">
-                                <label class="form-label fw-bold custom-label-muted mb-2">Options</label>
-                                <div class="p-3 border rounded bg-white">
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" asp-for="Bookmark" id="Bookmark" />
-                                        <label class="form-check-label text-dark" for="Bookmark">
-                                            <i class="bi bi-bookmark-fill text-secondary me-1"></i> Use Bookmark
-                                        </label>
-                                    </div>
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" asp-for="IsOwned" id="IsOwned" />
-                                        <label class="form-check-label text-dark" for="IsOwned">
-                                            <i class="bi bi-house-check text-success me-1"></i> Is Owned (I own this book)
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <input type="hidden" asp-for="Bookmark" />
-                            <input type="hidden" asp-for="IsOwned" />
-                        }
-
-                        @* 3. Read Status - Zablokowane, jeœli wypo¿yczenie zosta³o zakoñczone (isPastBorrower) *@
-                        <div class="mb-3">
-                            <label asp-for="ReadStatus" class="form-label fw-bold custom-label-muted">Read Status</label>
-                            @if (isPastBorrower)
-                            {
-                                <select asp-for="ReadStatus" class="form-select custom-form-control" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumReadStatus>()" disabled></select>
-                                <input type="hidden" asp-for="ReadStatus" />
-                            }
-                            else
-                            {
-                                <select asp-for="ReadStatus" class="form-select custom-form-control" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumReadStatus>()"></select>
-                            }
-                            <span asp-validation-for="ReadStatus" class="text-danger"></span>
-                        </div>
-
-                        @* 4. Storage Location - Zablokowane lub ukryte, jeœli isPastBorrower *@
-                        <div class="mb-3 d-none" id="locationGroup">
-                            <label asp-for="Location" class="form-label fw-bold custom-label-muted">Storage Location</label>
-                            @if (isPastBorrower)
-                            {
-                                <input asp-for="Location" class="form-control custom-form-control" id="bookLocation" disabled />
-                                <input type="hidden" asp-for="Location" />
-                            }
-                            else
-                            {
-                                <input asp-for="Location" class="form-control custom-form-control" placeholder="e.g., Living room shelf A" id="bookLocation" />
-                            }
-                            <span asp-validation-for="Location" class="text-danger"></span>
-                        </div>
-
-                        @* 5. Notes - ZAWSZE DOSTÊPNE DLA KA¯DEGO *@
-                        <div class="mb-4">
-                            <label asp-for="Notes" class="form-label fw-bold custom-label-muted">Your Notes & Thoughts</label>
-                            <textarea asp-for="Notes" class="form-control custom-form-control" rows="4" placeholder="Write your private impressions, notes or quotes..."></textarea>
-                            <span asp-validation-for="Notes" class="text-danger"></span>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                            <a href="/Shelf/Index" class="btn btn-custom-back px-4">
-                                <i class="bi bi-arrow-left me-2"></i>Cancel
-                            </a>
-                            <button type="submit" class="btn btn-custom-save px-4 shadow-sm">
-                                <i class="bi bi-check-lg me-2"></i>Save Changes
-                            </button>
-                        </div>
-                    </form>
-
-                    @* Sekcja zwrotu: Widoczna tylko dla aktualnie po¿yczaj¹cego (gdy ksi¹¿ka faktycznie u niego fizycznie jest) *@
-                    @if (Model.IsBorrowed && !isOwner)
-                    {
-                        <div class="border-top pt-4 mt-4">
-                            <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background-color: rgba(217, 83, 79, 0.05); border: 1px dashed #8b2635;">
-                                <div>
-                                    <h6 class="mb-1 fw-bold text-danger">Return Book</h6>
-                                    <p class="small text-muted mb-0">Are you done reading?</p>
-                                    <p class="small text-muted mb-0">Give the book back to its owner.</p>
-                                </div>
-                                <form asp-action="ReturnBorrowedBookDirectly" asp-controller="Friendship" method="post" class="mb-0">
-                                    <input type="hidden" name="userBookId" value="@Model.UserBookId" />
-                                    <button type="submit" class="btn btn-danger btn-sm px-3">
-                                        <i class="bi bi-box-arrow-up me-1"></i>Return Book
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    }
-
-                </div>
-            </div>
+    <div class="card shadow-sm border-0 custom-userbook-card">
+        <div class="card-header d-flex justify-content-between align-items-center py-3 custom-userbook-header">
+            <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Book Settings</h4>
+            <span class="badge custom-badge-status fs-6">@Model.Book?.Title</span>
         </div>
 
-        @* Karta Opinii / Recenzji *@
-        <div class="col-lg-5">
-            <div class="card shadow-sm border-0 custom-userbook-card h-100">
-                <div class="card-header py-3 custom-userbook-header bg-secondary">
-                    <h5 class="mb-0 text-white"><i class="bi bi-chat-square-heart me-2"></i>Community Reviews</h5>
-                </div>
-                <div class="card-body p-4 bg-white" style="max-height: 600px; overflow-y: auto;">
-                    <div id="reviewsContainer">
-                        <div id="placeholderText" class="text-center text-muted py-5">
-                            <i class="bi bi-chat-dots fs-1 d-block mb-2"></i>
-                            <span>Loading community thoughts for this book...</span>
+        <div class="card-body p-4">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="UserBookId" />
+                <input type="hidden" asp-for="BookId" />
+                <input type="hidden" asp-for="ApplicationUserId" />
+                <input type="hidden" asp-for="ReviewId" />
+
+                @if (isOwner)
+                {
+                    <h5 class="mb-3 text-secondary border-bottom pb-2">Book Details</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Book.Title" class="form-label fw-bold custom-label-muted">Title *</label>
+                            <input asp-for="Book.Title" class="form-control custom-form-control" required />
                         </div>
-                        <ul id="reviewsList" class="list-unstyled d-none"></ul>
-                        <div id="toggleReviewsBtn" class="btn-toggle-reviews text-center mt-3 d-none">
-                            Show all reviews
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Book.Author" class="form-label fw-bold custom-label-muted">Author *</label>
+                            <input asp-for="Book.Author" class="form-control custom-form-control" required />
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Book.Genre" class="form-label fw-bold custom-label-muted">Genre</label>
+                            <input asp-for="Book.Genre" class="form-control custom-form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Book.AgeRating" class="form-label fw-bold custom-label-muted">Age Rating</label>
+                            <input asp-for="Book.AgeRating" class="form-control custom-form-control" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Book.Description" class="form-label fw-bold custom-label-muted">Description</label>
+                        <textarea asp-for="Book.Description" class="form-control custom-form-control" rows="3"></textarea>
+                    </div>
 
+                    <div class="mb-3">
+                        <label asp-for="Media" class="form-label fw-bold custom-label-muted">Media Format</label>
+                        <select asp-for="Media" class="form-select custom-form-control" id="mediaSelect" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumMedia>()"></select>
+                    </div>
+                }
+                else
+                {
+                    <input type="hidden" asp-for="Book.Title" />
+                    <input type="hidden" asp-for="Book.Author" />
+                    <input type="hidden" asp-for="Book.Genre" />
+                    <input type="hidden" asp-for="Book.AgeRating" />
+                    <input type="hidden" asp-for="Book.Description" />
+                    <input type="hidden" asp-for="Media" id="mediaSelectHidden" value="@Model.Media" />
+                }
+
+                @if (isOwner || isCurrentBorrower)
+                {
+                    <div id="optionsCheckboxGroup" class="mb-3 d-none">
+                        <label class="form-label fw-bold custom-label-muted mb-2">Options</label>
+                        <div class="p-3 border rounded bg-white">
+                            <div class="form-check mb-2" id="bookmarkWrapper">
+                                <input class="form-check-input" type="checkbox" asp-for="Bookmark" id="Bookmark" />
+                                <label class="form-check-label text-dark" for="Bookmark">Use Bookmark</label>
+                            </div>
+
+                            @if (isOwner)
+                            {
+                                <div class="form-check mb-2" id="isOwnedWrapper">
+                                    <input class="form-check-input" type="checkbox" asp-for="IsOwned" id="IsOwned" />
+                                    <label class="form-check-label text-dark" for="IsOwned">Is Owned</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (isOwner || isCurrentBorrower)
+                {
+                    <div class="mb-3">
+                        <label asp-for="ReadStatus" class="form-label fw-bold custom-label-muted">Read Status</label>
+                        <select asp-for="ReadStatus" id="readStatusSelect" class="form-select custom-form-control" asp-items="Html.GetEnumSelectList<YourLibrary.Models.EnumReadStatus>()"></select>
+                    </div>
+                }
+                else if (isPastBorrower)
+                {
+                    <input type="hidden" asp-for="ReadStatus" />
+                }
+
+                @if (isOwner || isCurrentBorrower)
+                {
+                    <div class="mb-3 d-none" id="locationGroup">
+                        <label asp-for="Location" class="form-label fw-bold custom-label-muted">Storage Location</label>
+                        <input asp-for="Location" class="form-control custom-form-control" id="bookLocation" />
+                    </div>
+                }
+                else
+                {
+                    <input type="hidden" asp-for="Location" />
+                }
+
+                <div id="reviewRatingGroup" class="mb-3 d-none p-3 border rounded bg-light">
+                    <h6 class="fw-bold mb-2 text-dark">Your Review & Rating</h6>
+                    <input type="hidden" asp-for="Review.ReviewId" />
+
+                    <div class="mb-2">
+                        <label asp-for="Review.Rating" class="form-label small fw-bold">Rating</label>
+                        <select asp-for="Review.Rating" id="ratingSelect" class="form-select form-select-sm custom-form-control">
+                            <option value="0">Choose rating...</option>
+                            @for (decimal i = 10.00m; i >= 0.00m; i -= 0.25m)
+                            {
+                                <option value="@i.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)">@i.ToString("0.00")</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-0">
+                        <label asp-for="Review.ReviewComment" class="form-label small fw-bold">Review Comment (Optional)</label>
+                        <textarea asp-for="Review.ReviewComment" id="reviewCommentText" class="form-control custom-form-control" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Notes" class="form-label fw-bold custom-label-muted">Your Notes & Thoughts</label>
+                    <textarea asp-for="Notes" class="form-control custom-form-control" rows="4"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top custom-form-buttons-container">
+                    <a href="/Shelf/Index" class="btn btn-custom-back px-4"><i class="bi bi-arrow-left me-2"></i>Cancel</a>
+                    <button type="submit" class="btn btn-custom-save px-4 shadow-sm"><i class="bi bi-check-lg me-2"></i>Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
     <script src="~/js/edit.js" asp-append-version="true"></script>
-}
 }

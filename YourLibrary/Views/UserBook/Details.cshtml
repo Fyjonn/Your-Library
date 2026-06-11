@@ -1,11 +1,46 @@
 ﻿@model YourLibrary.Models.UserBook
 @using System.Security.Claims
-@using Microsoft.AspNetCore.Identity
 
 @{
     ViewData["Title"] = "Details";
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     var isOwner = Model.ApplicationUserId == currentUserId;
+
+    var userBorrowRecord = Model.Borrows?
+        .Where(b => b.ApplicationUserId == currentUserId)
+        .OrderByDescending(b => b.BorrowDate)
+        .FirstOrDefault();
+
+    var isCurrentBorrower = !isOwner && userBorrowRecord != null &&
+        userBorrowRecord.StatusBorrow == YourLibrary.Models.EnumStatusBorrow.Borrowed;
+
+    var isPastBorrower = !isOwner && userBorrowRecord != null &&
+        (userBorrowRecord.StatusBorrow == YourLibrary.Models.EnumStatusBorrow.Returned ||
+         userBorrowRecord.StatusBorrow == YourLibrary.Models.EnumStatusBorrow.Completed);
+
+  
+    var displayLocation = isOwner ? Model.Location : "Borrowed Item (No custom location)";
+    var displayNotes = isOwner ? Model.Notes : "Notes are private to the book owner.";
+
+    decimal displayRating = 0;
+    string displayComment = "";
+
+    if (isOwner)
+    {
+        if (Model.Review != null)
+        {
+            displayRating = Model.Review.Rating;
+            displayComment = Model.Review.ReviewComment;
+        }
+    }
+    else
+    {
+        if (Model.Review != null)
+        {
+            displayRating = Model.Review.Rating;
+            displayComment = Model.Review.ReviewComment;
+        }
+    }
 }
 
 @section Styles {
@@ -17,7 +52,9 @@
     <div class="card shadow-sm border-0 custom-userbook-card">
         <div class="card-header d-flex justify-content-between align-items-center py-3 custom-userbook-header">
             <h4 class="mb-0"><i class="bi bi-book-half me-2"></i>Info</h4>
-            <span class="badge custom-badge-status fs-6">@Model.ReadStatus</span>
+            <span class="badge custom-badge-status fs-6">
+                @(isOwner? Model.ReadStatus.ToString() : (userBorrowRecord?.BorrowerFinalReadStatus?.ToString() ?? "Borrowing"))
+            </span>
         </div>
         <div class="card-body p-4">
 
@@ -32,25 +69,44 @@
             </div>
 
             <div class="row mb-3 custom-border-bottom pb-2">
+                <div class="col-sm-4 fw-bold custom-label-muted">Genre:</div>
+                <div class="col-sm-8 custom-value-dark">@(string.IsNullOrEmpty(Model.Book?.Genre) ? "Not specified." : Model.Book?.Genre)</div>
+            </div>
+
+            <div class="row mb-3 custom-border-bottom pb-2">
+                <div class="col-sm-4 fw-bold custom-label-muted">Description:</div>
+                <div class="col-sm-8 custom-value-dark">@(string.IsNullOrEmpty(Model.Book?.Description) ? "No description available." : Model.Book?.Description)</div>
+            </div>
+
+            <div class="row mb-3 custom-border-bottom pb-2">
                 <div class="col-sm-4 fw-bold custom-label-muted">Media format:</div>
                 <div class="col-sm-8 custom-value-dark">@Model.Media</div>
             </div>
 
             <div class="row mb-3 custom-border-bottom pb-2">
-                <div class="col-sm-4 fw-bold custom-label-muted">Location:</div>
-                <div class="col-sm-8 custom-value-dark">
-                    @(string.IsNullOrEmpty(Model.Location) ? "Not specified." : Model.Location)
+                <div class="col-sm-4 fw-bold custom-label-muted">Storage Location:</div>
+                <div class="col-sm-8 custom-value-dark fw-bold text-primary">
+                    @(string.IsNullOrEmpty(displayLocation) ? "Not specified." : displayLocation)
                 </div>
             </div>
 
             <div class="row mb-3 custom-border-bottom pb-3 align-items-start align-items-sm-center">
                 <div class="col-sm-4 fw-bold custom-label-muted mb-2 mb-sm-0">Ownership Status:</div>
                 <div class="col-sm-8 d-flex flex-column flex-sm-row flex-wrap gap-2 w-100-mobile">
-                    <div class="custom-status-tile @(Model.IsOwned ? "tile-active" : "tile-inactive") mb-1 mb-sm-0">
-                        <span>@(Model.IsOwned ? "I own this book" : "I don't own this book")</span>
+                    <div class="custom-status-tile @(isOwner && Model.IsOwned ? "tile-active" : "tile-inactive") mb-1 mb-sm-0">
+                        <span>
+                            @if (isOwner)
+                            {
+                                @(Model.IsOwned ? "I own this book" : "I don't own this book")
+                            }
+                            else
+                            {
+                                <text>You are borrowing this book (Owner: @Model.ApplicationUser?.DisplayName)</text>
+                            }
+                        </span>
                     </div>
 
-                    @if (Model.Media == YourLibrary.Models.EnumMedia.Printed)
+                    @if (Model.Media == YourLibrary.Models.EnumMedia.Printed && isOwner)
                     {
                         <div class="custom-status-tile @(Model.Bookmark ? "tile-active" : "tile-inactive")">
                             <span>@(Model.Bookmark ? "Has a bookmark" : "No bookmark")</span>
@@ -60,48 +116,46 @@
             </div>
 
             <div class="mb-4">
-                <div class="fw-bold custom-label-muted mb-2">Your notes:</div>
-                <div class="p-3 rounded custom-notes-box">
-                    <span class="fst-italic">
-                        @(string.IsNullOrEmpty(Model.Notes) ? "No additional notes for this book." : Model.Notes)
+                <div class="fw-bold custom-label-muted mb-2">Personal Notes:</div>
+                <div class="p-3 rounded custom-notes-box bg-white">
+                    <span class="fst-italic text-dark">
+                        @(string.IsNullOrEmpty(displayNotes) ? "No additional notes for this book." : displayNotes)
                     </span>
                 </div>
             </div>
 
-            @if (Model.Review != null)
+            @if (displayRating > 0)
             {
                 <div class="mt-4 p-3 rounded custom-review-section">
                     <h5 class="fw-bold custom-label-muted mb-2">
-                        <i class="bi bi-chat-left-heart-fill me-2"></i>Your Review & Thoughts
+                        <i class="bi bi-chat-left-heart-fill me-2"></i>Book Rating & Review
                     </h5>
 
                     <div class="review-stars-display mb-2 fs-5">
-                        <span class="ms-2 small text-muted">(@Model.Review.Rating / 10)</span>
+                        <span class="fw-bold text-warning"><i class="bi bi-star-fill me-1"></i>@displayRating.ToString("0.00")</span>
+                        <span class="ms-1 small text-muted">/ 10</span>
                     </div>
 
-                    @if (!string.IsNullOrEmpty(Model.Review.ReviewComment))
+                    @if (!string.IsNullOrEmpty(displayComment))
                     {
-                        <p class="mb-0 italic-comment text-secondary">"@Model.Review.ReviewComment"</p>
+                        <p class="mb-0 italic-comment text-secondary">"@displayComment"</p>
                     }
                     else
                     {
-                        <p class="mb-0 text-muted small"><em>You rated this book without leaving a written comment.</em></p>
+                        <p class="mb-0 text-muted small">
+                            <em><i class="bi bi-info-circle me-1"></i>A numeric rating was submitted without an accompanying text comment.</em>
+                        </p>
                     }
                 </div>
             }
+            else
+            {
+                <div class="mt-4 p-2 rounded bg-light text-muted small text-center">
+                    <em><i class="bi bi-star me-1"></i>No active rating or review comment has been published yet.</em>
+                </div>
+            }
 
-            <div class="mt-4 text-center">
-                @if (!isOwner && Model.IsOwned)
-                {
-                    <form asp-controller="Friendship" asp-action="RequestBorrow" method="post">
-                        <input type="hidden" name="userBookId" value="@Model.UserBookId" />
-                        <input type="hidden" name="friendName" value="@Model.ApplicationUser?.UserName" />
-                       
-                    </form>
-                }
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-4">
                 <a href="/Shelf/Index" class="btn btn-custom-back px-4">
                     <i class="bi bi-arrow-left me-2"></i>Back to shelf
                 </a>

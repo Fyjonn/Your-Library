@@ -25,6 +25,14 @@
     font-family: 'Georgia', serif;
 }
 
+.custom-badge-status {
+    background-color: var(--accent-gold) !important;
+    color: var(--primary-green) !important;
+    font-weight: bold;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
 /* Wiersze informacyjne o książce */
 .custom-border-bottom {
     border-bottom: 1px solid #e3edf7;
@@ -32,102 +40,71 @@
 
 .custom-label-muted {
     color: var(--text-muted) !important;
-    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
 }
 
 .custom-value-title {
-    color: var(--text-dark);
+    color: var(--primary-green) !important;
     font-family: 'Georgia', serif;
 }
 
-/* Odznaka głównego statusu czytania w nagłówku */
-.custom-badge-status {
-    background-color: var(--primary-green) !important;
-    color: #ffffff !important;
-    border: 1px solid var(--accent-gold) !important;
-    padding: 6px 14px !important;
-    border-radius: 20px !important;
-    font-weight: 600;
-    box-shadow: 0 2px 5px rgba(26, 58, 95, 0.2);
+.custom-value-dark {
+    color: #2c3e50 !important;
 }
 
-/* Kafelki statusu posiadania i zakładki */
+/* Kafelki statusu (Ownership / Bookmark) */
 .custom-status-tile {
     display: inline-flex;
     align-items: center;
-    justify-content: flex-start;
-    padding: 8px 14px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    padding: 6px 14px;
     border-radius: 20px;
-    box-shadow: 0 2px 4px rgba(26, 58, 95, 0.08);
+    font-size: 0.85rem;
+    font-weight: bold;
+    border: 1px solid;
     transition: all 0.2s ease;
-    border: 1px solid transparent;
-    white-space: nowrap;
 }
 
-/* Stan aktywny (Ciemny motyw retro, biała czcionka) */
-.custom-status-tile.tile-active {
-    background-color: var(--primary-green) !important;
-    color: #ffffff !important;
-    border-color: var(--accent-gold) !important;
+.tile-active {
+    background-color: #e2f0d9 !important;
+    color: #385723 !important;
+    border-color: #c5e0b4 !important;
 }
 
-/* Stan nieaktywny (Stonowane jasne tło) */
-.custom-status-tile.tile-inactive {
-    background-color: #f1f3f5 !important;
-    color: var(--text-muted) !important;
-    border-color: #dee2e6 !important;
+.tile-inactive {
+    background-color: #fce4d6 !important;
+    color: #c65911 !important;
+    border-color: #f8cbad !important;
 }
 
-
-/* Sekcja recenzji użytkownika */
-.custom-review-section {
+/* Ramka na notatki i przemyślenia zalogowanego użytkownika */
+.custom-notes-box {
     background-color: #ffffff;
-    border: 1px solid #e3edf7;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+    border-left: 4px solid var(--accent-gold);
+    border-top: 1px solid #e3edf7;
+    border-right: 1px solid #e3edf7;
+    border-bottom: 1px solid #e3edf7;
+    color: #4a5568;
+    line-height: 1.6;
 }
 
+/* Sekcja opinii, komentarzy i oceny cyfrowej */
+.custom-review-section {
+    background-color: #fffdf3 !important;
+    border: 1px solid #fbe584 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+
+.review-stars-display {
+    color: #f39c12;
 }
 
 .italic-comment {
-    font-style: italic;
     font-family: 'Georgia', serif;
+    font-size: 1.05rem;
+    line-height: 1.5;
 }
 
-/* Stylizacja przycisków w pliku Details */
-.btn-custom-back {
-    background-color: #ffffff !important;
-    color: var(--text-dark) !important;
-    border: 1px solid var(--accent-gold) !important;
-}
-
-.btn-custom-back:hover {
-    background-color: #e3edf7 !important;
-}
-
-.btn-custom-save {
-    background-color: var(--primary-green) !important;
-    color: #ffffff !important;
-    border: 1px solid #112740 !important;
-}
-
-.btn-custom-save:hover {
-    background-color: #112740 !important;
-}
-
-.btn-custom-delete {
-    background-color: var(--retro-burgund) !important;
-    color: #ffffff !important;
-    border: 1px solid #6b1d29 !important;
-}
-
-.btn-custom-delete:hover {
-    background-color: #4a141c !important;
-    border-color: #2d0c11 !important;
-}
-
-/* Podstawa przycisków dolnych */
+/* Dolne przyciski nawigacyjne oraz akcji */
 .btn-custom-back,
 .btn-custom-save,
 .btn-custom-delete {
@@ -144,6 +121,7 @@
     box-sizing: border-box !important;
     box-shadow: 0 3px 8px rgba(26, 58, 95, 0.1) !important;
     transition: all 0.2s ease-in-out !important;
+    text-decoration: none;
 }
 
 .btn-custom-back i,
@@ -153,30 +131,57 @@
     line-height: 1 !important;
 }
 
+.btn-custom-back {
+    background-color: #ffffff !important;
+    color: var(--primary-green) !important;
+    border: 1px solid var(--accent-gold) !important;
+}
+
+.btn-custom-back:hover {
+    background-color: var(--table-header-bg) !important;
+}
+
+.btn-custom-save {
+    background-color: var(--primary-green) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--primary-green) !important;
+}
+
+.btn-custom-save:hover {
+    background-color: #0b1829 !important;
+}
+
+.btn-custom-delete {
+    background-color: var(--retro-burgund) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--retro-burgund) !important;
+}
+
+.btn-custom-delete:hover {
+    background-color: #5c1a23 !important;
+    border-color: #2d0c11 !important;
+}
+
+/* Responsywność dla smartfonów */
 @media (max-width: 576px) {
     .w-100-mobile {
         width: 100% !important;
     }
 
     .custom-status-tile {
-        display: flex !important;
         width: 100% !important;
-        justify-content: center !important;
-        margin-right: 0 !important;
-        font-size: 0.9rem;
-        padding: 10px 14px;
+        justify-content: center;
     }
 
-    .card-body .d-flex.justify-content-between {
+    .card-body .d-flex {
         flex-direction: column !important;
-        gap: 10px;
+        gap: 10px !important;
     }
 
-    .w-100-mobile-buttons {
-        width: 100% !important;
-        flex-direction: column !important;
-        gap: 10px;
-    }
+        .card-body .d-flex .gap-2 {
+            width: 100% !important;
+            flex-direction: column !important;
+        }
 
     .btn-custom-back,
     .btn-custom-save,
