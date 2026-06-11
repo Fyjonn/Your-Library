@@ -65,7 +65,20 @@
 
                         <div class="mb-4 text-start">
                             <label for="avatarUpload" class="form-label fw-bold custom-label-muted">Or add your own photo:</label>
-                            <input asp-for="AvatarImage" class="form-control library-input" type="file" id="avatarUpload" accept=".jpg,.jpeg,.png">
+                            <!--<input asp-for="AvatarImage" class="form-control library-input" type="file" id="avatarUpload" accept=".jpg,.jpeg,.png">-->
+                            <input asp-for="AvatarImage"
+                                   type="file"
+                                   id="avatarUpload"
+                                   accept=".jpg,.jpeg,.png"
+                                   style="display:none;">
+
+                            <label for="avatarUpload" class="btn btn-outline-primary">
+                                Choose Image
+                            </label>
+
+                            <span id="selectedFileName" class="ms-2 text-muted">
+                                No file selected
+                            </span>
                         </div>
 
                         <hr class="library-divider" />
@@ -364,5 +377,20 @@
                 updateConfirmButton();
             });
         }
+
+    //NEW adding own photo 
+     const fileInput = document.getElementById("avatarUpload");
+     const fileNameLabel = document.getElementById("selectedFileName");
+
+    if(fileInput){
+        fileInput.addEventListener("change", function(){
+            if(this.files.length > 0){
+                fileNameLabel.textContent = this.files[0].name;
+            }
+            else{
+                fileNameLabel.textContent = "No file selected";
+            }
+        });
+    }
     });
 </script>
