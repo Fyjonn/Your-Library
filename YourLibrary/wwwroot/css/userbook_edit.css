@@ -9,6 +9,7 @@
     --retro-burgund: #8b2635;
 }
 
+/* Karta główna edycji i jej nagłówek */
 .custom-userbook-card {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--accent-gold) !important;
@@ -24,18 +25,28 @@
     font-family: 'Georgia', serif;
 }
 
-/* Pola wejściowe formularza */
+.custom-badge-status {
+    background-color: var(--accent-gold) !important;
+    color: var(--primary-green) !important;
+    font-weight: bold;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+/* Pola tekstowe, obszary tekstowe i selecty */
 .custom-form-control {
     background-color: #ffffff !important;
     border: 1px solid var(--accent-gold) !important;
     color: var(--text-dark) !important;
     border-radius: 6px;
     padding: 10px 12px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .custom-form-control:focus {
     border-color: var(--primary-green) !important;
-    box-shadow: 0 0 0 0.2rem rgba(26, 58, 95, 0.15);
+    box-shadow: 0 0 0 0.2rem rgba(26, 58, 95, 0.25) !important;
+    outline: 0;
 }
 
 .custom-label-muted {
@@ -45,25 +56,18 @@
     margin-bottom: 0.5rem;
 }
 
-/* Grupy opcji i przełączników */
-.custom-checkbox-group {
+/* Stylowanie kontenerów na opcje (checkboxy) oraz recenzje (JS toggle) */
+#optionsCheckboxGroup .p-3,
+#reviewRatingGroup {
     background-color: #ffffff !important;
-    border: 1px solid var(--accent-gold) !important;
-    box-shadow: 0 2px 8px rgba(26, 58, 95, 0.04);
+    border: 1px solid var(--table-header-bg) !important;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.custom-checkbox-group .custom-value-dark {
-    color: #2b3e50 !important;
-    font-size: 0.95rem;
-    cursor: pointer;
-}
-
-/* Klasa używana do wygaszania niekompatybilnych opcji */
-.disabled-element-group {
-    opacity: 0.5;
-    pointer-events: none;
-    user-select: none;
-    transition: opacity 0.25s ease-in-out;
+.form-check-input:checked {
+    background-color: var(--primary-green) !important;
+    border-color: var(--primary-green) !important;
 }
 
 /* Walidacja i błędy */
@@ -73,11 +77,7 @@
     font-weight: 500;
 }
 
-.card-body .text-danger .bi-exclamation-triangle-fill {
-    color: var(--retro-burgund) !important;
-}
-
-/* Przyciski operacyjne */
+/* Przyciski dolne formularza */
 .btn-custom-save, button[type="submit"] {
     background-color: var(--primary-green) !important;
     color: #ffffff !important;
@@ -114,17 +114,18 @@
     border-radius: 6px !important;
     box-shadow: 0 2px 6px rgba(26, 58, 95, 0.1) !important;
     transition: all 0.2s ease-in-out !important;
+    text-decoration: none;
 }
 
 .btn-custom-back i,
 .btn-custom-save i {
     font-size: 1.1rem !important;
-    margin-right: 6px !important;
+    line-height: 1 !important;
 }
 
 /* Responsywność mobilna formularza */
 @media (max-width: 576px) {
-    .card-body .d-flex.justify-content-between.pt-2 {
+    .custom-form-buttons-container {
         flex-direction: column !important;
         align-items: stretch !important;
         gap: 10px !important;
