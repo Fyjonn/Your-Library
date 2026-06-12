@@ -33,7 +33,8 @@
    * Create a new App Password
    * Copy the generated password
    * Fill the `EmailSettings` section in `appsettings.json`, by writing down  your email and pasting password
-8.Omitting configuring email service (Only if you skipped step 7.)
+
+8. Omitting configuring email service (Only if you skipped step 7.)
    Warning - without configuring this functionality, button "Forgot Password" won't work properly and you won't be able to use retrievieng password optiton.
    We still recommend to go back and go through step 7. If you decided to skip it though follow this step:
 
