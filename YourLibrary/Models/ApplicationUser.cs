@@ -10,7 +10,6 @@ namespace YourLibrary.Models
         public string Avatar { get; set; } = "🌿";
 
         public string? AvatarImagePath { get; set; }
-        public bool ShelfVisibility { get; set; } = true;
         // Klucze obce
 
         // z userbook
