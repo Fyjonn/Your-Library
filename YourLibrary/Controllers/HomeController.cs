@@ -2,6 +2,11 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using YourLibrary.Models;
 
+/// <summary>
+/// Kontroler do Landing Page z logowaniem i rejestracj¹.
+/// </summary>
+
+
 namespace YourLibrary.Controllers
 {
     public class HomeController : Controller

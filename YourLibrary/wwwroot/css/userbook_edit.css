@@ -56,7 +56,7 @@
     margin-bottom: 0.5rem;
 }
 
-/* Stylowanie kontenerów na opcje (checkboxy) oraz recenzje (JS toggle) */
+/* Stylowanie kontenerów na opcje oraz recenzje */
 #optionsCheckboxGroup .p-3,
 #reviewRatingGroup {
     background-color: #ffffff !important;
@@ -123,7 +123,6 @@
     line-height: 1 !important;
 }
 
-/* Responsywność mobilna formularza */
 @media (max-width: 576px) {
     .custom-form-buttons-container {
         flex-direction: column !important;

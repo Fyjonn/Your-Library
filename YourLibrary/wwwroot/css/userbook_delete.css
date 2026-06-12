@@ -25,7 +25,7 @@
     font-family: 'Georgia', serif;
 }
 
-/* Kolorowanie ikon ostrzegawczych (Bootstrap, FontAwesome i czyste SVG) */
+/* Kolorowanie ikon ostrzegawczych */
 .fa-exclamation-triangle,
 .bi-exclamation-triangle,
 .bi-triangle-fill,
@@ -53,7 +53,7 @@ svg path {
     font-weight: bold;
 }
 
-/* Główny przycisk destrukcyjny (Delete) */
+/* Główny przycisk destrukcyjny */
 .btn-danger,
 .btn-custom-delete {
     background-color: var(--retro-burgund) !important;
@@ -103,7 +103,6 @@ svg path {
     margin-right: 6px !important;
 }
 
-/* Mobilne dopasowanie układu decyzji */
 @media (max-width: 576px) {
     .d-flex.justify-content-between {
         flex-direction: column !important;

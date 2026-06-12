@@ -80,10 +80,10 @@
     padding-bottom: 12px;
 }
 
-    .section-card-header h5 i {
-        color: #1a3a5f !important;
-        margin-right: 8px;
-    }
+.section-card-header h5 i {
+    color: #1a3a5f !important;
+    margin-right: 8px;
+}
 
 .line-after{
     color:lightgray;
@@ -117,9 +117,9 @@
     cursor: default !important;
 }
 
-    .dashboard-item-row:last-child {
-        margin-bottom: 0 !important;
-    }
+.dashboard-item-row:last-child {
+    margin-bottom: 0 !important;
+}
 
 .item-title {
     font-size: 1rem !important;
@@ -145,11 +145,11 @@
     padding: 10px 12px !important;
 }
 
-    .library-input:focus {
-        border-color: #6fa8dc !important;
-        box-shadow: 0 0 0 0.25rem rgba(111, 168, 220, 0.2) !important;
-        outline: none;
-    }
+.library-input:focus {
+    border-color: #6fa8dc !important;
+    box-shadow: 0 0 0 0.25rem rgba(111, 168, 220, 0.2) !important;
+    outline: none;
+}
 
 .library-divider {
     border-top: 1px solid rgba(26, 58, 95, 0.15) !important;
@@ -182,10 +182,10 @@
     transition: all 0.2s ease;
 }
 
-    .avatar-option span:hover {
-        border-color: #6fa8dc;
-        background-color: #f4f8fb;
-    }
+.avatar-option span:hover {
+    border-color: #6fa8dc;
+    background-color: #f4f8fb;
+}
 
 .avatar-option input[type="radio"]:checked + span {
     background: #1a3a5f !important;
@@ -205,9 +205,9 @@
     transition: background-color 0.2s ease;
 }
 
-    .btn-library-gold:hover, .btn-library-green:hover {
-        background-color: #11253f !important;
-    }
+.btn-library-gold:hover, .btn-library-green:hover {
+    background-color: #11253f !important;
+}
 
 .btn-library-cancel, .btn-outline-primary {
     background-color: transparent !important;
@@ -216,11 +216,11 @@
     transition: all 0.2s ease;
 }
 
-    .btn-library-cancel:hover, .btn-outline-primary:hover {
-        background-color: #e3edf7 !important;
-        color: #1a3a5f !important;
-        border-color: #6fa8dc !important;
-    }
+.btn-library-cancel:hover, .btn-outline-primary:hover {
+    background-color: #e3edf7 !important;
+    color: #1a3a5f !important;
+    border-color: #6fa8dc !important;
+}
 
 #profile-edit-mode:not([style*="display: none"]) ~ #dashboard-widgets-row {
     display: none !important;

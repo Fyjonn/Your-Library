@@ -7,6 +7,11 @@ using YourLibrary.Data;
 using Microsoft.EntityFrameworkCore;
 using SQLitePCL;
 
+///<summary>
+///Kontroler odpowiadajcy za zarzadzaniem profilem uzytkownika. Pozwala na edycje danych uzytkownika,
+///zmiene hasla, loginu, maila, awatara i zdjecia. Wyswietla takze ostanio dodane ksiazki, znajomych, pozyczenia i wypozyczenia.
+/// </summary>
+
 namespace YourLibrary.Controllers
 {
     [Authorize] 
@@ -25,6 +30,7 @@ namespace YourLibrary.Controllers
             _context = context;
         }
 
+        // do wyswietlania zakladki "My Profile" - get
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -90,6 +96,7 @@ namespace YourLibrary.Controllers
             return View(model);
         }
 
+        // edycja zakladki "My Profile" - post
         [HttpPost]
         public async Task<IActionResult> Index(ProfileViewModel model)
         {
@@ -117,13 +124,6 @@ namespace YourLibrary.Controllers
 
                 if (existingLogin != null)
                 {
-                    //ModelState.AddModelError("", "Login already taken");
-
-                    //model.DisplayName = user.DisplayName;
-                    //model.Email = user.Email;
-                    //ModelState.Remove("DisplayName");
-                    //ModelState.Remove("Email");
-
                     model.LatestBooks = new List<BookViewModel>();
                     model.LatestFriends = new List<FriendViewModel>();
 
@@ -140,13 +140,6 @@ namespace YourLibrary.Controllers
 
                 if (existingEmail != null)
                 {
-                    //ModelState.AddModelError("", "Email already taken");
-
-                    //model.DisplayName = user.DisplayName;
-                    //model.Email = user.Email;
-                    //ModelState.Remove("DisplayName");
-                    //ModelState.Remove("Email");
-
                     model.LatestBooks = new List<BookViewModel>();
                     model.LatestFriends = new List<FriendViewModel>();
 
@@ -239,9 +232,6 @@ namespace YourLibrary.Controllers
             {
                 if (model.NewPassword == model.ConfirmedPassword)
                 {
-                    //var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                    //await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
-
                     var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
                     var passwordResult = await _userManager.ResetPasswordAsync(

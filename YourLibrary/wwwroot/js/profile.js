@@ -124,7 +124,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // NEW adding own photo 
     const fileInput = document.getElementById("avatarUpload");
     const fileNameLabel = document.getElementById("selectedFileName");
 

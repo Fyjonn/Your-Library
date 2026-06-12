@@ -5,6 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using YourLibrary.Data;
 using YourLibrary.Models;
 
+/// <summary>
+/// Kontroler odpowiadajcy za zarzadzanie przyjazniami miedzy uzytkownikami. Zawiera obslugie zakladki "Friends",
+/// w tym wyswietlanie zaproszen, listy przyjaciol, a takze odpowiada za logike wypozyczania ksiazek.
+/// </summary>
+
 namespace YourLibrary.Controllers
 {
     [Authorize]
@@ -19,6 +24,8 @@ namespace YourLibrary.Controllers
             _userManager = userManager;
         }
 
+
+        // zakladka friends
         public async Task<IActionResult> Index()
         {
             var currentUser = await _userManager.GetUserAsync(User);
@@ -43,18 +50,18 @@ namespace YourLibrary.Controllers
                  .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Requested).ToListAsync();
 
             model.MyBorrowedBooks = await _context.Borrows
-        .Include(b => b.UserBook).ThenInclude(ub => ub.Book)
-        .Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser)
-        .Where(b => b.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed)
-        .ToListAsync();
+            .Include(b => b.UserBook).ThenInclude(ub => ub.Book)
+            .Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser)
+            .Where(b => b.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed)
+            .ToListAsync();
 
-            // Aktywne wypożyczone komuś (Tylko status Borrowed!)
+            // aktywne wypozyczone komus
             model.MyRentedBooks = await _context.Borrows
                 .Include(b => b.ApplicationUser).Include(b => b.UserBook).ThenInclude(ub => ub.Book)
                 .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Borrowed)
                 .ToListAsync();
 
-            // HISTORIA
+            // historia - borrowed books
             model.MyBorrowedHistory = await _context.Borrows
                 .Include(b => b.UserBook).ThenInclude(ub => ub.Book)
                 .Include(b => b.UserBook).ThenInclude(ub => ub.ApplicationUser)
@@ -62,13 +69,14 @@ namespace YourLibrary.Controllers
                 .OrderByDescending(b => b.ReturnDate)
                 .ToListAsync();
 
+            //historia - rented books
             model.MyRentedHistory = await _context.Borrows
                 .Include(b => b.ApplicationUser).Include(b => b.UserBook).ThenInclude(ub => ub.Book)
                 .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Completed)
                 .OrderByDescending(b => b.ReturnDate)
                 .ToListAsync();
 
-            // ================= NOWOŚĆ: Przekazujemy zwroty do potwierdzenia przez ViewBag =================
+            // potwierdzanie zwrotow
             ViewBag.ReturnsToConfirm = await _context.Borrows
                 .Include(b => b.ApplicationUser).Include(b => b.UserBook).ThenInclude(ub => ub.Book)
                 .Where(b => b.UserBook.ApplicationUserId == currentUser.Id && b.StatusBorrow == EnumStatusBorrow.Returned)
@@ -77,6 +85,7 @@ namespace YourLibrary.Controllers
             return View(model);
         }
 
+        // pozyczanie ksiazek - zapytanie
         [HttpPost]
         public async Task<IActionResult> RequestBorrow(int userBookId, string friendName)
         {
@@ -112,7 +121,7 @@ namespace YourLibrary.Controllers
             return RedirectToAction("Shelf", new { friendName = friendName });
         }
 
-
+        // pozyczanie ksiazek - akceptacja
         [HttpPost]
         public async Task<IActionResult> AcceptBorrow(int borrowId)
         {
@@ -146,6 +155,7 @@ namespace YourLibrary.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // pozyczanie ksiazek - odrzucenie
         [HttpPost]
         public async Task<IActionResult> RejectBorrow(int borrowId)
         {
@@ -167,7 +177,7 @@ namespace YourLibrary.Controllers
         }
 
 
-
+        // wyslanie zaproszenia
         [HttpPost]
         public async Task<IActionResult> SendInvitation(string searchUsername)
         {
@@ -217,6 +227,7 @@ namespace YourLibrary.Controllers
             return RedirectToAction("Index");
         }
 
+        // akceptacja zaproszenia
         [HttpPost]
         public async Task<IActionResult> AcceptInvitation(int friendshipId)
         {
@@ -241,6 +252,7 @@ namespace YourLibrary.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        //odrzucenie zaproszenia
         [HttpPost]
         public async Task<IActionResult> RejectInvitation(int friendshipId)
         {
@@ -265,6 +277,7 @@ namespace YourLibrary.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // usuwanie znajomego
         public async Task<IActionResult> DeleteFriend(int friendshipId)
         {
             var currectUser = await _userManager.GetUserAsync(User);
@@ -288,6 +301,7 @@ namespace YourLibrary.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // anulowanie zaproszenia
         public async Task<IActionResult> CancelInvitation(int friendshipId)
         {
             var currectUser = await _userManager.GetUserAsync(User);
@@ -311,7 +325,7 @@ namespace YourLibrary.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
+        // podglad polki znajomego przy akcji wypozyczania ksiazki
         [HttpGet]
         public async Task<IActionResult> Shelf(string friendName)
         {
@@ -356,6 +370,8 @@ namespace YourLibrary.Controllers
             return View(viewModel);
         }
 
+
+        // zwracanie ksiazki
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReturnBorrowedBookDirectly(int userBookId)
@@ -378,19 +394,16 @@ namespace YourLibrary.Controllers
             borrowRecord.BorrowerFinalReadStatus = borrowRecord.UserBook.ReadStatus;
             borrowRecord.StatusBorrow = EnumStatusBorrow.Returned;
             borrowRecord.ReturnDate = DateTime.Now;
-            //borrowRecord.UserBook.IsBorrowed = false;
-            //borrowRecord.UserBook.Location = null;
-            //borrowRecord.UserBook.Notes = null;
-            //borrowRecord.UserBook.ReadStatus = borrowRecord.OriginalOwnerReadStatus;
 
             _context.Entry(borrowRecord).State = EntityState.Modified;
-            //_context.Entry(borrowRecord.UserBook).State = EntityState.Modified;
 
             await _context.SaveChangesAsync();
 
             TempData["FriendSuccess"] = "Book returned successfully!";
             return RedirectToAction("Index");
         }
+
+        // potwierdznie zwrotu
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmReturn(int borrowId)

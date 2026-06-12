@@ -42,10 +42,10 @@
     box-shadow: 0 4px 15px rgba(40, 60, 80, 0.05) !important;
 }
 
-    .admin-search-input:focus {
-        border-color: #6fa8dc !important;
-        box-shadow: 0 0 0 0.25rem rgba(111, 168, 220, 0.2) !important;
-    }
+.admin-search-input:focus {
+    border-color: #6fa8dc !important;
+    box-shadow: 0 0 0 0.25rem rgba(111, 168, 220, 0.2) !important;
+}
 
 .admin-table-card {
     border-radius: 15px !important;
@@ -62,33 +62,33 @@
     border-collapse: separate !important;
 }
 
-    .admin-table th {
-        background-color: #ffffff !important;
-        color: #1a3a5f !important;
-        font-weight: 700 !important;
-        font-size: 1.1rem;
-        border-bottom: 2px solid #cfe2f3 !important;
-        padding: 1.2rem 1rem !important;
-    }
+.admin-table th {
+    background-color: #ffffff !important;
+    color: #1a3a5f !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #cfe2f3 !important;
+    padding: 1.2rem 1rem !important;
+}
 
-    .admin-table td {
-        color: #2b3e50;
-        padding: 1.2rem 1rem !important;
-        border-bottom: 1px solid #edf2f7 !important;
-    }
+.admin-table td {
+    color: #2b3e50;
+    padding: 1.2rem 1rem !important;
+    border-bottom: 1px solid #edf2f7 !important;
+}
 
 .user-row {
     cursor: pointer;
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-    .user-row:hover {
-        background-color: #fcfdfe !important;
-    }
+.user-row:hover {
+    background-color: #fcfdfe !important;
+}
 
-    .user-row.row-active {
-        background-color: #f4f8fc !important;
-    }
+.user-row.row-active {
+    background-color: #f4f8fc !important;
+}
 
 .btn-admin-delete {
     color: #7a1c22 !important;
@@ -98,12 +98,12 @@
     transition: all 0.2s ease-in-out;
 }
 
-    .btn-admin-delete:hover {
-        color: #ffffff !important;
-        background-color: #7a1c22 !important;
-        border-color: #7a1c22 !important;
-        transform: translateY(-1px);
-    }
+.btn-admin-delete:hover {
+    color: #ffffff !important;
+    background-color: #7a1c22 !important;
+    border-color: #7a1c22 !important;
+    transform: translateY(-1px);
+}
 
 #clearSearch {
     cursor: pointer;
@@ -111,9 +111,9 @@
     transition: color 0.2s;
 }
 
-    #clearSearch:hover {
-        color: #7a1c22;
-    }
+#clearSearch:hover {
+    color: #7a1c22;
+}
 
 .custom-delete-modal {
     border-radius: 12px !important;
@@ -136,12 +136,12 @@
     transition: all 0.2s ease-in-out;
 }
 
-    .btn-maroon:hover {
-        background-color: #5c1418 !important;
-        border-color: #5c1418 !important;
-        transform: scale(1.03);
-        box-shadow: 0 4px 12px rgba(122, 28, 34, 0.3);
-    }
+.btn-maroon:hover {
+    background-color: #5c1418 !important;
+    border-color: #5c1418 !important;
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(122, 28, 34, 0.3);
+}
 
 
 .reviews-row {
@@ -154,9 +154,9 @@
     transition: grid-template-rows 0.3s ease-out;
 }
 
-    .reviews-wrapper.open {
-        grid-template-rows: 1fr;
-    }
+.reviews-wrapper.open {
+    grid-template-rows: 1fr;
+}
 
 .reviews-inner {
     overflow: hidden;
@@ -183,9 +183,9 @@
     padding-bottom: 0.5rem;
 }
 
-    .reviews-section-title i {
-        color: #6fa8dc;
-    }
+.reviews-section-title i {
+    color: #6fa8dc;
+}
 
 .reviews-list-container {
     display: flex;

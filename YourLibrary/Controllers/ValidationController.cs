@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using YourLibrary.Models;
 
+/// <summary>
+/// Kontroler odpowiadajcy za walidacje danych profilu uzytkownika.
+/// </summary>
+
 namespace YourLibrary.Controllers
 {
     [Route("Validation")]

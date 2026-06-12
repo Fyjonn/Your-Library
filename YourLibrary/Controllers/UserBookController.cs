@@ -10,6 +10,11 @@ using System.IO;
 using System.Globalization;
 using System.Threading.Tasks;
 
+/// <summary>
+/// Kontroler odpowiadajacy za zarzadzanie polka uzytkownika - dodawanie ksiazke, edycja (podzial na wlascicela, aktualnie wypozyczajecego, uzytkownika, ktory oddal ksiazke),
+/// podglad informacji o pozycji (podzial na wlascicela, aktualnie wypozyczajecego, uzytkownika, ktory oddal ksiazke), usuwanie pozycji.
+/// </summary>
+
 namespace YourLibrary.Controllers
 {
     [Authorize] 
@@ -26,12 +31,14 @@ namespace YourLibrary.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        // tworzenie pozycji na polce - get
         [HttpGet]
         public IActionResult Create()
         {
             return View(new UserBook { Book = new Book() });
         }
 
+        // tworzenie pozycji na polce - post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(UserBook userbook, string reviewRating, string reviewComment, IFormFile coverFile)
@@ -128,6 +135,7 @@ namespace YourLibrary.Controllers
             return View(userbook);
         }
 
+        // wyswietlanie detali - get
         [HttpGet]
         public IActionResult Details(int id)
         {
@@ -177,6 +185,7 @@ namespace YourLibrary.Controllers
             return View(userBook);
         }
 
+        // edycja detali - get
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -221,6 +230,8 @@ namespace YourLibrary.Controllers
 
             return View(userBook);
         }
+
+        // edycja detali - post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, UserBook userbook, string? reviewComment)
@@ -273,7 +284,7 @@ namespace YourLibrary.Controllers
             {
                 if (userbook.Book == null || string.IsNullOrWhiteSpace(userbook.Book.Title) || string.IsNullOrWhiteSpace(userbook.Book.Author))
                 {
-                    ModelState.AddModelError("", "Tytuł i Autor są wymagane do zapisania książki!");
+                    ModelState.AddModelError("", "Title and Author are required to save a book!");
                     return View(dbUserBook);
                 }
 
@@ -369,7 +380,7 @@ namespace YourLibrary.Controllers
             return RedirectToAction("Index", "Shelf");
         }
 
-
+        // usuwanie pozycji - get
         [HttpGet]
         public IActionResult Delete(int id)
         {
@@ -387,6 +398,7 @@ namespace YourLibrary.Controllers
             return View(userBook);
         }
 
+        // potwierdzenie usuniecia pozycji - post
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)

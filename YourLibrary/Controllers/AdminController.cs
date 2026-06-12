@@ -5,11 +5,17 @@ using Microsoft.EntityFrameworkCore;
 using YourLibrary.Data;
 using YourLibrary.Models;
 
+/// <summary>
+///         Kontroler poswiecony zarzadzaniu uzytkownikow przez administaratora. Daje mozliwosc wyswietlania recenzji uzytkownikow 
+///         oraz usuwania uzytkownikow (np. za nieodpowiednie tresci recenzji).
+/// </summary>
+
 namespace YourLibrary.Controllers
 {
     [Authorize(Roles = "Admin")] // Tylko dla osób z rolą Admin
     public class AdminController : Controller
     {
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
 

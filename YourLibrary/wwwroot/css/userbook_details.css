@@ -52,7 +52,7 @@
     color: #2c3e50 !important;
 }
 
-/* Kafelki statusu (Ownership / Bookmark) */
+/* Kafelki statusu */
 .custom-status-tile {
     display: inline-flex;
     align-items: center;
@@ -162,7 +162,6 @@
     border-color: #2d0c11 !important;
 }
 
-/* Responsywność dla smartfonów */
 @media (max-width: 576px) {
     .w-100-mobile {
         width: 100% !important;

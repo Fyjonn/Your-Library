@@ -11,7 +11,6 @@
         b.ApplicationUserId == currentUserId &&
         b.StatusBorrow == EnumStatusBorrow.Borrowed);
 
-    // Jeœli nie ma aktywnego, szukamy jakiegokolwiek przesz³ego
     if (activeBorrow == null)
     {
         activeBorrow = Model.Borrows?.FirstOrDefault(b =>
@@ -22,7 +21,7 @@
     var isCurrentBorrower = !isOwner && activeBorrow != null && activeBorrow.StatusBorrow == EnumStatusBorrow.Borrowed;
     var isPastBorrower = !isOwner && activeBorrow != null && (activeBorrow.StatusBorrow == EnumStatusBorrow.Returned || activeBorrow.StatusBorrow == EnumStatusBorrow.Completed);
 
-    // DYNAMICZNE USTAWIANIE WARTOŒCI W ZALE¯NOŒCI OD TEGO, KTO EDYTUJE
+    // kto co kiedy edytuje
     string currentLocation = isOwner ? Model.Location : activeBorrow?.BorrowerLocation;
     string currentNotes = isOwner ? Model.Notes : activeBorrow?.BorrowerNotes;
     bool currentBookmark = isOwner ? Model.Bookmark : (activeBorrow?.BorrowerBookmark ?? false);

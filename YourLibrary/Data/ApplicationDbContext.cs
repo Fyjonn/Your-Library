@@ -21,7 +21,6 @@ namespace YourLibrary.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // solving cascade paths
             modelBuilder.Entity<UserBook>()
             .HasOne(ub => ub.Review)
             .WithMany()

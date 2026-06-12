@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using YourLibrary.Data;
 using YourLibrary.Models;
-using System.Globalization;
-using System.Text;
+
+/// <summary>
+/// Kontroler odpowiadajacy za obsluge recenzji - dodawanie, wyswietlanie.
+/// </summary>
 
 namespace YourLibrary.Controllers
 {
@@ -19,6 +24,7 @@ namespace YourLibrary.Controllers
             _context = context;
         }
 
+        // dodawanie recenzji - post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateReview(int userBookId, decimal rating, string reviewComment)
@@ -46,6 +52,7 @@ namespace YourLibrary.Controllers
             return RedirectToAction("Index", "Shelf");
         }
 
+        // wyswietlanie recenzji dla ksiazek dodawanych za pomoca wyszukiwania i dodanych manulanie - get
         [HttpGet("api/reviews")]
         public IActionResult GetBookReviews([FromQuery] string title, [FromQuery] string author)
         {
@@ -77,6 +84,7 @@ namespace YourLibrary.Controllers
             return Ok(filteredReviews);
         }
 
+        // funkcja do usuwanie polskich znakow
         private string RemoveDiacritics(string text)
         {
             var normalizedString = text.Normalize(NormalizationForm.FormD);

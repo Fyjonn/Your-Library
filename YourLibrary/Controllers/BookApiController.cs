@@ -9,6 +9,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using YourLibrary.Data;
 
+/// <summary>
+/// Kontroler odpowiadajacy za interakcje z Google Books API. Pozwala na wyszukiwanie ksiazek na podstawie tytulu
+/// lub autora.
+/// </summary>
+
 namespace YourLibrary.Controllers
 {
     [Route("api/books")]
@@ -26,6 +31,8 @@ namespace YourLibrary.Controllers
             _context = context;
         }
 
+
+        // wyszukiwanie
         [HttpGet("search")]
         public IActionResult SearchBooks([FromQuery] string query)
         {
@@ -52,6 +59,7 @@ namespace YourLibrary.Controllers
             return Content(content, "application/json");
         }
 
+        // funkcja usuwajaca polskie znaki
         private string RemoveDiacritics(string text)
         {
             var normalizedString = text.Normalize(NormalizationForm.FormD);

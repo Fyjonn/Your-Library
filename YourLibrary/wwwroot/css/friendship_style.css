@@ -2,13 +2,13 @@
     font-family: 'Georgia', serif;
 }
 
-    .friendship-page-container .page-main-title {
-        color: #1a3a5f !important;
-        text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
-        font-size: 2.8rem;
-        font-weight: bold;
-        margin-bottom: 0;
-    }
+.friendship-page-container .page-main-title {
+    color: #1a3a5f !important;
+    text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
+    font-size: 2.8rem;
+    font-weight: bold;
+    margin-bottom: 0;
+}
 
 .friend-search-card, .invitations-section, .friends-list-section, .borrow-section, .rent-section {
     background-color: rgba(255, 255, 255, 0.95) !important;
@@ -39,10 +39,10 @@
     color: #1a3a5f !important;
 }
 
-    .search-input:focus {
-        box-shadow: 0 0 0 0.25rem rgba(111, 168, 220, 0.2) !important;
-        border-color: #6fa8dc !important;
-    }
+.search-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(111, 168, 220, 0.2) !important;
+    border-color: #6fa8dc !important;
+}
 
 .btn-library-submit {
     background-color: #1a3a5f !important;
@@ -51,10 +51,10 @@
     transition: all 0.2s ease-in-out !important;
 }
 
-    .btn-library-submit:hover {
-        background-color: #11253f !important;
-        color: #ffffff !important;
-    }
+.btn-library-submit:hover {
+    background-color: #11253f !important;
+    color: #ffffff !important;
+}
 
 .custom-item-row, .invitation-card, .friend-card {
     background-color: #f4f8fb !important;
@@ -63,14 +63,14 @@
     margin-bottom: 8px;
 }
 
-    .friend-card .card-body,
-    .invitation-card .card-body {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        width: 100% !important;
-        padding: 10px 15px !important;
-    }
+.friend-card .card-body,
+.invitation-card .card-body {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 10px 15px !important;
+}
 
 .friend-card-content,
 .invitation-card-content {
@@ -149,10 +149,10 @@
     white-space: nowrap;
 }
 
-    .btn-delete-friend:hover {
-        color: #8b202a !important;
-        text-decoration: underline !important;
-    }
+.btn-delete-friend:hover {
+    color: #8b202a !important;
+    text-decoration: underline !important;
+}
 
 .invitation-card .btn-outline-danger {
     color: #b02a37 !important;
@@ -165,10 +165,10 @@
     white-space: nowrap;
 }
 
-    .invitation-card .btn-outline-danger:hover {
-        color: #ffffff !important;
-        background-color: #b02a37 !important;
-    }
+.invitation-card .btn-outline-danger:hover {
+    color: #ffffff !important;
+    background-color: #b02a37 !important;
+}
 
 
 .scroll-content-small {
@@ -186,22 +186,22 @@
     padding-right: 4px;
 }
 
-    .friends-scroll-viewport::-webkit-scrollbar,
-    .scroll-content-small::-webkit-scrollbar {
-        width: 6px;
-    }
+.friends-scroll-viewport::-webkit-scrollbar,
+.scroll-content-small::-webkit-scrollbar {
+    width: 6px;
+}
 
-    .friends-scroll-viewport::-webkit-scrollbar-track,
-    .scroll-content-small::-webkit-scrollbar-track {
-        background: #f4f8fb;
-        border-radius: 10px;
-    }
+.friends-scroll-viewport::-webkit-scrollbar-track,
+.scroll-content-small::-webkit-scrollbar-track {
+    background: #f4f8fb;
+    border-radius: 10px;
+}
 
-    .friends-scroll-viewport::-webkit-scrollbar-thumb,
-    .scroll-content-small::-webkit-scrollbar-thumb {
-        background-color: #6fa8dc;
-        border-radius: 10px;
-    }
+.friends-scroll-viewport::-webkit-scrollbar-thumb,
+.scroll-content-small::-webkit-scrollbar-thumb {
+    background-color: #6fa8dc;
+    border-radius: 10px;
+}
 
 .no-data-text, .empty-state-box {
     color: #5a738e !important;
@@ -220,19 +220,19 @@
     padding-right: 4px;
 }
 
-    .borrow-list-container::-webkit-scrollbar {
-        width: 6px;
-    }
+.borrow-list-container::-webkit-scrollbar {
+    width: 6px;
+}
 
-    .borrow-list-container::-webkit-scrollbar-track {
-        background: #f4f8fb;
-        border-radius: 10px;
-    }
+.borrow-list-container::-webkit-scrollbar-track {
+    background: #f4f8fb;
+    border-radius: 10px;
+}
 
-    .borrow-list-container::-webkit-scrollbar-thumb {
-        background-color: #6fa8dc;
-        border-radius: 10px;
-    }
+.borrow-list-container::-webkit-scrollbar-thumb {
+    background-color: #6fa8dc;
+    border-radius: 10px;
+}
 
 .custom-badge-rented {
     background-color: #d1ecf1 !important;

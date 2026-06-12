@@ -115,7 +115,7 @@ manualCoverFile.addEventListener('change', function () {
     }
 });
 
-// Nasłuchiwanie ręcznych wpisów dla przeładowania opinii z bazy
+// rezcne wpisy
 document.getElementById('bookTitle').addEventListener('input', function () {
     const t = this.value.trim();
     const a = document.getElementById('bookAuthor').value.trim();
@@ -186,7 +186,6 @@ function toggleReviewFormVisibility() {
 }
 readStatusSelect.addEventListener('change', toggleReviewFormVisibility);
 
-// WIZUALIZACJA 10 GWIAZDEK DLA LISTY ROZWIJANEJ
 const visualStars = document.querySelectorAll('.visual-star');
 if (reviewRatingSelect) {
     reviewRatingSelect.addEventListener('change', function () {
@@ -207,7 +206,7 @@ function updateVisualStars(rating) {
     });
 }
 
-// POBIERANIE OPINII Z BAZY DANYCH
+// POBIERANIE REVIEWS
 function loadDatabaseReviews(bookTitle, bookAuthor) {
     if (!bookTitle) return;
     fetch(`/api/reviews?title=${encodeURIComponent(bookTitle)}&author=${encodeURIComponent(bookAuthor || '')}`)
