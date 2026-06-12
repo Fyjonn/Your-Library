@@ -104,10 +104,12 @@ namespace YourLibrary.Controllers
                 {
                     if (parsedRating > 0)
                     {
+                        string finalComment = string.IsNullOrWhiteSpace(reviewComment)? "Rating only (no review comment provided).": reviewComment;
+
                         var newReview = new Review
                         {
                             Rating = parsedRating,
-                            ReviewComment = reviewComment ?? "",
+                            ReviewComment = finalComment,
                             UserBook = userbook
                         };
 
