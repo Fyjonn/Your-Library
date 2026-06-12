@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using YourLibrary.Data;
 using YourLibrary.Models;
 
+/// <summary>
+/// Kontroler odpowiadajcy za wyswietlanie polki uzytkownika.
+/// </summary>
+
 namespace YourLibrary.Controllers
 {
     [Authorize]
@@ -32,13 +36,6 @@ namespace YourLibrary.Controllers
                                 b.StatusBorrow == EnumStatusBorrow.Returned ||
                                 b.StatusBorrow == EnumStatusBorrow.Completed)))
                 .ToListAsync();
-
-
-        //    var uniqueBooks = myShelfBooks
-        //.GroupBy(ub => ub.UserBookId)
-        //.Select(g => g.First())
-        //.ToList();
-
             return View(myShelfBooks);
         }
     }
