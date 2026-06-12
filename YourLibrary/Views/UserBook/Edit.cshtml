@@ -1,17 +1,38 @@
 @model YourLibrary.Models.UserBook
 @using System.Security.Claims
+@using YourLibrary.Models
 
 @{
     ViewData["Title"] = "Edit Book";
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     var isOwner = Model.ApplicationUserId == currentUserId;
 
-    var isCurrentBorrower = !isOwner && Model.Borrows != null && Model.Borrows.Any(b =>
-        b.ApplicationUserId == currentUserId && b.StatusBorrow == YourLibrary.Models.EnumStatusBorrow.Borrowed);
-
-    var isPastBorrower = !isOwner && Model.Borrows != null && Model.Borrows.Any(b =>
+    // Pobieramy aktywny rekord wypo¿yczenia zalogowanego u¿ytkownika
+    var activeBorrow = Model.Borrows?.FirstOrDefault(b =>
         b.ApplicationUserId == currentUserId &&
-        (b.StatusBorrow == YourLibrary.Models.EnumStatusBorrow.Returned || b.StatusBorrow == YourLibrary.Models.EnumStatusBorrow.Completed));
+        (b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned || b.StatusBorrow == EnumStatusBorrow.Completed));
+
+    var isCurrentBorrower = !isOwner && activeBorrow != null && activeBorrow.StatusBorrow == EnumStatusBorrow.Borrowed;
+    var isPastBorrower = !isOwner && activeBorrow != null && (activeBorrow.StatusBorrow == EnumStatusBorrow.Returned || activeBorrow.StatusBorrow == EnumStatusBorrow.Completed);
+
+    // DYNAMICZNE USTAWIANIE WARTOŒCI W ZALE¯NOŒCI OD TEGO, KTO EDYTUJE
+    string currentLocation = isOwner ? Model.Location : activeBorrow?.BorrowerLocation;
+    string currentNotes = isOwner ? Model.Notes : activeBorrow?.BorrowerNotes;
+    bool currentBookmark = isOwner ? Model.Bookmark : (activeBorrow?.BorrowerBookmark ?? false);
+
+    decimal currentRating = 0;
+    string currentComment = "";
+
+    if (isOwner)
+    {
+        currentRating = Model.Review?.Rating ?? 0;
+        currentComment = Model.Review?.ReviewComment ?? "";
+    }
+    else if (activeBorrow != null)
+    {
+        currentRating = activeBorrow.BorrowerRating;
+        currentComment = activeBorrow.BorrowerReviewComment ?? "";
+    }
 }
 
 @section Styles {
@@ -83,8 +104,9 @@
                         <label class="form-label fw-bold custom-label-muted mb-2">Options</label>
                         <div class="p-3 border rounded bg-white">
                             <div class="form-check mb-2" id="bookmarkWrapper">
-                                <input class="form-check-input" type="checkbox" asp-for="Bookmark" id="Bookmark" />
-                                <label class="form-check-label text-dark" for="Bookmark">Use Bookmark</label>
+                                <input type="checkbox" id="bookBookmark" name="Bookmark" value="true" class="form-check-input custom-form-checkbox"
+                                       @(currentBookmark ? "checked=\"checked\"" : "") />
+                                <label class="form-check-label text-muted" for="bookBookmark">Has Bookmark</label>
                             </div>
 
                             @if (isOwner)
@@ -112,9 +134,10 @@
 
                 @if (isOwner || isCurrentBorrower)
                 {
-                    <div class="mb-3 d-none" id="locationGroup">
-                        <label asp-for="Location" class="form-label fw-bold custom-label-muted">Storage Location</label>
-                        <input asp-for="Location" class="form-control custom-form-control" id="bookLocation" />
+                    <div class="mb-3" id="locationGroup">
+                        <label class="form-label fw-bold text-secondary">Location</label>
+                        <input type="text" id="bookLocation" name="Location" class="form-control custom-form-input"
+                               value="@currentLocation" placeholder="e.g., Living room shelf, Bedroom..." />
                     </div>
                 }
                 else
@@ -128,30 +151,62 @@
 
                     <div class="mb-2">
                         <label asp-for="Review.Rating" class="form-label small fw-bold">Rating</label>
-                        <select asp-for="Review.Rating" id="ratingSelect" class="form-select form-select-sm custom-form-control">
-                            <option value="0">Choose rating...</option>
-                            @for (decimal i = 10.00m; i >= 0.00m; i -= 0.25m)
-                            {
-                                <option value="@i.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)">@i.ToString("0.00")</option>
-                            }
-                        </select>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-secondary">Rating</label>
+                            <select id="ratingSelect" name="reviewRating" class="form-select custom-form-input">
+                                <option value="0" selected="@(currentRating == 0 ? "selected" : null)">Choose rating...</option>
+                                @for (decimal i = 1.00m; i <= 10.00m; i += 0.25m)
+                                {
+                                    var isSelected = Math.Abs(currentRating - i) < 0.01m;
+                                    <option value="@i.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)"
+                                            selected="@(isSelected ? "selected" : null)">
+                                        @i.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                                    </option>
+                                }
+                            </select>
+                        </div>
                     </div>
-                    <div class="mb-0">
-                        <label asp-for="Review.ReviewComment" class="form-label small fw-bold">Review Comment (Optional)</label>
-                        <textarea asp-for="Review.ReviewComment" id="reviewCommentText" class="form-control custom-form-control" rows="2"></textarea>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary">Review Comment</label>
+                        <textarea id="reviewCommentText" name="reviewComment" class="form-control custom-form-input"
+                                  rows="4" placeholder="Write your thoughts about this book...">@currentComment</textarea>
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <label asp-for="Notes" class="form-label fw-bold custom-label-muted">Your Notes & Thoughts</label>
-                    <textarea asp-for="Notes" class="form-control custom-form-control" rows="4"></textarea>
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary">Notes</label>
+                    <textarea id="bookNotes" name="Notes" class="form-control custom-form-input text-start"
+                              rows="3" placeholder="Add personal notes, thoughts or tags...">@currentNotes</textarea>
                 </div>
+
+                @if (isCurrentBorrower)
+                {
+                    <div class="border-top pt-4 mt-4">
+                        <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background-color: rgba(217, 83, 79, 0.05); border: 1px dashed #8b2635;">
+                            <div>
+                                <h6 class="mb-1 fw-bold text-danger">Return Book</h6>
+                                <p class="small text-muted mb-0">Are you done reading?</p>
+                                <p class="small text-muted mb-0">Give the book back to its owner.</p>
+                            </div>
+                            <button type="submit" form="returnBookForm" class="btn btn-danger btn-sm px-3">
+                                <i class="bi bi-box-arrow-up me-1"></i>Return Book
+                            </button>
+                        </div>
+                    </div>
+                }
 
                 <div class="d-flex justify-content-between align-items-center pt-3 border-top custom-form-buttons-container">
                     <a href="/Shelf/Index" class="btn btn-custom-back px-4"><i class="bi bi-arrow-left me-2"></i>Cancel</a>
                     <button type="submit" class="btn btn-custom-save px-4 shadow-sm"><i class="bi bi-check-lg me-2"></i>Save Changes</button>
                 </div>
             </form>
+
+            @if (isCurrentBorrower)
+            {
+                <form id="returnBookForm" asp-action="ReturnBorrowedBookDirectly" asp-controller="Friendship" method="post" style="display:none;">
+                    <input type="hidden" name="userBookId" value="@Model.UserBookId" />
+                </form>
+            }
         </div>
     </div>
 </div>

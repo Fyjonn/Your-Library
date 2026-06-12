@@ -7,8 +7,15 @@
         public EnumStatusBorrow StatusBorrow { get; set; }
         public DateTime BorrowDate { get; set; }
         public DateTime ReturnDate { get; set; }
+
+        public string? BorrowerLocation { get; set; }
+        public string? BorrowerNotes { get; set; }
+        public bool BorrowerBookmark { get; set; }
+
+        public decimal BorrowerRating { get; set; }
+        public string? BorrowerReviewComment { get; set; }
         // Klucze obce
-        
+
         // z userbook
         public int UserBookId { get; set; }
         public virtual UserBook UserBook { get; set; }

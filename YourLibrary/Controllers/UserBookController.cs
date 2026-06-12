@@ -134,9 +134,9 @@ namespace YourLibrary.Controllers
             var userBook = _context.UserBooks
                 .Include(ub => ub.Book)
                 .Include(ub => ub.Review)
-                .Include(ub => ub.ApplicationUser) // Właściciel
+                .Include(ub => ub.ApplicationUser)
                 .Include(ub => ub.Borrows)
-                    .ThenInclude(b => b.ApplicationUser) // Kto pożyczał
+                    .ThenInclude(b => b.ApplicationUser)
                 .FirstOrDefault(ub => ub.UserBookId == id);
 
             if (userBook == null || userBook.Book == null)
@@ -146,11 +146,30 @@ namespace YourLibrary.Controllers
 
             bool isOwner = userBook.ApplicationUserId == currentUserId;
 
-            bool isBorrower = userBook.Borrows.Any(b => b.ApplicationUserId == currentUserId);
+            var userBorrowRecord = userBook.Borrows?
+                .Where(b => b.ApplicationUserId == currentUserId)
+                .OrderByDescending(b => b.BorrowDate)
+                .FirstOrDefault();
+
+            bool isBorrower = userBorrowRecord != null;
 
             if (!isOwner && !isBorrower)
             {
                 return Forbid();
+            }
+
+            if (!isOwner && userBorrowRecord != null)
+            {
+                userBook.Location = userBorrowRecord.BorrowerLocation;
+                userBook.Notes = userBorrowRecord.BorrowerNotes;
+                userBook.Bookmark = userBorrowRecord.BorrowerBookmark;
+                userBook.ReadStatus = userBorrowRecord.BorrowerFinalReadStatus ?? EnumReadStatus.ToRead;
+
+                userBook.Review = new Review
+                {
+                    Rating = userBorrowRecord.BorrowerRating,
+                    ReviewComment = userBorrowRecord.BorrowerReviewComment ?? string.Empty
+                };
             }
 
             return View(userBook);
@@ -162,24 +181,47 @@ namespace YourLibrary.Controllers
             string currentUserId = _userManager.GetUserId(User);
 
             var userBook = _context.UserBooks
-                .Include(ub => ub.Book).Include(ub => ub.Borrows)
-                .FirstOrDefault(ub => ub.UserBookId == id &&
-                    (ub.ApplicationUserId == currentUserId ||
-                    ub.Borrows.Any(b => b.ApplicationUserId == currentUserId &&
-    (b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned || b.StatusBorrow == EnumStatusBorrow.Completed))
-                ));
+                .Include(ub => ub.Book)
+                .Include(ub => ub.Review)
+                .Include(ub => ub.Borrows)
+                .FirstOrDefault(ub => ub.UserBookId == id);
 
             if (userBook == null || userBook.Book == null)
             {
                 return NotFound();
             }
 
+            bool isOwner = userBook.ApplicationUserId == currentUserId;
+
+            var userBorrowRecord = userBook.Borrows?
+                .Where(b => b.ApplicationUserId == currentUserId)
+                .OrderByDescending(b => b.BorrowDate)
+                .FirstOrDefault();
+
+            if (!isOwner && userBorrowRecord == null)
+            {
+                return Forbid();
+            }
+
+            if (!isOwner && userBorrowRecord != null)
+            {
+                userBook.Location = userBorrowRecord.BorrowerLocation;
+                userBook.Notes = userBorrowRecord.BorrowerNotes;
+                userBook.Bookmark = userBorrowRecord.BorrowerBookmark;
+                userBook.ReadStatus = userBorrowRecord.BorrowerFinalReadStatus ?? EnumReadStatus.ToRead;
+
+                userBook.Review = new Review
+                {
+                    Rating = userBorrowRecord.BorrowerRating,
+                    ReviewComment = userBorrowRecord.BorrowerReviewComment ?? string.Empty
+                };
+            }
+
             return View(userBook);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, UserBook userbook, string? SelectedRating, string? ReviewComment)
+        public IActionResult Edit(int id, UserBook userbook, string? reviewComment)
         {
             if (id != userbook.UserBookId)
             {
@@ -200,13 +242,29 @@ namespace YourLibrary.Controllers
             }
 
             bool isOwner = dbUserBook.ApplicationUserId == currentUserId;
-            bool isCurrentBorrower = dbUserBook.Borrows.Any(b => b.ApplicationUserId == currentUserId && b.StatusBorrow == EnumStatusBorrow.Borrowed);
-            bool isPastBorrower = dbUserBook.Borrows.Any(b => b.ApplicationUserId == currentUserId &&
-                (b.StatusBorrow == EnumStatusBorrow.Returned || b.StatusBorrow == EnumStatusBorrow.Completed));
+
+            var userBorrowRecord = dbUserBook.Borrows?
+                .Where(b => b.ApplicationUserId == currentUserId)
+                .OrderByDescending(b => b.BorrowDate)
+                .FirstOrDefault();
+
+            bool isCurrentBorrower = userBorrowRecord != null && userBorrowRecord.StatusBorrow == EnumStatusBorrow.Borrowed;
+            bool isPastBorrower = userBorrowRecord != null && (userBorrowRecord.StatusBorrow == EnumStatusBorrow.Returned || userBorrowRecord.StatusBorrow == EnumStatusBorrow.Completed);
 
             if (!isOwner && !isCurrentBorrower && !isPastBorrower)
             {
                 return Forbid();
+            }
+
+            string rawRating = Request.Form["reviewRating"].ToString();
+            decimal parsedRating = 0;
+
+            if (!string.IsNullOrEmpty(rawRating))
+            {
+                if (!decimal.TryParse(rawRating, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsedRating))
+                {
+                    decimal.TryParse(rawRating, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.CurrentCulture, out parsedRating);
+                }
             }
 
             if (isOwner)
@@ -239,75 +297,71 @@ namespace YourLibrary.Controllers
                     dbUserBook.IsOwned = false;
                     dbUserBook.Location = null;
                 }
-            }
-            else if (isCurrentBorrower)
-            {
-                dbUserBook.ReadStatus = userbook.ReadStatus;
-                dbUserBook.Location = userbook.Location;
-                dbUserBook.Notes = userbook.Notes;
-                dbUserBook.Bookmark = userbook.Bookmark;
 
-                if (dbUserBook.Media != EnumMedia.Printed)
+                bool ownerCanHaveReview = userbook.ReadStatus == EnumReadStatus.Read || userbook.ReadStatus == EnumReadStatus.DNF;
+                if (ownerCanHaveReview)
                 {
-                    dbUserBook.Bookmark = false;
-                    dbUserBook.Location = null;
-                }
-            }
-            else if (isPastBorrower)
-            {
-                dbUserBook.Notes = userbook.Notes;
-            }
-
-            // 2. Zapisywanie oceny i recenzji
-            bool canHaveReview = false;
-            if (isPastBorrower)
-            {
-                canHaveReview = dbUserBook.ReadStatus == EnumReadStatus.Read || dbUserBook.ReadStatus == EnumReadStatus.DNF;
-            }
-            else
-            {
-                canHaveReview = userbook.ReadStatus == EnumReadStatus.Read || userbook.ReadStatus == EnumReadStatus.DNF;
-            }
-
-            if (canHaveReview)
-            {
-                if (userbook.Review != null)
-                {
-                    string safeComment = userbook.Review.ReviewComment ?? string.Empty;
-
                     if (dbUserBook.Review == null)
                     {
-                        dbUserBook.Review = new Review
-                        {
-                            Rating = userbook.Review.Rating,
-                            ReviewComment = safeComment
-                        };
+                        dbUserBook.Review = new Review { Rating = parsedRating, ReviewComment = reviewComment ?? "" };
                     }
                     else
                     {
-                        dbUserBook.Review.Rating = userbook.Review.Rating;
-                        dbUserBook.Review.ReviewComment = safeComment;
+                        dbUserBook.Review.Rating = parsedRating;
+                        dbUserBook.Review.ReviewComment = reviewComment ?? "";
                     }
                 }
-            }
-            else
-            {
-                if (dbUserBook.Review != null)
+                else if (!ownerCanHaveReview && dbUserBook.Review != null)
                 {
                     dbUserBook.Review.Rating = 0;
                     dbUserBook.Review.ReviewComment = string.Empty;
+                }
+
+                _context.UserBooks.Update(dbUserBook);
+            }
+            else
+            {
+                if (userBorrowRecord != null)
+                {
+                    dbUserBook.ReadStatus = userbook.ReadStatus;
+
+                    userBorrowRecord.BorrowerLocation = userbook.Location;
+                    userBorrowRecord.BorrowerNotes = userbook.Notes;
+                    userBorrowRecord.BorrowerBookmark = userbook.Bookmark;
+                    userBorrowRecord.BorrowerFinalReadStatus = userbook.ReadStatus;
+
+                    bool borrowerCanHaveReview = userbook.ReadStatus == EnumReadStatus.Read || userbook.ReadStatus == EnumReadStatus.DNF;
+
+                    if (borrowerCanHaveReview)
+                    {
+                        userBorrowRecord.BorrowerRating = parsedRating;
+                        userBorrowRecord.BorrowerReviewComment = reviewComment ?? string.Empty;
+                    }
+                    else
+                    {
+                        userBorrowRecord.BorrowerRating = 0;
+                        userBorrowRecord.BorrowerReviewComment = string.Empty;
+                    }
+
+                    _context.Entry(dbUserBook).State = EntityState.Modified;
+                    _context.Entry(userBorrowRecord).State = EntityState.Modified;
                 }
             }
 
             try
             {
-                _context.UserBooks.Update(dbUserBook);
                 _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.UserBooks.Any(e => e.UserBookId == userbook.UserBookId)) return NotFound();
-                else throw;
+                if (!_context.UserBooks.Any(e => e.UserBookId == userbook.UserBookId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
 
             return RedirectToAction("Index", "Shelf");
