@@ -1,5 +1,12 @@
 # Your-Library
 
+## Brief project description
+
+Web application that enables users to manage their personal book collection and share books with other members of application. 
+Adding books and storing them on designated shelves, changing notes and status in those books, adding friends and viewing their shelves.
+Those are main functionalities of the App. What is more, borrowing mechanism allows users to borrow/lend books between eachother. 
+Everything that you need to know about your books and ebooks is within "Your-Library".
+
 ## How to run the project locally
 
 1. Clone the repository or fork it.
@@ -58,5 +65,13 @@
      
 8. Migrate the database in the Package Manager Console:
 
-```text
-Update-Database
+`Update-Database`
+
+## Used Technologies
+
+* ASP.NET Core MVC
+* C#
+* Entity Framework Core
+* Microsoft SQL Server
+* ASP.NET Identity
+* HTML, CSS, Javascript
