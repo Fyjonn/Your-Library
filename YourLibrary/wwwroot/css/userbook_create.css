@@ -205,9 +205,6 @@ a[href*="Index"],
     transform: translateX(4px);
 }
 
-.review-stars {
-    color: #f1c40f;
-}
 
 .review-hidden-item {
     display: none;
@@ -225,18 +222,6 @@ a[href*="Index"],
     cursor: pointer;
     display: inline-flex;
     gap: 5px;
-}
-
-.star-rating-wrapper .star-select {
-    transition: color 0.15s ease-in-out, transform 0.1s ease;
-}
-
-.star-rating-wrapper .star-select:hover {
-    transform: scale(1.2);
-}
-
-.star-rating-wrapper .bi-star-fill.text-warning {
-    color: #f1c40f !important;
 }
 
 

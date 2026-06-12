@@ -341,8 +341,11 @@ namespace YourLibrary.Controllers
                 .Where(b => b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned)
                 .Select(b => b.UserBookId)
                 .ToListAsync();
+            var OwnedBooksIds = await _context.UserBooks.Where(ub => ub.ApplicationUserId == friendUser.Id && ub.IsOwned == true)
+                .Select(ub => ub.UserBookId)
+                .ToListAsync();
 
-            var availableBooks = books.Where(ub => !currentlyBorrowedIds.Contains(ub.UserBookId)).ToList();
+            var availableBooks = books.Where(ub => !currentlyBorrowedIds.Contains(ub.UserBookId) && OwnedBooksIds.Contains(ub.UserBookId)).ToList();
 
             var viewModel = new FriendShelfViewModel
             {
