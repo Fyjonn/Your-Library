@@ -7,10 +7,17 @@
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
     var isOwner = Model.ApplicationUserId == currentUserId;
 
-    // Pobieramy aktywny rekord wypo¿yczenia zalogowanego u¿ytkownika
     var activeBorrow = Model.Borrows?.FirstOrDefault(b =>
         b.ApplicationUserId == currentUserId &&
-        (b.StatusBorrow == EnumStatusBorrow.Borrowed || b.StatusBorrow == EnumStatusBorrow.Returned || b.StatusBorrow == EnumStatusBorrow.Completed));
+        b.StatusBorrow == EnumStatusBorrow.Borrowed);
+
+    // Jeœli nie ma aktywnego, szukamy jakiegokolwiek przesz³ego
+    if (activeBorrow == null)
+    {
+        activeBorrow = Model.Borrows?.FirstOrDefault(b =>
+            b.ApplicationUserId == currentUserId &&
+            (b.StatusBorrow == EnumStatusBorrow.Returned || b.StatusBorrow == EnumStatusBorrow.Completed));
+    }
 
     var isCurrentBorrower = !isOwner && activeBorrow != null && activeBorrow.StatusBorrow == EnumStatusBorrow.Borrowed;
     var isPastBorrower = !isOwner && activeBorrow != null && (activeBorrow.StatusBorrow == EnumStatusBorrow.Returned || activeBorrow.StatusBorrow == EnumStatusBorrow.Completed);
@@ -188,7 +195,7 @@
                                 <p class="small text-muted mb-0">Are you done reading?</p>
                                 <p class="small text-muted mb-0">Give the book back to its owner.</p>
                             </div>
-                            <button type="submit" form="returnBookForm" class="btn btn-danger btn-sm px-3">
+                            <button type="button" class="btn btn-danger btn-sm px-3" onclick="document.getElementById('returnBookForm').submit();">
                                 <i class="bi bi-box-arrow-up me-1"></i>Return Book
                             </button>
                         </div>
